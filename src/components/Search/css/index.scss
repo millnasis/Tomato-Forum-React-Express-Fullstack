@@ -1,0 +1,78 @@
+$primary-color: rgb(128, 0, 32);
+$link-color: rgb(128, 0, 32);
+$layout-header-background: rgb(76, 0, 9);
+$component-background-color: darken(
+  $color: #fff,
+  $amount: 3%,
+);
+
+.main-content {
+  padding: 0 50px;
+  margin-top: 64px;
+  .search-warp {
+    width: 100%;
+    padding-left: 100px;
+    background: $component-background-color;
+    padding-top: 30px;
+    padding-right: 50px;
+    height: 1%;
+    overflow: hidden;
+    .search-col {
+      float: left;
+      margin-right: 40px;
+      border-radius: 5px;
+    }
+    .search-bar-warp {
+      width: 90%;
+      margin-bottom: 30px;
+      display: flex;
+      padding: 0 50px;
+      .search-logo {
+        margin-right: 20px;
+        width: 131px;
+        height: 35px;
+      }
+    }
+    .search-control {
+      width: 90%;
+      padding: 0 10px;
+      margin-bottom: 30px;
+      .search-control-row {
+        margin-bottom: 5px;
+      }
+    }
+    .search-result {
+      width: 90%;
+      padding: 0 10px;
+      .search-result-title {
+      }
+      .search-result-content {
+      }
+      .search-result-info {
+        color: rgba(0, 0, 0, 0.45);
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1190px) {
+  .main-content {
+    padding: unset;
+    .search-warp {
+      padding-left: 0;
+    }
+  }
+}
+
+@media only screen and (max-width: 975px) {
+  .page-header.search-page {
+    height: 64px;
+  }
+  .main-content {
+    .search-warp {
+      .search-bar-warp {
+        padding: unset;
+      }
+    }
+  }
+}

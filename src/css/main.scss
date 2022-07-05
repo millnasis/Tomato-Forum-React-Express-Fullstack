@@ -1,0 +1,67 @@
+$primary-color: rgb(128, 0, 32);
+$link-color: rgb(128, 0, 32);
+$layout-header-background: rgb(76, 0, 9);
+
+#root .logo {
+  float: left;
+  width: 100px;
+  height: 53px;
+  margin: 5px;
+  margin-right: 24px;
+  background-image: url("../public/img/src=http___p1.meituan.net_wedding_f92e4f02f005da5733d9a192be5437b6120957.jpg@660w_500h_1e_1c&refer=http___p1.meituan.png");
+  background-size: cover;
+}
+
+.search-input {
+  position: absolute;
+  top: 15px;
+  right: 0;
+  width: 30vw;
+  min-width: 200px;
+}
+
+.list-item-point {
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: $primary-color;
+    left: 10px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  #root .logo {
+    display: none;
+  }
+}
+
+.titleEllipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.contentEllipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+@media only screen and (max-width: 975px) {
+  .page-header {
+    height: 120px;
+  }
+  .search-input {
+    margin-top: 10px;
+    position: unset;
+    width: 80vw;
+  }
+}

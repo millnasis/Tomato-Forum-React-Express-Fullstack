@@ -1,0 +1,83 @@
+$primary-color: rgb(128, 0, 32);
+$link-color: rgb(128, 0, 32);
+$layout-header-background: rgb(76, 0, 9);
+$component-background-color: darken(
+  $color: #fff,
+  $amount: 3%,
+);
+
+
+.main-content {
+  padding: 0 50px;
+  margin-top: 64px;
+  .user-info-warp {
+    width: 100%;
+    padding-left: 100px;
+    padding-top: 30px;
+    .user-info-col {
+      float: left;
+      margin-right: 40px;
+      border-radius: 5px;
+    }
+    .user-info-card-warp {
+      width: 90%;
+      margin-bottom: 30px;
+      background: $component-background-color;
+      .user-info-card {
+        display: flex;
+        flex-direction: row;
+        position: relative;
+      }
+    }
+    .user-info-main-col-component {
+      background: $component-background-color;
+      padding: 10px;
+    }
+    .user-info-main-col {
+      width: 60%;
+      min-width: 550px;
+    }
+    .user-info-sub-col {
+      width: 30%;
+    }
+    .user-info-sub-col-component {
+      width: 88%;
+    }
+  }
+}
+
+@media only screen and (max-width: 1190px) {
+  .main-content {
+    padding: unset;
+    margin-top: unset;
+    .user-info-warp {
+      padding-left: 0;
+      .user-info-card-warp {
+        margin-top: 50px;
+        width: 100vw;
+      }
+      .user-info-main-col {
+        width: 100vw;
+        min-width: unset;
+      }
+      .user-info-sub-col {
+        display: none;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 975px) {
+  .main-content {
+    .user-info-warp {
+      margin-top: 50px;
+      .user-info-card-warp {
+        .user-info-card {
+          display: flex;
+          flex-direction: column;
+          position: relative;
+        }
+      }
+    }
+  }
+}

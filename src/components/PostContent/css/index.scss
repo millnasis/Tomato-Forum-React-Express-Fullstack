@@ -1,0 +1,122 @@
+$primary-color: rgb(128, 0, 32);
+$link-color: rgb(128, 0, 32);
+$layout-header-background: rgb(76, 0, 9);
+
+.delete {
+  color: #ccc;
+  cursor: pointer;
+}
+
+.main-content {
+  padding: 0 50px;
+  margin-top: 64px;
+  .post-warp {
+    width: 100%;
+    padding-left: 100px;
+    padding-top: 30px;
+    .post-col {
+      float: left;
+      margin-right: 40px;
+      border-radius: 5px;
+    }
+    .post-main-col-component {
+      margin-bottom: 30px;
+      background: darken($color: #fff, $amount: 3%);
+      padding: 20px;
+    }
+    .post-main-col {
+      width: 70%;
+      min-width: 550px;
+      .main-post-content-warp {
+        strong {
+          color: $link-color;
+        }
+        .main-post-content-message {
+          color: lighten($color: #000000, $amount: 50%);
+        }
+        .main-post-content-body {
+        }
+        .main-post-content-body-control {
+          font-size: 20px;
+          display: flex;
+          .main-post-content-body-control-item {
+            margin-right: 20px;
+            color: rgba(0, 0, 0, 0.65);
+            cursor: pointer;
+            transition: 0.3s all;
+            &:hover {
+              color: rgba(0, 0, 0, 0.85);
+            }
+          }
+        }
+      }
+      .main-post-reply-warp {
+        .main-post-reply-list {
+          .main-post-reply-single-textarea {
+            display: flex;
+            width: 90%;
+            margin: 0 15px;
+            justify-content: center;
+            .main-post-reply-single-textarea-avatar {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex-direction: column;
+              margin-right: 10px;
+              width: 55px;
+              span {
+                color: rgba(0, 0, 0, 0.65);
+              }
+            }
+          }
+        }
+      }
+      .main-post-content-control {
+        padding: 20px;
+        h2 {
+          font-size: 20px;
+        }
+        .main-post-content-control-botton-warp {
+          width: 100%;
+          height: 1%;
+          overflow: auto;
+          .main-post-content-control-botton {
+            float: right;
+            margin-top: 20px;
+            margin-right: 20px;
+            width: 180px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1190px) {
+  .main-content {
+    padding: unset;
+    margin-top: unset;
+    .post-warp {
+      padding-left: 0;
+      .post-main-col {
+        margin-top: 50px;
+        width: 100vw;
+        min-width: unset;
+      }
+      .post-sub-col {
+        display: none;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 975px) {
+  .main-content {
+    overflow-x: hidden;
+    .post-warp {
+      .post-main-col {
+        margin-top: 100px;
+      }
+    }
+  }
+}

@@ -1,0 +1,119 @@
+$primary-color: rgb(128, 0, 32);
+$link-color: rgb(128, 0, 32);
+$layout-header-background: rgb(76, 0, 9);
+
+.main-content {
+  padding: 0 50px;
+  margin-top: 64px;
+  .main-index-warp {
+    width: 100%;
+    padding-left: 100px;
+    padding-top: 30px;
+    .index-col {
+      float: left;
+      margin-right: 40px;
+      border-radius: 5px;
+    }
+    .main-col {
+      padding: 20px;
+      background: darken($color: #fff, $amount: 3%);
+      width: 55%;
+      min-width: 550px;
+      .main-control {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .main-col-control {
+        display: none;
+      }
+      .main-list-description {
+        line-height: normal;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        word-break: break-word;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 14px;
+        line-height: 1.5715;
+      }
+    }
+    .sub-col {
+      width: 30%;
+      min-width: 250px;
+      .sub-col-component {
+        margin-bottom: 30px;
+        width: 100%;
+        background: darken($color: #fff, $amount: 3%);
+      }
+      .main-control {
+        height: 180px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .hot-search {
+        strong {
+          color: $link-color;
+        }
+        .hot-search-item {
+          cursor: pointer;
+          &:hover {
+            background: darken($color: #fff, $amount: 6%);
+          }
+        }
+      }
+      .hot-post-warp {
+        padding: 20px;
+        strong {
+          line-height: 100%;
+          color: $link-color;
+        }
+        .hot-post-list-item {
+          margin-bottom: 20px;
+          cursor: pointer;
+          transition: 0.3s all ease-in-out;
+          &:hover {
+            border: 1px solid $link-color;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1190px) {
+  .main-content {
+    padding: unset;
+    margin-top: unset;
+    .main-index-warp {
+      padding-left: 0;
+      .main-col {
+        margin-top: 20px;
+        width: 100%;
+        min-width: unset;
+        .main-col-control {
+          display: flex;
+        }
+      }
+      .sub-col {
+        display: none;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 975px) {
+  .main-content {
+    .main-index-warp {
+      .main-col {
+        margin-top: 90px;
+        .main-col-control {
+          display: flex;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,121 @@
+$primary-color: rgb(128, 0, 32);
+$link-color: rgb(128, 0, 32);
+$layout-header-background: rgb(76, 0, 9);
+$component-background-color: darken(
+  $color: #fff,
+  $amount: 3%,
+);
+
+.main-content {
+  padding: 0 50px;
+  margin-top: 64px;
+  .user-message-warp {
+    width: 100%;
+    padding-left: 150px;
+    padding-top: 30px;
+    .user-message-col {
+      float: left;
+      margin-right: 40px;
+      border-radius: 5px;
+      &.user-message-control-left {
+        width: 120px;
+        background-color: $component-background-color;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        .user-message-control-title {
+          font-size: 15px;
+        }
+        .user-message-control-li {
+          margin-bottom: 20px;
+          transition: 0.3s all ease-in-out;
+          cursor: pointer;
+          font-weight: 600;
+          color: lighten($color: #000000, $amount: 50%);
+          &:hover {
+            color: $link-color;
+          }
+          &.active {
+            color: $link-color;
+          }
+        }
+      }
+      &.user-message-body {
+        width: 60%;
+        background-color: $component-background-color;
+        padding: 30px;
+        .user-message-control-top {
+          width: 100%;
+          display: none;
+          flex-direction: row;
+          padding-left: unset;
+          .user-message-control-li {
+            padding: 10px 20px;
+            font-size: 3vw;
+            margin-bottom: 20px;
+            transition: 0.3s all ease-in-out;
+            list-style: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: lighten($color: #000000, $amount: 50%);
+            position: relative;
+            &:hover {
+              background: lighten($color: #000000, $amount: 70%);
+              color: $link-color;
+              &::before {
+                width: 60%;
+              }
+            }
+            &.active {
+              color: $link-color;
+              &::before {
+                width: 60%;
+              }
+            }
+            &::before {
+              content: "";
+              display: block;
+              width: 0;
+              height: 3px;
+              background-color: $link-color;
+              position: absolute;
+              left: 0;
+              right: 0;
+              bottom: 4px;
+              margin: 0 auto;
+              transition: 0.15s all ease-in;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1190px) {
+  .main-content {
+    padding: unset;
+    .user-message-warp {
+      padding-left: 0;
+    }
+  }
+}
+
+@media only screen and (max-width: 975px) {
+  .main-content {
+    .user-message-warp {
+      .user-message-col {
+        &.user-message-control-left {
+          display: none;
+        }
+        &.user-message-body {
+          width: 100%;
+          .user-message-control-top {
+            display: flex;
+          }
+        }
+      }
+    }
+  }
+}
