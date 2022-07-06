@@ -59,7 +59,7 @@ class MessageDAO {
             });
             return ret;
           } else {
-            query = await messages
+            const queryUsr = await messages
               .aggregate([
                 {
                   $match: {
@@ -79,7 +79,7 @@ class MessageDAO {
                 },
               ])
               .toArray();
-            if (query.length === 0) {
+            if (queryUsr.length === 0) {
               let ret = await messages.updateOne(
                 {
                   userTo: userTo,
@@ -101,31 +101,33 @@ class MessageDAO {
                 }
               );
               return ret;
-            } else if (query.length === 1) {
-              let ret = await messages.deleteOne({
-                userTo: userTo,
-                targetid: targetid,
-                targetType,
-                MSGtype,
-              });
-              return ret;
-            } else {
-              let ret = await messages.updateOne(
-                {
+            } else if (queryUsr.length === 1) {
+              if (query[0].likeList.length === 1) {
+                let ret = await messages.deleteOne({
                   userTo: userTo,
                   targetid: targetid,
                   targetType,
                   MSGtype,
-                },
-                {
-                  $pull: {
-                    likeList: {
-                      userid: userFrom,
-                    },
+                });
+                return ret;
+              } else {
+                let ret = await messages.updateOne(
+                  {
+                    userTo: userTo,
+                    targetid: targetid,
+                    targetType,
+                    MSGtype,
                   },
-                }
-              );
-              return ret;
+                  {
+                    $pull: {
+                      likeList: {
+                        userid: userFrom,
+                      },
+                    },
+                  }
+                );
+                return ret;
+              }
             }
           }
         }

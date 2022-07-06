@@ -12,39 +12,71 @@ import formatDate from "../../../tools/LocalDate";
 import htmlToText from "../../../tools/htmlToText";
 import { withUseNavigateHooksHOC } from "../../../tools/withUseNavigateHooksHOC";
 import { bindActionCreators } from "redux";
+import { consoleDebugTool } from "../../../tools/consoleDebugTool";
+import { Link } from "react-router-dom";
 
 const singlePageLimit = 10;
 
 function SpawnTitle(props) {
-  let aList = [];
+  const aList = [];
   const { likeList } = props;
-  for (let index = 0; index < likeList.length && index < 3; index++) {
-    const element = likeList[index];
-    if (index === likeList.length - 1 || index === 2) {
-      aList.push(
-        <strong key={index}>
-          <a>{element.user.username}</a>
-        </strong>
-      );
-    } else {
-      aList.push(
-        <strong key={index}>
-          <a>{element.user.username}</a>、
-        </strong>
-      );
+  if (Array.isArray(likeList)) {
+    for (let index = 0; index < likeList.length && index < 3; index++) {
+      const element = likeList[index];
+      if (index === likeList.length - 1 || index === 2) {
+        aList.push(
+          <strong key={index}>
+            <Link to={`/user/${element.userid}`}>{element.user.username}</Link>
+          </strong>
+        );
+      } else {
+        aList.push(
+          <strong key={index}>
+            <Link to={`/user/${element.userid}`}>
+              {element.user.username}、
+            </Link>
+          </strong>
+        );
+      }
     }
+  } else {
+    aList.push(
+      <strong key={likeList._id}>
+        <Link to={`/user/${likeList._id}`}>{likeList.username}</Link>
+      </strong>
+    );
   }
   return aList;
 }
 
-function getTabCN(tab) {
-  switch (tab) {
-    case TotalTargetType.POST:
-      return <a>帖子</a>;
-    case TotalTargetType.REPLY:
+function SpawnAvatar(props) {
+  const avatarList = [];
+  const { likeList } = props;
+  for (let index = 0; index < likeList.length && index < 3; index++) {
+    const element = likeList[index];
+    avatarList.push(
+      <Avatar
+        shape="circle"
+        src={element.user.head_picture}
+        key={element.userid}
+      ></Avatar>
+    );
+  }
+  return <Avatar.Group maxCount={3}>{avatarList}</Avatar.Group>;
+}
+
+function getTabCN(props) {
+  const { targetType } = props;
+  switch (targetType) {
+    case TotalTargetType.POST: {
+      return <Link to={`/post/${props.targetid}`}>帖子</Link>;
+    }
+    case TotalTargetType.REPLY: {
       return <a>回帖</a>;
-    case TotalTargetType.COMMENT:
+    }
+    case TotalTargetType.COMMENT: {
       return <a>评论</a>;
+    }
     default:
       break;
   }
@@ -91,20 +123,18 @@ class ShowMessageBody extends React.Component {
             header={<MessageControl position="top"></MessageControl>}
             dataSource={showMessageArray}
             renderItem={(item) => {
+              consoleDebugTool("ShowMessageBody", item);
               return (
                 <List.Item>
                   <List.Item.Meta
                     avatar={
-                      <Avatar
-                        src={item.likeList[0].user.head_picture}
-                        shape={"circle"}
-                      ></Avatar>
+                      <SpawnAvatar likeList={item.likeList}></SpawnAvatar>
                     }
                     title={
                       <div>
                         <SpawnTitle likeList={item.likeList}></SpawnTitle>等
                         {item.likeList.length}人点赞了你的
-                        {getTabCN(item.targetType)}
+                        {getTabCN(item)}
                       </div>
                     }
                     description={formatDate(item.lastUpdate)}
@@ -144,6 +174,7 @@ class ShowMessageBody extends React.Component {
             header={<MessageControl position="top"></MessageControl>}
             dataSource={showMessageArray}
             renderItem={(item) => {
+              consoleDebugTool("ShowMessageBody", item);
               return (
                 <List.Item>
                   <List.Item.Meta
@@ -155,8 +186,11 @@ class ShowMessageBody extends React.Component {
                     }
                     title={
                       <div>
-                        用户<a>{item.userFrom.username}</a>回复了您的发帖
-                        <a>{item.target.master.title}</a>
+                        用户<SpawnTitle likeList={item.userFrom}></SpawnTitle>
+                        回复了您的发帖&nbsp;
+                        <Link to={`/post/${item.target.masterID}`}>
+                          {item.target.master.title}
+                        </Link>
                       </div>
                     }
                     description={
@@ -201,6 +235,7 @@ class ShowMessageBody extends React.Component {
             header={<MessageControl position="top"></MessageControl>}
             dataSource={showMessageArray}
             renderItem={(item) => {
+              consoleDebugTool("showmessagebody", item);
               return (
                 <List.Item>
                   <List.Item.Meta
@@ -213,13 +248,17 @@ class ShowMessageBody extends React.Component {
                     title={
                       item.target.isMention ? (
                         <div>
-                          用户<a>{item.userFrom.username}</a>回复了您的
-                          <a>评论</a>
+                          用户
+                          <SpawnTitle likeList={item.userFrom}></SpawnTitle>
+                          评论了您的
+                          <Link to={`/post/${item.target.master.masterID}`}>评论</Link>
                         </div>
                       ) : (
                         <div>
-                          用户<a>{item.userFrom.username}</a>回复了您的
-                          <a>回帖</a>
+                          用户
+                          <SpawnTitle likeList={item.userFrom}></SpawnTitle>
+                          评论了您的
+                          <Link to={`/post/${item.target.masterID}`}>回帖</Link>
                         </div>
                       )
                     }

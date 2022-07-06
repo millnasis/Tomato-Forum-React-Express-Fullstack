@@ -41,13 +41,12 @@ class UserInfoCard extends React.Component {
       },
     })
       .then((ret) => {
-        console.log(ret.data);
         R.setState({
           avatar: ret.data,
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -87,7 +86,7 @@ class UserInfoCard extends React.Component {
           <Descriptions title={username} style={{ flex: "1" }}>
             <Descriptions.Item label="个性签名">{words}</Descriptions.Item>
             <Descriptions.Item label="邮箱地址">
-              1985551393@qq.com
+              {email ? email : "无"}
             </Descriptions.Item>
             <Descriptions.Item label="性别">{sex}</Descriptions.Item>
             <Descriptions.Item label="创建时间">

@@ -1,6 +1,7 @@
 const dbURL = "mongodb://localhost:27017/";
-const uploadImgPath = "D:\\vsCodeWorkSpace\\react\\forum\\server\\public\\img"
-const uploadVideoPath = "D:\\vsCodeWorkSpace\\react\\forum\\server\\public\\img"
+const path = require("path");
+const uploadImgPath = path.join(__dirname, "../public/img");
+const uploadVideoPath = path.join(__dirname, "../public/vedio");
 
 const multer = require("multer");
 let IMGstorage = multer.diskStorage({

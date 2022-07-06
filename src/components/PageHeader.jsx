@@ -17,6 +17,44 @@ class PageHeader extends React.Component {
   }
 
   render() {
+    const menuItem = [
+      {
+        label: <Link to="/">首页</Link>,
+        key: "link-to-main",
+      },
+      {
+        label: <Link to={`/message`}>消息</Link>,
+        key: "user-info-message",
+      },
+      this.props.isUserLogin
+        ? {
+            label: (
+              <Link
+                to={`/user/${this.props.userInfo.id}`}
+                key="link-to-post"
+                style={{ color: "rgba(255,255,255,.65)", userSelect: "none" }}
+              >
+                {this.props.userInfo.username}
+              </Link>
+            ),
+            icon: <Avatar src={this.props.userInfo.head_picture}></Avatar>,
+            key: "user-info",
+            children: [
+              {
+                label: <Link to={`/user/${this.props.userInfo.id}`}>设置</Link>,
+                key: "user-info-setting",
+              },
+              {
+                label: "登出",
+                key: "user-info-logout",
+              },
+            ],
+          }
+        : {
+            label: "登陆",
+            key: "login",
+          },
+    ];
     return (
       <Header
         className={`page-header ${
@@ -25,55 +63,21 @@ class PageHeader extends React.Component {
         style={{ position: "fixed", zIndex: 100, width: "100%" }}
       >
         <div className="logo" />
-        <Menu theme="dark" mode="horizontal">
-          <Menu.Item key="1">
-            <Link to="/" key="link-to-main">
-              首页
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="user-info-message">
-            <Link to={`/message`}>消息</Link>
-          </Menu.Item>
-          {this.props.isUserLogin ? (
-            <Menu.SubMenu
-              key="user-info"
-              icon={<Avatar src={this.props.userInfo.head_picture}></Avatar>}
-              title={
-                <Link
-                  to={`/user/${this.props.userInfo.id}`}
-                  key="link-to-post"
-                  style={{ color: "rgba(255,255,255,.65)" }}
-                >
-                  {this.props.userInfo.username}
-                </Link>
-              }
-            >
-              <Menu.ItemGroup>
-                <Menu.Item key="user-info-setting">
-                  <Link to={`/user/${this.props.userInfo.id}`}>设置</Link>
-                </Menu.Item>
-                <Menu.Item
-                  key="user-info-logout"
-                  onClick={() => {
-                    this.props.send_logout();
-                  }}
-                >
-                  登出
-                </Menu.Item>
-              </Menu.ItemGroup>
-            </Menu.SubMenu>
-          ) : (
-            <Menu.Item
-              key="login"
-              onClick={() => {
-                this.props.show_login_modal();
-              }}
-            >
-              登陆后的世界更精彩！
-            </Menu.Item>
-          )}
-        </Menu>
-
+        <Menu
+          mode="horizontal"
+          theme="dark"
+          items={menuItem}
+          onClick={(e) => {
+            if (e.key === "login") {
+              this.props.show_login_modal();
+              return;
+            }
+            if (e.key === "user-info-logout") {
+              this.props.send_logout();
+              return;
+            }
+          }}
+        ></Menu>
         {this.props.location.pathname === "/search" || (
           <Search
             placeholder="输入搜索内容"

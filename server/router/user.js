@@ -60,6 +60,10 @@ router.get("/", async (req, res) => {
 router.get("/:userid", async (req, res) => {
   const userDAO = new UserDAO();
   let ret = await userDAO.queryByID(req.params.userid);
+  if (!ret) {
+    res.redirect("/404");
+    return;
+  }
   if (req.session.userInfo) {
     res.send({
       userInfo: ret.getOriginData(),

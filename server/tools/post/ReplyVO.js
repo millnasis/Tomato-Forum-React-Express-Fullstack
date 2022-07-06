@@ -1,6 +1,5 @@
 const CommentVO = require("./CommentVO");
 const db = require("../db");
-const ReplyDAO = require("./replyDAO");
 const { ObjectId } = require("mongodb");
 
 const dbName = "replys";
@@ -90,6 +89,39 @@ class ReplyVO {
           },
           {
             $lookup: {
+              from: "replys",
+              localField: "comments.masterID",
+              foreignField: "_id",
+              as: "comments.master",
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "comments.mentionUser",
+              foreignField: "_id",
+              as: "comments.mentionUser",
+            },
+          },
+          {
+            $project: { comments: 1 },
+          },
+        ])
+        .toArray();
+      ret = ret[0].comments;
+      if (ret.isMention) {
+        let mentionRet = await replys
+        .aggregate([
+          {
+            $unwind: "$comments",
+          },
+          {
+            $match: {
+              "comments.id": ret.mentionID,
+            },
+          },
+          {
+            $lookup: {
               from:"replys",
               localField:"comments.masterID",
               foreignField:"_id",
@@ -109,13 +141,8 @@ class ReplyVO {
           },
         ])
         .toArray();
-      ret = ret[0].comments;
-      if (ret.isMention && queryMention) {
-        const replyDAO = new ReplyDAO();
-        let query = await replyDAO.queryCommentByCommentID(
-          ret.mentionID,
-          false
-        );
+        mentionRet = mentionRet[0].comments;
+        const query = new CommentVO(mentionRet,dbName);
         ret.mention = query.getOriginData();
       }
       return new CommentVO(ret, dbName);

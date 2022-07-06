@@ -30,6 +30,18 @@ class App extends React.Component {
     this.props.send_update_user_info();
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.reload !== this.props.reload && this.props.reload) {
+      window.location.reload();
+    }
+    if (
+      prevProps.message.type !== this.props.message.type &&
+      this.props.message.type !== -1
+    ) {
+      this.spawnMessage();
+    }
+  }
+
   spawnMessage() {
     if (this.props.message.type === 1) {
       message.success(this.props.message.content);
@@ -91,8 +103,6 @@ class App extends React.Component {
           <Footer style={{ textAlign: "center" }}>
             Ant Design ©2018 Created by Ant UED
           </Footer>
-          {this.props.message.type === -1 ? false : this.spawnMessage()}
-          {this.props.reload ? window.location.reload() : false}
         </Layout>
       </Router>
     );
