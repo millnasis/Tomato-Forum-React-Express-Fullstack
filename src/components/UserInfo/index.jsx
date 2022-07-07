@@ -25,6 +25,12 @@ class UserInfo extends React.Component {
     this.props.get_show_user_info(this.props.params.userid);
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.params.userid !== this.props.params.userid) {
+      this.props.get_show_user_info(this.props.params.userid);
+    }
+  }
+
   render() {
     return (
       <div className="user-info-warp">

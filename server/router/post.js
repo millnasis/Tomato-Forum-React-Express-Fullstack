@@ -102,154 +102,6 @@ router.get("/reply/:replyid/comment", async (req, res) => {
   res.send(ret);
 });
 
-router.put("/", checkLogin, async (req, res) => {
-  const postDAO = new PostDAO();
-  const { title, content, publisher } = req.body;
-  let ret = await postDAO.createByTitleAndContentAndPublisher(
-    title,
-    content,
-    publisher
-  );
-  if (!ret) {
-    res.status(500).send("error");
-    return;
-  }
-  res.send(ret);
-});
-
-router.put("/:postid/reply", checkLogin, async (req, res) => {
-  const postDAO = new PostDAO();
-  const messageDAO = new MessageDAO();
-  const { TotalMSGtype, TotalTargetType } = MessageDAO;
-  const { publisher, content } = req.body;
-  const { postid } = req.params;
-  let postVO = await postDAO.queryByID(postid);
-  if (!postVO) {
-    res.status(500).send("error");
-    return;
-  }
-  let insertedId = await postVO.createReplyByContentAndPublisher(
-    content,
-    publisher
-  );
-  await messageDAO.toggleMSG(
-    publisher,
-    postVO.publisher._id,
-    insertedId,
-    TotalTargetType.REPLY,
-    TotalMSGtype.REPLY
-  );
-  res.send("OK");
-});
-
-router.put("/reply/:replyid/comment", checkLogin, async (req, res) => {
-  const replyDAO = new ReplyDAO();
-  const messageDAO = new MessageDAO();
-  const { TotalMSGtype, TotalTargetType } = MessageDAO;
-  const { publisher, content, isMention, mentionID, mentionUser } = req.body;
-  let replyVO = await replyDAO.queryByID(req.params.replyid);
-  let insertedId = await replyVO.createCommentByContentAndPublisher(
-    content,
-    publisher,
-    isMention,
-    mentionID,
-    mentionUser
-  );
-  if (!isMention) {
-    await messageDAO.toggleMSG(
-      publisher,
-      replyVO.publisher,
-      insertedId,
-      TotalTargetType.COMMENT,
-      TotalMSGtype.COMMENT
-    );
-  } else {
-    await messageDAO.toggleMSG(
-      publisher,
-      mentionUser,
-      insertedId,
-      TotalTargetType.COMMENT,
-      TotalMSGtype.COMMENT
-    );
-  }
-  if (!insertedId) {
-    res.status(500).send("error");
-    return;
-  }
-  res.send(req.params.replyid);
-});
-
-router.post("/:postid/like", checkLogin, async (req, res) => {
-  const postDAO = new PostDAO();
-  const messageDAO = new MessageDAO();
-  const { publisher } = req.body;
-  const { postid } = req.params;
-  const { TotalMSGtype, TotalTargetType } = MessageDAO;
-  const postVO = await postDAO.queryByID(postid);
-  let ret = await postVO.toggleLikeByPublisher(publisher);
-  await messageDAO.toggleMSG(
-    publisher,
-    postVO.publisher._id,
-    postid,
-    TotalTargetType.POST,
-    TotalMSGtype.LIKE
-  );
-  if (!ret) {
-    res.status(500).send("error");
-    return;
-  }
-  res.send(postVO.getOriginData());
-});
-
-router.post("/reply/:replyid/like", checkLogin, async (req, res) => {
-  const replyDAO = new ReplyDAO();
-  const messageDAO = new MessageDAO();
-  const { TotalMSGtype, TotalTargetType } = MessageDAO;
-  const { publisher } = req.body;
-  const { replyid } = req.params;
-  const replyVO = await replyDAO.queryByID(replyid);
-  let ret = await replyVO.toggleLikeByPublisher(publisher);
-  await messageDAO.toggleMSG(
-    publisher,
-    replyVO.publisher,
-    replyid,
-    TotalTargetType.REPLY,
-    TotalMSGtype.LIKE
-  );
-  if (!ret) {
-    res.status(500).send("error");
-    return;
-  }
-  res.send(replyVO.getOriginData());
-});
-
-router.post(
-  "/reply/:replyid/comment/:commentid/like",
-  checkLogin,
-  async (req, res) => {
-    const replyDAO = new ReplyDAO();
-    const messageDAO = new MessageDAO();
-    const { TotalMSGtype, TotalTargetType } = MessageDAO;
-    const { replyid, commentid } = req.params;
-    const { publisher } = req.body;
-    const replyVO = await replyDAO.queryByID(replyid);
-    const commentVO = await replyVO.getCommentByID(commentid);
-    let ret = await commentVO.toggleLikeByPublisher(publisher);
-    await messageDAO.toggleMSG(
-      publisher,
-      commentVO.publisher,
-      commentid,
-      TotalTargetType.COMMENT,
-      TotalMSGtype.LIKE
-    );
-    if (!ret) {
-      res.status(500).send("error");
-      return;
-    }
-    res.send(commentVO.getOriginData());
-  }
-);
-
 router.get("/user/:userid/post", async (req, res) => {
   const postDAO = new PostDAO();
   const { userid } = req.params;
@@ -291,4 +143,160 @@ router.get("/user/:userid/comment", async (req, res) => {
   let sum = await replyDAO.queryCommentSumByUserID(userid);
   res.send({ array: ret, sum });
 });
+
+router.put("/", checkLogin, async (req, res) => {
+  const postDAO = new PostDAO();
+  const { title, content, publisher } = req.body;
+  let ret = await postDAO.createByTitleAndContentAndPublisher(
+    title,
+    content,
+    publisher
+  );
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(ret);
+});
+
+router.put("/:postid/reply", checkLogin, async (req, res) => {
+  const postDAO = new PostDAO();
+  const messageDAO = new MessageDAO();
+  const { TotalMSGtype, TotalTargetType } = MessageDAO;
+  const { publisher, content } = req.body;
+  const { postid } = req.params;
+  let postVO = await postDAO.queryByID(postid);
+  if (!postVO) {
+    res.status(500).send("error");
+    return;
+  }
+  let insertedId = await postVO.createReplyByContentAndPublisher(
+    content,
+    publisher
+  );
+
+  await messageDAO.addReplyMSG(
+    publisher,
+    postVO.publisher._id,
+    insertedId,
+    TotalTargetType.REPLY
+  );
+
+  // await messageDAO.toggleMSG(
+  //   publisher,
+  //   postVO.publisher._id,
+  //   insertedId,
+  //   TotalTargetType.REPLY,
+  //   TotalMSGtype.REPLY
+  // );
+  res.send("OK");
+});
+
+router.put("/reply/:replyid/comment", checkLogin, async (req, res) => {
+  const replyDAO = new ReplyDAO();
+  const messageDAO = new MessageDAO();
+  const { TotalMSGtype, TotalTargetType } = MessageDAO;
+  const { publisher, content, isMention, mentionID, mentionUser } = req.body;
+  let replyVO = await replyDAO.queryByID(req.params.replyid);
+  let insertedId = await replyVO.createCommentByContentAndPublisher(
+    content,
+    publisher,
+    isMention,
+    mentionID,
+    mentionUser
+  );
+  if (!isMention) {
+    await messageDAO.addCommentMSG(
+      publisher,
+      replyVO.publisher,
+      insertedId,
+      TotalTargetType.COMMENT
+    );
+  } else {
+    await messageDAO.addCommentMSG(
+      publisher,
+      mentionUser,
+      insertedId,
+      TotalTargetType.COMMENT
+    );
+  }
+  if (!insertedId) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(req.params.replyid);
+});
+
+router.post("/:postid/like", checkLogin, async (req, res) => {
+  const postDAO = new PostDAO();
+  const messageDAO = new MessageDAO();
+  const { publisher } = req.body;
+  const { postid } = req.params;
+  const { TotalMSGtype, TotalTargetType } = MessageDAO;
+  const postVO = await postDAO.queryByID(postid);
+  let ret = await postVO.toggleLikeByPublisher(publisher);
+  await messageDAO.toggleLikeMSG(
+    publisher,
+    postVO.publisher._id,
+    postid,
+    TotalTargetType.POST,
+    TotalMSGtype.LIKE
+  );
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(postVO.getOriginData());
+});
+
+router.post("/reply/:replyid/like", checkLogin, async (req, res) => {
+  const replyDAO = new ReplyDAO();
+  const messageDAO = new MessageDAO();
+  const { TotalMSGtype, TotalTargetType } = MessageDAO;
+  const { publisher } = req.body;
+  const { replyid } = req.params;
+  const replyVO = await replyDAO.queryByID(replyid);
+  let ret = await replyVO.toggleLikeByPublisher(publisher);
+  await messageDAO.toggleLikeMSG(
+    publisher,
+    replyVO.publisher,
+    replyid,
+    TotalTargetType.REPLY,
+    TotalMSGtype.LIKE
+  );
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(replyVO.getOriginData());
+});
+
+// "/reply/:replyid/comment/:commentid/like"
+router.post(
+  "/reply/:replyid/comment/:commentid/like",
+  checkLogin,
+  async (req, res) => {
+    const replyDAO = new ReplyDAO();
+    const messageDAO = new MessageDAO();
+    const { TotalMSGtype, TotalTargetType } = MessageDAO;
+    const { replyid, commentid } = req.params;
+    const { publisher } = req.body;
+    const replyVO = await replyDAO.queryByID(replyid);
+    const commentVO = await replyVO.getCommentByID(commentid);
+    let ret = await commentVO.toggleLikeByPublisher(publisher);
+    await messageDAO.toggleLikeMSG(
+      publisher,
+      commentVO.publisher,
+      commentid,
+      TotalTargetType.COMMENT,
+      TotalMSGtype.LIKE
+    );
+    if (!ret) {
+      res.status(500).send("error");
+      return;
+    }
+    res.send(commentVO.getOriginData());
+  }
+);
+
 module.exports = router;

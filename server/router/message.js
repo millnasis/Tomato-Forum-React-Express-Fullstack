@@ -18,7 +18,7 @@ router.get("/user/:userid", checkLogin, async (req, res) => {
     res.status(500).send("error");
     return;
   }
-  res.send({ array: arr, sum });
+  res.send({ array: arr.sort((a, b) => b.lastUpdate - a.lastUpdate), sum });
 });
 
 module.exports = router;

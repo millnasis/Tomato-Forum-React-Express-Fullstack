@@ -1,7 +1,7 @@
 import React from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Layout, Menu, Avatar } from "antd";
+import { Layout, Menu, Avatar, Badge } from "antd";
 import { Link } from "react-router-dom";
 const { Header } = Layout;
 import { Input } from "antd";
@@ -23,7 +23,11 @@ class PageHeader extends React.Component {
         key: "link-to-main",
       },
       {
-        label: <Link to={`/message`}>消息</Link>,
+        label: (
+          <Badge count={89} size="small" offset={[10, -10]}>
+            <Link to={`/message`} style={{color:"rgba(255, 255, 255, 0.65)"}}>消息</Link>
+          </Badge>
+        ),
         key: "user-info-message",
       },
       this.props.isUserLogin
