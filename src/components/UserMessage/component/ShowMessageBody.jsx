@@ -1,5 +1,5 @@
 import React from "react";
-import { List, Pagination, Avatar } from "antd";
+import { List, Pagination, Avatar, Badge } from "antd";
 import MessageControl from "./MessageControl";
 import { connect } from "react-redux";
 import {
@@ -128,7 +128,9 @@ class ShowMessageBody extends React.Component {
                 <List.Item>
                   <List.Item.Meta
                     avatar={
-                      <SpawnAvatar likeList={item.likeList}></SpawnAvatar>
+                      <Badge count={!item.read ? "新" : 0}>
+                        <SpawnAvatar likeList={item.likeList}></SpawnAvatar>
+                      </Badge>
                     }
                     title={
                       <div>
@@ -179,10 +181,12 @@ class ShowMessageBody extends React.Component {
                 <List.Item>
                   <List.Item.Meta
                     avatar={
-                      <Avatar
-                        src={item.userFrom.head_picture}
-                        shape={"circle"}
-                      ></Avatar>
+                      <Badge count={!item.read ? "新" : 0}>
+                        <Avatar
+                          src={item.userFrom.head_picture}
+                          shape={"circle"}
+                        ></Avatar>
+                      </Badge>
                     }
                     title={
                       <div>
@@ -240,10 +244,12 @@ class ShowMessageBody extends React.Component {
                 <List.Item>
                   <List.Item.Meta
                     avatar={
-                      <Avatar
-                        src={item.userFrom.head_picture}
-                        shape={"circle"}
-                      ></Avatar>
+                      <Badge count={!item.read ? "新" : 0}>
+                        <Avatar
+                          src={item.userFrom.head_picture}
+                          shape={"circle"}
+                        ></Avatar>
+                      </Badge>
                     }
                     title={
                       item.target.isMention ? (
@@ -251,7 +257,9 @@ class ShowMessageBody extends React.Component {
                           用户
                           <SpawnTitle likeList={item.userFrom}></SpawnTitle>
                           评论了您的
-                          <Link to={`/post/${item.target.master.masterID}`}>评论</Link>
+                          <Link to={`/post/${item.target.master.masterID}`}>
+                            评论
+                          </Link>
                         </div>
                       ) : (
                         <div>

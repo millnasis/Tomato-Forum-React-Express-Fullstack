@@ -573,9 +573,10 @@ class MessageDAO {
       skip = parseInt(skip);
       limit = parseInt(limit);
       const messages = await db(dbName);
+      let ret = null;
       switch (MSGtype) {
         case TotalMSGtype.LIKE: {
-          let ret = await messages
+          ret = await messages
             .aggregate([
               {
                 $match: {
@@ -639,10 +640,10 @@ class MessageDAO {
               }
             })
           );
-          return ret;
+          break;
         }
         case TotalMSGtype.REPLY: {
-          let ret = await messages
+          ret = await messages
             .aggregate([
               {
                 $match: {
@@ -691,10 +692,10 @@ class MessageDAO {
               },
             ])
             .toArray();
-          return ret;
+          break;
         }
         case TotalMSGtype.COMMENT: {
-          let ret = await messages
+          ret = await messages
             .aggregate([
               {
                 $match: {
@@ -733,14 +734,20 @@ class MessageDAO {
               };
             })
           );
-          return ret;
+          break;
         }
         case TotalMSGtype.MEMTION: {
           return [];
+          break;
         }
         default:
           break;
       }
+      await messages.updateMany(
+        { userTo: ObjectId(userid), MSGtype },
+        { $set: { read: true } }
+      );
+      return ret;
     } catch (error) {
       console.log(error);
       return false;
@@ -750,7 +757,7 @@ class MessageDAO {
   async queryMessageSumByUserIDAndMSGtype(userid, MSGtype) {
     try {
       const messages = await db(dbName);
-      let ret = await messages
+      const ret = await messages
         .aggregate([
           {
             $match: {
@@ -763,8 +770,50 @@ class MessageDAO {
           },
         ])
         .toArray();
+
       return ret[0].sum;
     } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async queryUnreadMessageSumByUserID(userid) {
+    try {
+      const messages = await db(dbName);
+      const ret = await messages
+        .aggregate([
+          {
+            $match: {
+              userTo: ObjectId(userid),
+              read: false,
+            },
+          },
+          {
+            $group: {
+              _id: "$MSGtype",
+              sum: {
+                $count: {},
+              },
+            },
+          },
+        ])
+        .toArray();
+      const total = ret
+        .map((v) => v.sum)
+        .reduce((prev, cur) => +prev + +cur, 0);
+      return Object.assign(
+        ...ret.map((v) => {
+          return {
+            [v._id]: v.sum,
+          };
+        }),
+        {
+          total: total,
+        }
+      );
+    } catch (error) {
+      console.error(error);
       return false;
     }
   }

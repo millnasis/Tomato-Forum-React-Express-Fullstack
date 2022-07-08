@@ -79,6 +79,7 @@ class App extends React.Component {
         <Layout>
           <PageHeader
             show_login_modal={this.props.show_login_modal}
+            send_update_user_info={this.props.send_update_user_info}
           ></PageHeader>
           <Content className="main-content">
             <div>

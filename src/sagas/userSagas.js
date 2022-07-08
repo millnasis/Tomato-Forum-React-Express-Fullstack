@@ -7,6 +7,7 @@ import {
   actions as UIactions,
 } from "../reducers/ui";
 import { actionsType as userInfoPageActionsType } from "../reducers/userInfoPage";
+import { consoleDebugTool } from "../tools/consoleDebugTool";
 
 function* loginSend(username, password) {
   yield put(UIactions.start_fetch());
@@ -78,6 +79,7 @@ export function* updateUserInfo() {
     yield take(actionsType.USER_SEND_UPDATE_INFO);
     let response = yield call(updateSend);
     if (response && response.status === 200) {
+      consoleDebugTool("userSagas", response.data);
       yield put(actions.update_user_info(response.data));
     } else {
       yield put({ type: actionsType.FAILED_TO_UPDATE_USER_INFO });

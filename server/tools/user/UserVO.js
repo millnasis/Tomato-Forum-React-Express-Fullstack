@@ -4,7 +4,7 @@ class UserVO {
    *
    * @param {Object} data
    */
-  constructor(data) {
+  constructor(data, msgNum = 0) {
     this.id = data._id;
     this.username = data.username;
     this.head_picture = data.head_picture;
@@ -13,6 +13,7 @@ class UserVO {
     this.foundtime = data.foundtime;
     this.email = data.email;
     this.likeCount = data.likeCount;
+    this.msgNum = msgNum;
   }
 
   changeInfo(data) {
@@ -32,6 +33,7 @@ class UserVO {
       email: this.email,
       foundtime: this.foundtime,
       likeCount: this.likeCount,
+      msgNum: this.msgNum,
     };
   }
 

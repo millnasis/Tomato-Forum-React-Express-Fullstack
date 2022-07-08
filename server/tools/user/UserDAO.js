@@ -2,6 +2,7 @@ const db = require("../db");
 const PermitDAO = require("./PermitDAO");
 const UserVO = require("./UserVO");
 const { ObjectId } = require("mongodb");
+const MessageDAO = require("../message/messageDAO");
 
 const dbName = "users";
 const default_head_picture = "/public/logo.png";
@@ -10,13 +11,15 @@ module.exports = class UserDAO {
   async queryByID(ID) {
     try {
       const users = await db(dbName);
-      let ret = await users.find({ _id: ObjectId(ID) }).toArray();
+      const ret = await users.find({ _id: ObjectId(ID) }).toArray();
+      const messageDAO = new MessageDAO();
+      const msgNum = await messageDAO.queryUnreadMessageSumByUserID(ret[0]._id);
 
       if (ret.length === 0) {
         return false;
       }
 
-      const userVo = new UserVO(ret[0]);
+      const userVo = new UserVO(ret[0], msgNum);
       return userVo;
     } catch (error) {
       console.error(error);
@@ -39,13 +42,15 @@ module.exports = class UserDAO {
   async queryByUserName(userName) {
     try {
       const users = await db(dbName);
-      let ret = await users.find({ username: userName }).toArray();
+      const ret = await users.find({ username: userName }).toArray();
+      const messageDAO = new MessageDAO();
+      const msgNum = await messageDAO.queryUnreadMessageSumByUserID(ret[0]._id);
 
       if (ret.length === 0) {
         return false;
       }
 
-      return new UserVO(ret[0]);
+      return new UserVO(ret[0], msgNum);
     } catch (error) {
       console.error(error);
     }

@@ -2,9 +2,15 @@ import React from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { MessageOutlined } from "@ant-design/icons";
-import { Divider } from "antd";
+import { Divider, Badge } from "antd";
 import { actions, TotalTab } from "../../../reducers/userMessagePage";
 const { switch_tab, get_show_message_array } = actions;
+const msgTypeArr = [
+  TotalTab.LIKE,
+  TotalTab.REPLY,
+  TotalTab.COMMENT,
+  TotalTab.MEMTION,
+];
 
 const ControlLi = (props) => {
   function getShowText(props) {
@@ -26,10 +32,23 @@ const ControlLi = (props) => {
       }
       onClick={() => {
         props.switch_tab(props.tabkey);
-        props.get_show_message_array(props.userid, props.tabkey, 0);
+        props.get_show_message_array(props.userInfo.id, props.tabkey, 0);
       }}
     >
-      {getShowText(props)}
+      {props.userInfo.msgNum ? (
+        <Badge
+          dot
+          count={
+            props.tabkey in props.userInfo.msgNum
+              ? props.userInfo.msgNum[props.tabkey]
+              : 0
+          }
+        >
+          {getShowText(props)}
+        </Badge>
+      ) : (
+        getShowText(props)
+      )}
     </li>
   );
 };
@@ -55,7 +74,19 @@ class MessageControl extends React.Component {
           </strong>
         ) : null}
         {this.props.position === "left" && <Divider></Divider>}
-        <ControlLi
+        {msgTypeArr.map((v) => {
+          return (
+            <ControlLi
+              nowTab={this.props.nowTab}
+              switch_tab={this.props.switch_tab}
+              tabkey={v}
+              userInfo={this.props.userInfo}
+              get_show_message_array={this.props.get_show_message_array}
+              key={v}
+            ></ControlLi>
+          );
+        })}
+        {/* <ControlLi
           nowTab={this.props.nowTab}
           switch_tab={this.props.switch_tab}
           tabkey={TotalTab.LIKE}
@@ -82,7 +113,7 @@ class MessageControl extends React.Component {
           switch_tab={this.props.switch_tab}
           tabkey={TotalTab.MEMTION}
           get_show_message_array={this.props.get_show_message_array}
-        ></ControlLi>
+        ></ControlLi> */}
       </ul>
     );
   }

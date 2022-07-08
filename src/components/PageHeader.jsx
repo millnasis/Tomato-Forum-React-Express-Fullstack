@@ -16,6 +16,12 @@ class PageHeader extends React.Component {
     super(props);
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.location.pathname !== this.props.location.pathname) {
+      this.props.send_update_user_info();
+    }
+  }
+
   render() {
     const menuItem = [
       {
@@ -23,10 +29,18 @@ class PageHeader extends React.Component {
         key: "link-to-main",
       },
       {
-        label: (
-          <Badge count={89} size="small" offset={[10, -10]}>
-            <Link to={`/message`} style={{color:"rgba(255, 255, 255, 0.65)"}}>消息</Link>
-          </Badge>
+        label: this.props.isUserLogin ? (
+          <Link to={`/message`}>
+            <Badge
+              count={this.props.userInfo.msgNum.total}
+              size="small"
+              offset={[10, -10]}
+            >
+              <span style={{ color: "rgba(255, 255, 255, 0.65)" }}>消息</span>
+            </Badge>
+          </Link>
+        ) : (
+          <span style={{ userSelect: "none" }}>消息</span>
         ),
         key: "user-info-message",
       },
@@ -72,6 +86,10 @@ class PageHeader extends React.Component {
           theme="dark"
           items={menuItem}
           onClick={(e) => {
+            if (e.key === "user-info-message" && !this.props.isUserLogin) {
+              this.props.show_login_modal();
+              return;
+            }
             if (e.key === "login") {
               this.props.show_login_modal();
               return;

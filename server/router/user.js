@@ -49,7 +49,8 @@ router.post("/logout", async (req, res) => {
 router.get("/", async (req, res) => {
   if (req.session.userInfo) {
     const userDao = new UserDAO();
-    let ret = await userDao.queryByUserName(req.session.userInfo.username);
+    // let ret = await userDao.queryByUserName(req.session.userInfo.username);
+    let ret = await userDao.queryByID(req.session.userInfo.id);
     req.session.userInfo = ret.getOriginData();
     res.send(ret.getOriginData());
   } else {
