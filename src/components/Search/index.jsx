@@ -1,6 +1,6 @@
 import React from "react";
 import SearchBar from "./component/SearchBar";
-import { Divider } from "antd";
+import { Divider, Switch } from "antd";
 import "./css/index.scss";
 import SearchControl from "./component/SearchControl";
 import SearchResult from "./component/SearchResult";
@@ -11,6 +11,7 @@ import { actions } from "../../reducers/searchPage";
 const { change_search_target, change_sort_mode, send_to_search } = actions;
 import { getQueryVariable } from "../../tools/getQueryVariable.js";
 import { totalSearchTarget, totalSortMode } from "../../reducers/searchPage";
+import { CSSTransition } from "react-transition-group";
 
 function getQueryParams() {
   let params = {};
@@ -30,6 +31,12 @@ function getQueryParams() {
 class Search extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      start: false,
+      show: false,
+      unknownKeyword: false,
+    };
   }
 
   componentDidMount() {
@@ -37,35 +44,69 @@ class Search extends React.Component {
     const { keyword, skip, searchTarget, sortMode } = getQueryParams();
     this.props.change_search_target(searchTarget);
     this.props.change_sort_mode(sortMode);
+    if (!keyword) {
+      this.setState({ unknownKeyword: true });
+      return;
+    }
     this.props.send_to_search(keyword, searchTarget, sortMode, skip);
   }
+
+  showSearchContent = () => {
+    if (this.state.unknownKeyword) {
+      this.setState({ start: true });
+    }
+  };
 
   render() {
     return (
       <div className="search-warp">
-        <SearchBar
-          send_to_search={this.props.send_to_search}
-          getQueryParams={getQueryParams}
-          setSearchParams={this.props.setSearchParams}
-          getQueryVariable={getQueryVariable}
-        ></SearchBar>
-        <Divider></Divider>
-        <SearchControl
-          searchTarget={this.props.searchTarget}
-          send_to_search={this.props.send_to_search}
-          sortMode={this.props.sortMode}
-          change_search_target={this.props.change_search_target}
-          change_sort_mode={this.props.change_sort_mode}
-          totalSearchTarget={totalSearchTarget}
-          totalSortMode={totalSortMode}
-          setSearchParams={this.props.setSearchParams}
-          getQueryParams={getQueryParams}
-        ></SearchControl>
-        <Divider></Divider>
-        <SearchResult
-          showArray={this.props.showArray}
-          sum={this.props.sum}
-        ></SearchResult>
+        <CSSTransition
+          in={this.state.start}
+          timeout={700}
+          classNames="search-bar"
+          onEntering={() => {
+            setTimeout(() => {
+              this.setState({ show: true });
+            }, 300);
+          }}
+        >
+          <SearchBar
+            key="search-bar"
+            className={!this.state.unknownKeyword ? "" : "search-bar-enter"}
+            send_to_search={this.props.send_to_search}
+            getQueryParams={getQueryParams}
+            showSearchContent={this.showSearchContent}
+            setSearchParams={this.props.setSearchParams}
+            getQueryVariable={getQueryVariable}
+          ></SearchBar>
+        </CSSTransition>
+        <CSSTransition
+          in={this.state.show}
+          timeout={700}
+          classNames="search-content"
+        >
+          <div
+            className={!this.state.unknownKeyword ? "" : "search-content-enter"}
+          >
+            <Divider></Divider>
+            <SearchControl
+              searchTarget={this.props.searchTarget}
+              send_to_search={this.props.send_to_search}
+              sortMode={this.props.sortMode}
+              change_search_target={this.props.change_search_target}
+              change_sort_mode={this.props.change_sort_mode}
+              totalSearchTarget={totalSearchTarget}
+              totalSortMode={totalSortMode}
+              setSearchParams={this.props.setSearchParams}
+              getQueryParams={getQueryParams}
+            ></SearchControl>
+            <Divider></Divider>
+            <SearchResult
+              showArray={this.props.showArray}
+              sum={this.props.sum}
+            ></SearchResult>
+          </div>
+        </CSSTransition>
       </div>
     );
   }

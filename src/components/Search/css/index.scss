@@ -76,3 +76,36 @@ $component-background-color: darken(
     }
   }
 }
+
+.search-bar-enter {
+  transform: translateY(40vh) scale(1.2);
+}
+.search-bar-enter-active {
+  transform: translateY(0) scale(1);
+  transition: all ease-in-out 700ms;
+}
+.search-bar-exit-done {
+  transform: translateY(40vh) scale(1.2);
+}
+.search-bar-exit-active {
+  transform: translateY(40vh) scale(1.2);
+  transition: all ease-in-out 700ms;
+}
+.search-content-enter {
+  opacity: 0;
+  transform: translateY(100vh) scale(1.2);
+}
+.search-content-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity ease-in-out 700ms;
+}
+.search-content-exit-done {
+  transform: translateY(100vh) scale(1.2);
+  opacity: 0;
+}
+.search-content-exit-active {
+  transform: translateY(100vh) scale(1.2);
+  opacity: 0;
+  transition: opacity ease-in-out 700ms;
+}

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const { Header } = Layout;
 import { Input } from "antd";
 import { withUseLocationHooksHOC } from "../tools/withUseLocationHooksHOC";
+import { withUseNavigateHooksHOC } from "../tools/withUseNavigateHooksHOC";
 const { Search } = Input;
 
 import { actions } from "../reducers/root";
@@ -105,6 +106,10 @@ class PageHeader extends React.Component {
             placeholder="输入搜索内容"
             enterButton="Search"
             className="search-input"
+            onSearch={(value) => {
+              const path = value ? `/search?keyword=${value}` : "/search";
+              this.props.navigate(path);
+            }}
           />
         )}
       </Header>
@@ -125,8 +130,7 @@ function mapDispatchToProps(dispatch) {
     set_message: bindActionCreators(set_message, dispatch),
   };
 }
+PageHeader = withUseNavigateHooksHOC(PageHeader);
+PageHeader = withUseLocationHooksHOC(PageHeader);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withUseLocationHooksHOC(PageHeader));
+export default connect(mapStateToProps, mapDispatchToProps)(PageHeader);
