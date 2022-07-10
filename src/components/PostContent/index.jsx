@@ -8,8 +8,10 @@ import { getQueryVariable } from "../../tools/getQueryVariable";
 import { withUseParamsHooksHOC } from "../../tools/withUseParamsHooksHOC";
 import { actions } from "../../reducers/postContentPage";
 import { actions as uiActions } from "../../reducers/ui";
+import { actions as postContentPageActions } from "../../reducers/postContentPage";
 const { get_post_content_body, get_show_reply_array, post_new_reply } = actions;
 const { show_login_modal } = uiActions;
+const { change_focus_write_board } = postContentPageActions;
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
@@ -47,6 +49,7 @@ class PostContent extends React.Component {
               show_login_modal={this.props.show_login_modal}
               isUserLogin={this.props.isUserLogin}
               replySum={this.props.replySum}
+              change_focus_write_board={this.props.change_focus_write_board}
             ></MainPostContent>
           )}
           <MainPostReply
@@ -65,6 +68,8 @@ class PostContent extends React.Component {
             replySum={this.props.replySum}
             isUserLogin={this.props.isUserLogin}
             show_login_modal={this.props.show_login_modal}
+            change_focus_write_board={this.props.change_focus_write_board}
+            focusWriteBoard={this.props.focusWriteBoard}
             defaultLimit={defaultLimit}
           ></WriteBoard>
         </div>
@@ -92,6 +97,10 @@ function mapDispatchToProps(dispatch) {
     get_show_reply_array: bindActionCreators(get_show_reply_array, dispatch),
     post_new_reply: bindActionCreators(post_new_reply, dispatch),
     show_login_modal: bindActionCreators(show_login_modal, dispatch),
+    change_focus_write_board: bindActionCreators(
+      change_focus_write_board,
+      dispatch
+    ),
   };
 }
 

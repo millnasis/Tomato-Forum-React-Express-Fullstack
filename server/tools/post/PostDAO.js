@@ -344,7 +344,7 @@ module.exports = class PostDAO {
   }
 
   async search(keyword, sortMode, skip, limit) {
-    console.log(keyword, sortMode, skip, limit);
+    // console.log(keyword, sortMode, skip, limit);
     skip = parseInt(skip);
     limit = parseInt(limit);
     const regex = getRegexByKeyword(keyword);

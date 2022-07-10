@@ -3,13 +3,13 @@ import PostList from "./main-col/PostList";
 import Control from "./sub-col/control";
 import HotPost from "./sub-col/HotPost";
 import { Divider, Modal, Form, Input, Button } from "antd";
-import ReactWEditor from "wangeditor-for-react";
 import HotSearch from "./sub-col/HotSearch";
 import "./css/index.scss";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actions } from "../../reducers/mainIndexPage";
 import { actions as uiactions } from "../../reducers/ui";
+import EditorWarp from "../EditorWarp";
 const {
   get_hot_post_array,
   get_hot_search,
@@ -107,13 +107,12 @@ class MainIndex extends React.Component {
               </Form.Item>
               <Divider></Divider>
               <Form.Item>
-                <ReactWEditor
-                  onChange={(html) => {
-                    this.setState({
-                      html: html,
-                    });
+                <EditorWarp
+                  value={this.state.html}
+                  onChange={(editor) => {
+                    this.setState({ html: editor.getHtml() });
                   }}
-                ></ReactWEditor>
+                ></EditorWarp>
               </Form.Item>
               <Form.Item>
                 <Button

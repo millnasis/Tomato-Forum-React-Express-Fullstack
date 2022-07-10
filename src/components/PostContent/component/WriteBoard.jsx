@@ -1,7 +1,7 @@
 import React from "react";
 import { withUseSearchParamsHooksHOC } from "../../../tools/withUseSearchParamsHooksHOC";
-import ReactWEditor from "wangeditor-for-react";
 import { Divider, Button } from "antd";
+import EditorWarp from "../../EditorWarp";
 
 class WriteBoard extends React.Component {
   constructor(props) {
@@ -22,11 +22,7 @@ class WriteBoard extends React.Component {
       return;
     }
     const { postContentBody, userInfo } = this.props;
-    this.props.post_new_reply(
-      postContentBody.id,
-      userInfo.id,
-      this.state.html
-    );
+    this.props.post_new_reply(postContentBody.id, userInfo.id, this.state.html);
   }
 
   componentDidUpdate(prevProp) {
@@ -40,6 +36,9 @@ class WriteBoard extends React.Component {
       });
       window.location.reload();
     }
+    if(prevProp.focusWriteBoard !== this.props.focusWriteBoard && this.props.focusWriteBoard){
+      this.props.change_focus_write_board(false);
+    }
   }
 
   render() {
@@ -47,11 +46,13 @@ class WriteBoard extends React.Component {
       <div className="post-main-col-component main-post-content-control">
         <h2>发表回复</h2>
         <Divider></Divider>
-        <ReactWEditor
-          onChange={(html) => {
-            this.setState({ html });
+        <EditorWarp
+          focus={this.props.focusWriteBoard}
+          value={this.state.html}
+          onChange={(editor) => {
+            this.setState({ html: editor.getHtml() });
           }}
-        ></ReactWEditor>
+        ></EditorWarp>
         <div className="main-post-content-control-botton-warp">
           <Button
             className="main-post-content-control-botton"

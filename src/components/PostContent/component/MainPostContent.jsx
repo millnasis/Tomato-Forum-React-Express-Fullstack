@@ -57,8 +57,7 @@ class MainPostContent extends React.Component {
                   this.props.show_login_modal();
                   return;
                 }
-                const editor = document.querySelectorAll(".w-e-text");
-                editor[editor.length - 1].focus();
+                this.props.change_focus_write_board(true);
               }}
             >
               <CommentOutlined></CommentOutlined>

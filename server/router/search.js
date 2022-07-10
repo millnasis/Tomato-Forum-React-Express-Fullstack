@@ -12,10 +12,6 @@ router.get("/", async (req, res) => {
   const postDAO = new PostDAO();
   switch (searchTarget) {
     case totalSearchTarget.POST: {
-      if (keyword === "_") {
-        res.send({ arr: [], sum: 0 });
-        return;
-      }
       let ret = await postDAO.search(decodeURI(keyword), sortMode, skip, limit);
       if (!ret) {
         res.status(500).send("error");

@@ -3,6 +3,7 @@ const initialState = {
   showReplyArray: [],
   replySum: 0,
   isFetchingPostNewReply: false,
+  focusWriteBoard: false,
   commentEditor: {
     replyID: null,
     targetID: null,
@@ -29,9 +30,16 @@ export const actionsType = {
   USER_SEND_TO_LIKE: "USER_SEND_TO_LIKE",
   RESPONSE_SEND_TO_LIKE: "RESPONSE_SEND_TO_LIKE",
   USER_SEND_TO_FAVORITE: "USER_SEND_TO_FAVORITE",
+  CHANGE_FOCUS_WRITE_BOARD: "CHANGE_FOCUS_WRITE_BOARD",
 };
 
 export const actions = {
+  change_focus_write_board(focusState) {
+    return {
+      type: actionsType.CHANGE_FOCUS_WRITE_BOARD,
+      focusState,
+    };
+  },
   get_post_content_body(postid, click = false) {
     return {
       type: actionsType.SEND_TO_GET_POST_CONTENT_BODY,
@@ -146,6 +154,12 @@ export const actions = {
 
 export function reducer(state = initialState, action) {
   switch (action.type) {
+    case actionsType.CHANGE_FOCUS_WRITE_BOARD:
+      return {
+        ...state,
+        focusWriteBoard: action.focusState,
+      };
+
     case actionsType.RESPONSE_POST_CONTENT_BODY:
       return {
         ...state,

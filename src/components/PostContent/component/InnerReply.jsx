@@ -3,13 +3,13 @@ import formatDate from "../../../tools/LocalDate";
 import { List } from "antd";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import ReactWEditor from "wangeditor-for-react";
 import { Comment, Tooltip, Avatar, Button, Divider, Pagination } from "antd";
 import CommentInReply from "./CommentInReply";
 import ClickLike from "./Like";
 import { actions } from "../../../reducers/postContentPage";
 import { actions as rootActions } from "../../../reducers/root";
 import { actions as uiActions } from "../../../reducers/ui";
+import EditorWarp from "../../EditorWarp";
 const { change_comment_editor, post_new_comment, reset_post_new_comment } =
   actions;
 const { set_message } = rootActions;
@@ -116,7 +116,7 @@ class InnerReply extends React.Component {
                     ></Avatar>
                     <span>{this.props.userInfo.username}</span>
                   </div>
-                  <ReactWEditor
+                  {/* <ReactWEditor
                     style={{
                       flex: "1",
                       maxWidth: "32vw",
@@ -132,7 +132,16 @@ class InnerReply extends React.Component {
                     onChange={(html) => {
                       this.setState({ html });
                     }}
-                  ></ReactWEditor>
+                  ></ReactWEditor> */}
+                  <EditorWarp
+                    height={60}
+                    style={{ flex: "1", maxWidth: "32vw" }}
+                    value={this.state.html}
+                    menus={["bold", "emotion", "underline", "undo", "redo"]}
+                    onChange={(editor) => {
+                      this.setState({ html: editor.getHtml() });
+                    }}
+                  ></EditorWarp>
                   <Button
                     type="primary"
                     style={{ marginTop: "60px", marginLeft: "30px" }}

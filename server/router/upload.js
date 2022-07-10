@@ -10,4 +10,14 @@ router.post("/avatar", AvatarUpload.single("avatar"), (req, res) => {
   res.send(`/public/img/${filename}`);
 });
 
+router.post("/img", AvatarUpload.single("img"), (req, res) => {
+  const filename = req.file.originalname;
+  res.send({
+    errno: 0,
+    data: {
+      url: `/public/img/${filename}`,
+    },
+  });
+});
+
 module.exports = router;

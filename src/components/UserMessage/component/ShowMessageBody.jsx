@@ -65,17 +65,17 @@ function SpawnAvatar(props) {
   return <Avatar.Group maxCount={3}>{avatarList}</Avatar.Group>;
 }
 
-function getTabCN(props) {
-  const { targetType } = props;
+function getTabCN(item) {
+  const { targetType } = item;
   switch (targetType) {
     case TotalTargetType.POST: {
-      return <Link to={`/post/${props.targetid}`}>帖子</Link>;
+      return <Link to={`/post/${item.targetid}`}>帖子</Link>;
     }
     case TotalTargetType.REPLY: {
-      return <a>回帖</a>;
+      return <Link to={`/post/${item.target.masterID}`}>回帖</Link>;
     }
     case TotalTargetType.COMMENT: {
-      return <a>评论</a>;
+      return <Link to={`/post/${item.target.master.masterID}`}>评论</Link>;
     }
     default:
       break;
