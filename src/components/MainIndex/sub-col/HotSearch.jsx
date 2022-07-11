@@ -1,13 +1,10 @@
 import React from "react";
 import { List } from "antd";
+import { Link } from "react-router-dom";
 
 class HotSearch extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      list: ["我", "你", "他"],
-    };
   }
 
   render() {
@@ -20,9 +17,16 @@ class HotSearch extends React.Component {
             </div>
           }
           bordered
-          dataSource={this.state.list}
-          renderItem={(item) => (
-            <List.Item className="hot-search-item list-item-point">{item}</List.Item>
+          dataSource={this.props.showHotSearchArray}
+          renderItem={(item, index) => (
+            <List.Item className="hot-search-item" key={item._id}>
+              <List.Item.Meta
+                avatar={index + 1}
+                title={
+                  <Link to={`/search?keyword=${item.word}`}>{item.word}</Link>
+                }
+              ></List.Item.Meta>
+            </List.Item>
           )}
         />
       </div>

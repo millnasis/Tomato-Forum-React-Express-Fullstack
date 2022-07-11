@@ -5,8 +5,7 @@ const ReplyDAO = require("./replyDAO");
 const ReplyVO = require("./ReplyVO");
 const CommentVO = require("./CommentVO");
 
-function getRegexByKeyword(keyword) {
-  let keywords = keyword.split(" ");
+function getRegexByKeyword(keywords) {
   let regex = "";
   for (let index = 0; index < keywords.length; index++) {
     const element = keywords[index];

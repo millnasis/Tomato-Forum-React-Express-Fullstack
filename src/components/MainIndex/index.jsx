@@ -10,6 +10,7 @@ import { bindActionCreators } from "redux";
 import { actions } from "../../reducers/mainIndexPage";
 import { actions as uiactions } from "../../reducers/ui";
 import { actions as rootActions } from "../../reducers/root.js";
+import { consoleDebugTool } from "../../tools/consoleDebugTool";
 import EditorWarp from "../EditorWarp";
 const {
   get_hot_post_array,
@@ -67,6 +68,7 @@ class MainIndex extends React.Component {
   }
 
   render() {
+    consoleDebugTool("MainIndex", this.props);
     return (
       <div className="main-index-warp">
         <div className="main-col index-col">
@@ -151,7 +153,9 @@ class MainIndex extends React.Component {
             show_login_modal={this.props.show_login_modal}
             className="main-col-control main-control sub-col-component"
           ></Control>
-          <HotSearch></HotSearch>
+          <HotSearch
+            showHotSearchArray={this.props.showHotSearchArray}
+          ></HotSearch>
           <HotPost></HotPost>
         </div>
       </div>

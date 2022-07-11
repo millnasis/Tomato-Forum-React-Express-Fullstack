@@ -65,7 +65,7 @@ export function* getNewPostArray() {
 
 function* sendToGetHotSearchArray() {
   try {
-    return yield call(axios.get, "/api/post/hotsearch");
+    return yield call(axios.get, "/api/search/hot");
   } catch (error) {
     return yield put(rootActions.set_message(2, "获取热搜错误"));
   }
