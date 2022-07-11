@@ -1,4 +1,5 @@
 import React from "react";
+import { Progress } from "antd";
 import "@wangeditor/editor/dist/css/style.css";
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
 
@@ -6,6 +7,9 @@ class EditorWarp extends React.Component {
   constructor(props) {
     super(props);
     this.editor = null;
+    this.state = {
+      progress: -1,
+    };
   }
 
   createEditor = (editor) => {
@@ -13,9 +17,7 @@ class EditorWarp extends React.Component {
     console.log(editor.getMenuConfig("uploadImage"));
   };
 
-  componentDidMount() {
-    
-  }
+  componentDidMount() {}
 
   componentDidUpdate(prevProp) {
     if (prevProp.focus !== this.props.focus && this.props.focus) {
@@ -35,6 +37,7 @@ class EditorWarp extends React.Component {
   }
 
   render() {
+    const R = this;
     const { style, menus, height } = this.props;
     this.height = height ? +height + "px" : "500px";
     this.editorConfig = { MENU_CONF: {} };
@@ -42,6 +45,18 @@ class EditorWarp extends React.Component {
       server: "/api/upload/img",
       fieldName: "img",
       maxNumberOfFiles: 1,
+      onProgress(progress) {
+        R.setState({ progress });
+      },
+    };
+    this.editorConfig.MENU_CONF["uploadVideo"] = {
+      server: "/api/upload/video",
+      fieldName: "video",
+      maxNumberOfFiles: 1,
+      maxFileSize: 512 * 1024 * 1024,
+      onProgress(progress) {
+        R.setState({ progress });
+      },
     };
     this.toolbarConfig = Array.isArray(menus) ? { toolbarKeys: menus } : {};
     this.style = { border: "1px solid #ccc" };
@@ -56,6 +71,9 @@ class EditorWarp extends React.Component {
           mode="default"
           style={{ borderBottom: "1px solid #ccc" }}
         ></Toolbar>
+        {this.state.progress !== -1 && (
+          <Progress percent={this.state.progress}></Progress>
+        )}
         <Editor
           defaultConfig={this.editorConfig}
           value={this.props.value}

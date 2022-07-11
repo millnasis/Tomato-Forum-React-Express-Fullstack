@@ -584,6 +584,11 @@ class MessageDAO {
                   MSGtype,
                 },
               },
+              {
+                $sort: {
+                  lastUpdate: -1,
+                },
+              },
               { $skip: skip },
               { $limit: limit },
               { $unwind: "$likeList" },
@@ -652,6 +657,11 @@ class MessageDAO {
                 },
               },
               {
+                $sort: {
+                  lastUpdate: -1,
+                },
+              },
+              {
                 $skip: skip,
               },
               {
@@ -701,6 +711,11 @@ class MessageDAO {
                 $match: {
                   userTo: ObjectId(userid),
                   MSGtype,
+                },
+              },
+              {
+                $sort: {
+                  lastUpdate: -1,
                 },
               },
               {

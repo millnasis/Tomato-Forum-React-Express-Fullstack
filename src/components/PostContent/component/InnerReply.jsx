@@ -89,7 +89,7 @@ class InnerReply extends React.Component {
                 author={<a>{publisher.username}</a>}
                 avatar={<Avatar src={publisher.head_picture}></Avatar>}
                 content={
-                  <div dangerouslySetInnerHTML={{ __html: item.content }} />
+                  <div className="main-post-reply-single-body" dangerouslySetInnerHTML={{ __html: item.content }} />
                 }
                 datetime={<span>{formatDate(new Date(item.foundtime))}</span>}
               >
@@ -116,23 +116,6 @@ class InnerReply extends React.Component {
                     ></Avatar>
                     <span>{this.props.userInfo.username}</span>
                   </div>
-                  {/* <ReactWEditor
-                    style={{
-                      flex: "1",
-                      maxWidth: "32vw",
-                    }}
-                    config={{
-                      menus: ["bold", "emoticon", "underline", "undo", "redo"],
-                      height: 60,
-                      showFullScreen: false,
-                      placeholder: this.props.commentEditor.isMention
-                        ? `回复 @${this.props.commentEditor.targetUser.username}: `
-                        : "",
-                    }}
-                    onChange={(html) => {
-                      this.setState({ html });
-                    }}
-                  ></ReactWEditor> */}
                   <EditorWarp
                     height={60}
                     style={{ flex: "1", maxWidth: "32vw" }}

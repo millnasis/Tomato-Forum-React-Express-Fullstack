@@ -92,6 +92,12 @@ export const actions = {
       type: actionsType.FETCH_END,
     };
   },
+  /**
+   * 
+   * @param {int} type 消息类型，1为成功，2为错误，3为警告
+   * @param {String} content 消息内容
+   * @returns 
+   */
   set_message(type, content) {
     return {
       type: actionsType.SET_MESSAGE,

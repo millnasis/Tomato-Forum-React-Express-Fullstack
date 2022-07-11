@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actions } from "../../reducers/mainIndexPage";
 import { actions as uiactions } from "../../reducers/ui";
+import { actions as rootActions } from "../../reducers/root.js";
 import EditorWarp from "../EditorWarp";
 const {
   get_hot_post_array,
@@ -20,6 +21,7 @@ const {
   clear_array,
 } = actions;
 const { show_login_modal } = uiactions;
+const { set_message } = rootActions;
 
 const defaultLimit = 2;
 
@@ -44,6 +46,14 @@ class MainIndex extends React.Component {
 
   handlePublish(event) {
     const { title, html } = this.state;
+    if (!title) {
+      this.props.set_message(3, "未填写标题");
+      return;
+    }
+    if (!html) {
+      this.props.set_message(3, "未填写内容");
+      return;
+    }
     const { id } = this.props.userInfo;
     this.props.publish_new_post(title, html, id);
   }
@@ -167,6 +177,7 @@ function mapDispatchToProps(dispatch) {
     publish_new_post: bindActionCreators(publish_new_post, dispatch),
     show_login_modal: bindActionCreators(show_login_modal, dispatch),
     clear_array: bindActionCreators(clear_array, dispatch),
+    set_message: bindActionCreators(set_message, dispatch),
   };
 }
 

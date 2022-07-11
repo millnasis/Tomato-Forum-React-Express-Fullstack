@@ -35,6 +35,12 @@ $layout-header-background: rgb(76, 0, 9);
           color: lighten($color: #000000, $amount: 50%);
         }
         .main-post-content-body {
+          img{
+            max-width: 100%;
+          }
+          video{
+            max-width: 100%;
+          }
         }
         .main-post-content-body-control {
           font-size: 20px;
@@ -52,6 +58,14 @@ $layout-header-background: rgb(76, 0, 9);
       }
       .main-post-reply-warp {
         .main-post-reply-list {
+          .main-post-reply-single-body{
+            img{
+              max-width: 100%;
+            }
+            video{
+              max-width: 100%;
+            }
+          }
           .main-post-reply-single-textarea {
             display: flex;
             width: 90%;

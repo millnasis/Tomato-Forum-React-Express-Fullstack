@@ -1,7 +1,7 @@
 const dbURL = "mongodb://localhost:27017/";
 const path = require("path");
 const uploadImgPath = path.join(__dirname, "../public/img");
-const uploadVideoPath = path.join(__dirname, "../public/vedio");
+const uploadVideoPath = path.join(__dirname, "../public/video");
 
 const multer = require("multer");
 let IMGstorage = multer.diskStorage({
