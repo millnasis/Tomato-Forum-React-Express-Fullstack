@@ -613,4 +613,47 @@ module.exports = class PostDAO {
       return false;
     }
   }
+
+  async queryUserLikeAndReplySumByUserID(ID) {
+    try {
+      const posts = await db(dbName);
+      const ret = await posts
+        .aggregate([
+          {
+            $match: {
+              publisher: ID,
+            },
+          },
+          {
+            $addFields: {
+              like: {
+                $size: "$likeList",
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$publisher",
+              click: {
+                $sum: "$click",
+              },
+              like: {
+                $sum: "$like",
+              },
+              getReplySum: {
+                $sum: "$replyCount",
+              },
+              postSum:{
+                $count:{}
+              }
+            },
+          },
+        ])
+        .toArray();
+      return ret[0];
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 };

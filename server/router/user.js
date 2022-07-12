@@ -2,6 +2,8 @@ const express = require("express");
 const UserDAO = require("../tools/user/UserDAO");
 const PermitDAO = require("../tools/user/PermitDAO");
 const { ObjectId } = require("mongodb");
+const PostDAO = require("../tools/post/PostDAO");
+const ReplyDAO = require("../tools/post/replyDAO");
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
@@ -60,6 +62,22 @@ router.get("/", async (req, res) => {
 
 router.get("/:userid", async (req, res) => {
   const userDAO = new UserDAO();
+  const postDAO = new PostDAO();
+  const replyDAO = new ReplyDAO();
+  const postData = await postDAO.queryUserLikeAndReplySumByUserID(
+    req.params.userid
+  );
+  const replyData = await replyDAO.queryUserLikeAndCommentSumByUserID(
+    req.params.userid
+  );
+  const commentData = await replyDAO.queryUserCommentLikeSumByUserID(
+    req.params.userid
+  );
+  const userInteractData = {
+    ...Object.assign(postData, replyData, commentData),
+    like: +postData.like + +replyData.like + +commentData.like,
+  };
+
   let ret = await userDAO.queryByID(req.params.userid);
   if (!ret) {
     res.redirect("/404");
@@ -68,11 +86,13 @@ router.get("/:userid", async (req, res) => {
   if (req.session.userInfo) {
     res.send({
       userInfo: ret.getOriginData(),
+      userInteractData,
       isMe: ret.getId().equals(req.session.userInfo.id),
     });
   } else {
     res.send({
       userInfo: ret.getOriginData(),
+      userInteractData,
       isMe: false,
     });
   }

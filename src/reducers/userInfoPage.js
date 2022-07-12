@@ -1,22 +1,7 @@
 const initialState = {
   showUserInfo: {},
-  showUserPostArray: [
-    {
-      title: "牛牛牛牛",
-      content: "描述描述描述描述",
-      date: new Date(),
-    },
-    {
-      title: "牛牛牛牛",
-      content: "描述描述描述描述",
-      date: new Date(),
-    },
-    {
-      title: "牛牛牛牛",
-      content: "描述描述描述描述",
-      date: new Date(),
-    },
-  ],
+  userInteractData: {},
+  showUserPostArray: [],
   showUserPostArraySum: 20,
   showUserReplyArray: [],
   showUserReplyArraySum: 0,
@@ -94,6 +79,7 @@ export const actions = {
     return {
       type: actionsType.RESPONSE_SHOW_USER_INFO,
       showUserInfo: data.userInfo,
+      userInteractData: data.userInteractData,
       isMe: data.isMe,
     };
   },
@@ -153,6 +139,7 @@ export function reducer(state = initialState, action) {
       return {
         ...state,
         showUserInfo: action.showUserInfo,
+        userInteractData: action.userInteractData,
         isMe: action.isMe,
       };
     case actionsType.RESPONSE_SHOW_USER_POST_ARRAY:

@@ -32,6 +32,7 @@ class UserInfo extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     return (
       <div className="user-info-warp">
         <div className="user-info-col user-info-card-warp">
@@ -49,7 +50,9 @@ class UserInfo extends React.Component {
           <UserPostRecords userid={this.props.params.userid}></UserPostRecords>
         </div>
         <div className="user-info-sub-col user-info-col">
-          <UserOtherRecords></UserOtherRecords>
+          <UserOtherRecords
+            userInteractData={this.props.userInteractData}
+          ></UserOtherRecords>
         </div>
       </div>
     );

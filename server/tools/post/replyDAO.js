@@ -116,10 +116,10 @@ module.exports = class ReplyDAO {
           },
           {
             $lookup: {
-              from:"replys",
-              localField:"comments.masterID",
-              foreignField:"_id",
-              as:"comments.master"
+              from: "replys",
+              localField: "comments.masterID",
+              foreignField: "_id",
+              as: "comments.master",
             },
           },
           {
@@ -332,6 +332,95 @@ module.exports = class ReplyDAO {
 
       return true;
     } catch (error) {
+      return false;
+    }
+  }
+
+  async queryUserLikeAndCommentSumByUserID(ID) {
+    try {
+      const replys = await db(dbName);
+
+      const ret = await replys
+        .aggregate([
+          {
+            $match: {
+              publisher: ID,
+            },
+          },
+          {
+            $addFields: {
+              like: {
+                $size: "$likeList",
+              },
+              comments: {
+                $size: "$comments",
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$publisher",
+              like: {
+                $sum: "$like",
+              },
+              getCommentSum: {
+                $sum: "$comments",
+              },
+              replySum: {
+                $count: {},
+              },
+            },
+          },
+        ])
+        .toArray();
+      return ret[0];
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async queryUserCommentLikeSumByUserID(ID) {
+    try {
+      const replys = await db(dbName);
+      const ret = await replys
+        .aggregate([
+          {
+            $project: {
+              comments: 1,
+            },
+          },
+          {
+            $unwind: "$comments",
+          },
+          {
+            $match: {
+              "comments.publisher": "62c414f95beb883da9c44ede",
+            },
+          },
+          {
+            $addFields: {
+              "comments.like": {
+                $size: "$comments.likeList",
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$comments.publisher",
+              like: {
+                $sum: "$comments.like",
+              },
+              commentSum: {
+                $count: {},
+              },
+            },
+          },
+        ])
+        .toArray();
+      return ret[0];
+    } catch (error) {
+      console.error(error);
       return false;
     }
   }

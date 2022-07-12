@@ -46,7 +46,7 @@ class UserInfoCard extends React.Component {
     const { sex, email, words } = data;
     let head_picture = null;
     if (this.state.avatar.length === 0) {
-      head_picture = "/public/img/default-avatar.png";
+      head_picture = "/public/default-avatar.png";
     } else if ("url" in this.state.avatar[0]) {
       head_picture = this.state.avatar[0].url;
     } else if ("response" in this.state.avatar[0]) {

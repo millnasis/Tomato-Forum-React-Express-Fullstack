@@ -8,13 +8,38 @@ class UserOtherRecords extends React.Component {
   }
 
   render() {
+    const {
+      click,
+      commentSum,
+      getCommentSum,
+      getReplySum,
+      like,
+      postSum,
+      replySum,
+    } = this.props.userInteractData;
     return (
       <Card className="user-info-sub-col-component">
-        <LikeFilled style={{marginRight:"10px",fontSize:"25px",marginBottom:"10px"}}/>
-         点赞数：100
-         <br></br>
-        <MenuFoldOutlined style={{marginRight:"10px",fontSize:"25px"}}/>
-         回复数：15
+        帖子总浏览量：{click}
+        <br></br>
+        总发帖数：{postSum}
+        <br></br>
+        总回帖数：{replySum}
+        <br></br>
+        总评论数：{commentSum}
+        <br></br>
+        <LikeFilled
+          style={{
+            marginRight: "10px",
+            fontSize: "25px",
+            marginBottom: "10px",
+          }}
+        />
+        收获点赞数：{like}
+        <br></br>
+        <MenuFoldOutlined style={{ marginRight: "10px", fontSize: "25px" }} />
+        收获回复数：{getReplySum}
+        <br></br>
+        收获评论数：{getCommentSum}
       </Card>
     );
   }
