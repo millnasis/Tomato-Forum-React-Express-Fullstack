@@ -8,7 +8,9 @@ import {
   Form,
   Radio,
   Input,
+  Upload,
 } from "antd";
+import ImgCrop from "antd-img-crop";
 import axios from "axios";
 import formatTime from "../../../tools/LocalDate.js";
 
@@ -17,47 +19,44 @@ class UserInfoCard extends React.Component {
     super(props);
 
     this.state = {
-      avatar: null,
+      avatar: [],
     };
 
     this.uploadRef = React.createRef();
 
     this.handleCancel = this.handleCancel.bind(this);
-    this.handleUpload = this.handleUpload.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleUpload() {
-    const R = this;
-    const form_data = new FormData();
-    const file = this.uploadRef.current.files;
-    form_data.append("avatar", file[0]);
-    axios({
-      method: "post",
-      url: "/api/upload/avatar",
-      data: form_data,
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    })
-      .then((ret) => {
-        R.setState({
-          avatar: ret.data,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.showUserInfo.head_picture !==
+      prevProps.showUserInfo.head_picture
+    ) {
+      this.setState({
+        avatar: [{ status: "done", url: this.props.showUserInfo.head_picture }],
       });
+    }
   }
 
+  
+
   handleSubmit(data) {
-    const { id, head_picture } = this.props.showUserInfo;
+    const { id } = this.props.showUserInfo;
     const { sex, email, words } = data;
+    let head_picture = null;
+    if (this.state.avatar.length === 0) {
+      head_picture = "/public/img/default-avatar.png";
+    } else if ("url" in this.state.avatar[0]) {
+      head_picture = this.state.avatar[0].url;
+    } else if ("response" in this.state.avatar[0]) {
+      head_picture = this.state.avatar[0].response;
+    }
     const userInfo = {
       sex,
       email,
       words,
-      head_picture: this.state.avatar || head_picture,
+      head_picture,
     };
     this.props.update_user_info(id, userInfo);
   }
@@ -114,21 +113,20 @@ class UserInfoCard extends React.Component {
               initialValues={{ sex: sex, words: words, email: email }}
             >
               <Form.Item label="修改头像">
-                <Avatar
-                  shape="square"
-                  size="large"
-                  style={{ width: "100px", height: "100px", cursor: "pointer" }}
-                  src={this.state.avatar || head_picture}
-                  onClick={() => {
-                    this.uploadRef.current.click();
-                  }}
-                ></Avatar>
-                <input
-                  type="file"
-                  style={{ display: "none" }}
-                  ref={this.uploadRef}
-                  onChange={this.handleUpload}
-                ></input>
+                <ImgCrop rotate>
+                  <Upload
+                    action="/api/upload/avatar"
+                    listType="picture-card"
+                    fileList={this.state.avatar}
+                    name="avatar"
+                    onChange={(e) => {
+                      this.setState({ avatar: e.fileList });
+                    }}
+                    maxCount={1}
+                  >
+                    + 上传新头像
+                  </Upload>
+                </ImgCrop>
               </Form.Item>
               <Form.Item label="性别" name={"sex"}>
                 <Radio.Group>

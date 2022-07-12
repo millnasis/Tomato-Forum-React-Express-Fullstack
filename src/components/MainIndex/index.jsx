@@ -24,7 +24,7 @@ const {
 const { show_login_modal } = uiactions;
 const { set_message } = rootActions;
 
-const defaultLimit = 2;
+const defaultLimit = 5;
 
 class MainIndex extends React.Component {
   constructor(props) {
