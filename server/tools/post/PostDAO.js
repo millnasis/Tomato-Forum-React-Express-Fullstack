@@ -643,13 +643,24 @@ module.exports = class PostDAO {
               getReplySum: {
                 $sum: "$replyCount",
               },
-              postSum:{
-                $count:{}
-              }
+              postSum: {
+                $count: {},
+              },
             },
           },
         ])
         .toArray();
+      if (ret.length === 0) {
+        {
+          return {
+            _id: "auto_spawn",
+            click: 0,
+            like: 0,
+            getReplySum: 0,
+            postSum: 0,
+          };
+        }
+      }
       return ret[0];
     } catch (error) {
       console.error(error);

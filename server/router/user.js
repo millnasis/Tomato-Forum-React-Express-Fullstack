@@ -73,9 +73,10 @@ router.get("/:userid", async (req, res) => {
   const commentData = await replyDAO.queryUserCommentLikeSumByUserID(
     req.params.userid
   );
+  const like = +postData.like + +replyData.like + +commentData.like;
   const userInteractData = {
     ...Object.assign(postData, replyData, commentData),
-    like: +postData.like + +replyData.like + +commentData.like,
+    like,
   };
 
   let ret = await userDAO.queryByID(req.params.userid);
@@ -102,9 +103,25 @@ router.post("/:userid", async (req, res) => {
   const userDAO = new UserDAO();
   await userDAO.updateUserByIDAndUserInfo(req.params.userid, req.body.userInfo);
   let ret = await userDAO.queryByID(req.params.userid);
+  const postDAO = new PostDAO();
+  const replyDAO = new ReplyDAO();
+  const postData = await postDAO.queryUserLikeAndReplySumByUserID(
+    req.params.userid
+  );
+  const replyData = await replyDAO.queryUserLikeAndCommentSumByUserID(
+    req.params.userid
+  );
+  const commentData = await replyDAO.queryUserCommentLikeSumByUserID(
+    req.params.userid
+  );
+  const userInteractData = {
+    ...Object.assign(postData, replyData, commentData),
+    like: +postData.like + +replyData.like + +commentData.like,
+  };
   res.send({
     userInfo: ret.getOriginData(),
     isMe: true,
+    userInteractData,
   });
 });
 

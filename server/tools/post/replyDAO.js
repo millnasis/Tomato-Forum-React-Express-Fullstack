@@ -373,6 +373,14 @@ module.exports = class ReplyDAO {
           },
         ])
         .toArray();
+      if (ret.length === 0) {
+        return {
+          _id: "$auto_spawn",
+          like: 0,
+          getCommentSum: 0,
+          replySum: 0,
+        };
+      }
       return ret[0];
     } catch (error) {
       console.error(error);
@@ -395,7 +403,7 @@ module.exports = class ReplyDAO {
           },
           {
             $match: {
-              "comments.publisher": "62c414f95beb883da9c44ede",
+              "comments.publisher": ID,
             },
           },
           {
@@ -418,6 +426,13 @@ module.exports = class ReplyDAO {
           },
         ])
         .toArray();
+      if (ret.length === 0) {
+        return {
+          _id: "$auto_spawn",
+          like: 0,
+          commentSum: 0,
+        };
+      }
       return ret[0];
     } catch (error) {
       console.error(error);

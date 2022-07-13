@@ -104,7 +104,7 @@ class PageHeader extends React.Component {
         {this.props.location.pathname === "/search" || (
           <Search
             placeholder="输入搜索内容"
-            enterButton="Search"
+            enterButton="搜索"
             className="search-input"
             onSearch={(value) => {
               const path = value ? `/search?keyword=${value}` : "/search";

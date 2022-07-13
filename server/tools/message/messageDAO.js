@@ -785,7 +785,9 @@ class MessageDAO {
           },
         ])
         .toArray();
-
+      if (ret.length === 0) {
+        return 0;
+      }
       return ret[0].sum;
     } catch (error) {
       console.error(error);

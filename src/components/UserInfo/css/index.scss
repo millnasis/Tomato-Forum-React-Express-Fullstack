@@ -42,6 +42,9 @@ $component-background-color: darken(
     }
     .user-info-sub-col-component {
       width: 88%;
+      .user-info-sub-col-component-item{
+        line-height: 100%;
+      }
     }
   }
 }

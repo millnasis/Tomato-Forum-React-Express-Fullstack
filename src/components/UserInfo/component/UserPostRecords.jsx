@@ -31,14 +31,22 @@ class UserPostRecords extends React.Component {
       return;
     }
     const { userid } = this.props;
-    if (key === "1") {
-      this.props.get_show_user_post_array(userid, 0);
-    } else if (key === "2") {
-      this.props.get_show_user_reply_array(userid, 0);
-    } else if (key === "3") {
-      this.props.get_show_user_comment_array(userid, 0);
-    } else if (key === "4") {
-      this.props.get_show_user_favorite_array(userid, 0);
+    switch (key) {
+      case "1":
+        this.props.get_show_user_post_array(userid, 0);
+        break;
+      case "2":
+        this.props.get_show_user_reply_array(userid, 0);
+        break;
+      case "3":
+        this.props.get_show_user_comment_array(userid, 0);
+        break;
+      case "4":
+        this.props.get_show_user_favorite_array(userid, 0);
+        break;
+
+      default:
+        break;
     }
     this.setState({
       nowTabKey: key,
@@ -47,6 +55,28 @@ class UserPostRecords extends React.Component {
 
   componentDidMount() {
     this.props.get_show_user_post_array(this.props.userid, 0);
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.userid !== this.props.userid) {
+      const { userid } = this.props;
+      switch (this.state.nowTabKey) {
+        case "1":
+          this.props.get_show_user_post_array(userid, 0);
+          break;
+        case "2":
+          this.props.get_show_user_reply_array(userid, 0);
+          break;
+        case "3":
+          this.props.get_show_user_comment_array(userid, 0);
+          break;
+        case "4":
+          this.props.get_show_user_favorite_array(userid, 0);
+          break;
+
+        default:
+          break;
+      }
+    }
   }
 
   render() {
