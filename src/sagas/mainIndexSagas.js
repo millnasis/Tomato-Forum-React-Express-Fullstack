@@ -104,3 +104,18 @@ export function* publishNewPost() {
     }
   }
 }
+
+export function* getClickPostArray() {
+  while (true) {
+    const action = yield take(actionsType.SEND_TO_GET_CLICK_POST_ARRAY);
+    const { limit } = action;
+    const response = yield call(axios.get, "/api/post/recommend/click", {
+      params: {
+        limit,
+      },
+    });
+    if (response && response.status === 200) {
+      yield put(actions.response_click_post_array(response.data));
+    }
+  }
+}

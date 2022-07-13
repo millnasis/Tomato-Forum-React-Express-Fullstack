@@ -31,6 +31,17 @@ router.get("/recommend/new", async (req, res) => {
   res.send(ret);
 });
 
+router.get("/recommend/click", async (req, res) => {
+  const postDAO = new PostDAO();
+  const { limit } = req.query;
+  const ret = await postDAO.queryLatestAndClick(limit);
+  if (!ret) {
+    res.status(404).send("not found");
+    return;
+  }
+  res.send(ret);
+});
+
 router.get("/:postid/main", async (req, res) => {
   const postDAO = new PostDAO();
   const postVO = await postDAO.queryByID(req.params.postid);

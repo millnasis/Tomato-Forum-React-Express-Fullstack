@@ -5,6 +5,8 @@ const ReplyDAO = require("./replyDAO");
 const ReplyVO = require("./ReplyVO");
 const CommentVO = require("./CommentVO");
 
+const oneDayMSec = 1000 * 60 * 60 * 24;
+
 function getRegexByKeyword(keywords) {
   let regex = "";
   for (let index = 0; index < keywords.length; index++) {
@@ -224,7 +226,7 @@ module.exports = class PostDAO {
         .aggregate([
           {
             $sort: {
-              lasttime: -1,
+              foundtime: -1,
             },
           },
           {
@@ -275,6 +277,73 @@ module.exports = class PostDAO {
         };
       });
     } catch (error) {
+      return false;
+    }
+  }
+
+  async queryLatestAndClick(limit = 20) {
+    try {
+      limit = parseInt(limit);
+      const posts = await db(dbName);
+      let ret = await posts
+        .aggregate([
+          {
+            $match: {
+              lasttime: {
+                $gte: new Date(Date.now() - 7 * oneDayMSec),
+              },
+            },
+          },
+          {
+            $sort: {
+              click: -1,
+            },
+          },
+          {
+            $limit: limit,
+          },
+          {
+            $addFields: {
+              likeCount: {
+                $size: "$likeList",
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "replys",
+              localField: "_id",
+              foreignField: "masterID",
+              as: "replyCount",
+            },
+          },
+          {
+            $addFields: {
+              replyCount: {
+                $size: "$replyCount",
+              },
+            },
+          },
+        ])
+        .toArray();
+      if (ret.length === 0) {
+        return [];
+      }
+      return ret.map((value) => {
+        return {
+          id: value._id,
+          content: value.content,
+          foundtime: value.foundtime,
+          title: value.title,
+          lasttime: value.lasttime,
+          publisher: value.publisher,
+          likeCount: value.likeCount,
+          replyCount: value.replyCount,
+          click: value.click,
+        };
+      });
+    } catch (error) {
+      console.error(error);
       return false;
     }
   }

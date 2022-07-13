@@ -16,6 +16,7 @@ const {
   get_hot_post_array,
   get_hot_search,
   get_new_post_array,
+  get_click_post_array,
   show_edit_board,
   close_edit_board,
   publish_new_post,
@@ -65,6 +66,7 @@ class MainIndex extends React.Component {
     this.props.get_hot_post_array(0, defaultLimit);
     this.props.get_new_post_array(0, defaultLimit);
     this.props.get_hot_search();
+    this.props.get_click_post_array(5);
   }
 
   render() {
@@ -156,7 +158,7 @@ class MainIndex extends React.Component {
           <HotSearch
             showHotSearchArray={this.props.showHotSearchArray}
           ></HotSearch>
-          <HotPost></HotPost>
+          <HotPost showClickPostArray={this.props.showClickPostArray}></HotPost>
         </div>
       </div>
     );
@@ -182,6 +184,7 @@ function mapDispatchToProps(dispatch) {
     show_login_modal: bindActionCreators(show_login_modal, dispatch),
     clear_array: bindActionCreators(clear_array, dispatch),
     set_message: bindActionCreators(set_message, dispatch),
+    get_click_post_array: bindActionCreators(get_click_post_array, dispatch),
   };
 }
 

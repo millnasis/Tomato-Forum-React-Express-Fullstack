@@ -4,6 +4,7 @@ import { Comment, Tooltip, Avatar, Button, Divider, Pagination } from "antd";
 import { List } from "antd";
 import ClickLike from "./Like";
 import formatDate from "../../../tools/LocalDate";
+import { Link } from "react-router-dom";
 
 const defaultPageLimit = 5;
 
@@ -96,6 +97,7 @@ class CommentInReply extends React.Component {
           clickToLikeCommentHandle={R.clickToLikeCommentHandle}
           likeList={item.likeList}
         ></ClickLike>,
+
         <span
           onClick={() => {
             R.props.isUserLogin
@@ -131,8 +133,16 @@ class CommentInReply extends React.Component {
               >
                 <Comment
                   actions={spawnCommentActions(item, index)}
-                  author={<a>{item.publisher.username}</a>}
-                  avatar={<Avatar src={item.publisher.head_picture}></Avatar>}
+                  author={
+                    <Link to={`/user/${item.publisher._id}`}>
+                      {item.publisher.username}
+                    </Link>
+                  }
+                  avatar={
+                    <Link to={`/user/${item.publisher._id}`}>
+                      <Avatar src={item.publisher.head_picture}></Avatar>
+                    </Link>
+                  }
                   content={
                     <div
                       dangerouslySetInnerHTML={{

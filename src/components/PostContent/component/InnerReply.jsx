@@ -9,6 +9,7 @@ import ClickLike from "./Like";
 import { actions } from "../../../reducers/postContentPage";
 import { actions as rootActions } from "../../../reducers/root";
 import { actions as uiActions } from "../../../reducers/ui";
+import { Link } from "react-router-dom";
 import EditorWarp from "../../EditorWarp";
 const { change_comment_editor, post_new_comment, reset_post_new_comment } =
   actions;
@@ -76,7 +77,7 @@ class InnerReply extends React.Component {
                     {item.count}楼
                   </span>
                   {this.props.isUserLogin &&
-                    item.publisher._id === this.props.userInfo.id && (
+                    publisher._id === this.props.userInfo.id && (
                       <span style={{ marginLeft: "4px" }} className="delete">
                         删除
                       </span>
@@ -86,10 +87,21 @@ class InnerReply extends React.Component {
             >
               <Comment
                 actions={spawnCommentActions(item, index)}
-                author={<a>{publisher.username}</a>}
-                avatar={<Avatar src={publisher.head_picture}></Avatar>}
+                author={
+                  <Link to={`/user/${publisher._id}`}>
+                    {publisher.username}
+                  </Link>
+                }
+                avatar={
+                  <Link to={`/user/${publisher._id}`}>
+                    <Avatar src={publisher.head_picture}></Avatar>
+                  </Link>
+                }
                 content={
-                  <div className="main-post-reply-single-body" dangerouslySetInnerHTML={{ __html: item.content }} />
+                  <div
+                    className="main-post-reply-single-body"
+                    dangerouslySetInnerHTML={{ __html: item.content }}
+                  />
                 }
                 datetime={<span>{formatDate(new Date(item.foundtime))}</span>}
               >

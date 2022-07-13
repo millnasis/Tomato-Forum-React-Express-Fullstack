@@ -6,15 +6,18 @@ const initialState = {
   showHotPostArray: [],
   showNewPostArray: [],
   showHotSearchArray: [],
+  showClickPostArray: [],
 };
 
 export const actionsType = {
   SEND_TO_GET_HOT_POST_ARRAY: "SEND_TO_GET_HOT_POST_ARRAY",
   SEND_TO_GET_NEW_POST_ARRAY: "SEND_TO_GET_NEW_POST_ARRAY",
+  SEND_TO_GET_CLICK_POST_ARRAY: "SEND_TO_GET_CLICK_POST_ARRAY",
   SEND_TO_GET_HOT_SEARCH: "SENT_TO_GET_HOT_SEARCH",
   RESPONSE_HOT_SEARCH: "RESPONSE_HOT_SEARCH",
   RESPONSE_HOT_POST_ARRAY: "RESPONSE_HOT_POST_ARRAY",
   RESPONSE_NEW_POST_ARRAY: "RESPONSE_NEW_POST_ARRAY",
+  RESPONSE_NEW_CLICK_ARRAY: "RESPONSE_NEW_CLICK_ARRAY",
   START_FETCH_HOT_POST: "START_FETCH_HOT_POST",
   END_FETCH_HOT_POST: "END_FETCH_HOT_POST",
   START_FETCH_NEW_POST: "START_FETCH_NEW_POST",
@@ -42,6 +45,12 @@ export const actions = {
       limit: limit,
     };
   },
+  get_click_post_array(limit) {
+    return {
+      type: actionsType.SEND_TO_GET_CLICK_POST_ARRAY,
+      limit,
+    };
+  },
   get_hot_search() {
     return {
       type: actionsType.SEND_TO_GET_HOT_SEARCH,
@@ -63,6 +72,12 @@ export const actions = {
     return {
       type: actionsType.RESPONSE_NEW_POST_ARRAY,
       showNewPostArray: data,
+    };
+  },
+  response_click_post_array(data) {
+    return {
+      type: actionsType.RESPONSE_NEW_CLICK_ARRAY,
+      arr: data,
     };
   },
   start_hot_array_fetch() {
@@ -113,11 +128,11 @@ export const actions = {
       type: actionsType.END_FETCH_PUBLISH_NEW_POST,
     };
   },
-  clear_array(){
+  clear_array() {
     return {
-      type:actionsType.CLEAR_MAIN_INDEX_ARRAY
-    }
-  }
+      type: actionsType.CLEAR_MAIN_INDEX_ARRAY,
+    };
+  },
 };
 
 export function reducer(state = initialState, action) {
@@ -161,6 +176,11 @@ export function reducer(state = initialState, action) {
           ...state.showNewPostArray.filter((value) => !value.loading),
           ...action.showNewPostArray,
         ],
+      };
+    case actionsType.RESPONSE_NEW_CLICK_ARRAY:
+      return {
+        ...state,
+        showClickPostArray: action.arr,
       };
     case actionsType.RESPONSE_HOT_SEARCH:
       return {
@@ -210,10 +230,10 @@ export function reducer(state = initialState, action) {
     case actionsType.CLEAR_MAIN_INDEX_ARRAY:
       return {
         ...state,
-        showHotPostArray:[],
-        showHotSearchArray:[],
-        showNewPostArray:[],
-      }
+        showHotPostArray: [],
+        showHotSearchArray: [],
+        showNewPostArray: [],
+      };
     default:
       return state;
   }

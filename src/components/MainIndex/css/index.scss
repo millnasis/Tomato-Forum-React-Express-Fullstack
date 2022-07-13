@@ -78,6 +78,10 @@ $layout-header-background: rgb(76, 0, 9);
           &:hover {
             border: 1px solid $link-color;
           }
+          img,
+          video {
+            width: 100%;
+          }
         }
       }
     }

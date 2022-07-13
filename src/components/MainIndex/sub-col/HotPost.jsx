@@ -1,34 +1,36 @@
 import React from "react";
 import { Card, Divider } from "antd";
+import { Link } from "react-router-dom";
+import clickPoshtmlHandle from "../../../tools/recommendPostmlHandle.js";
 
 class HotPost extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      list: ["热", "热", "热", "热", "热", "热"],
-    };
   }
 
   render() {
+    const { showClickPostArray } = this.props;
     return (
       <div className="hot-post-warp sub-col-component">
-        <strong>热门帖子</strong>
+        <strong>其他人正在看</strong>
         <Divider></Divider>
-        {this.state.list.map((item, index) => {
+        {showClickPostArray.map((item, index) => {
           return (
-            <Card
-              key={item + index}
-              size="small"
-              className="hot-post-list-item"
-              style={{ maxHeight: 100, overflow: "hidden" }}
-            >
-              <p>{item}</p>
-              <p>{item}</p>
-              <p>{item}</p>
-              <p>{item}</p>
-              <p>{item}</p>
-            </Card>
+            <Link to={`/post/${item.id}`}>
+              <Card
+                key={item.id}
+                size="small"
+                className="hot-post-list-item"
+                style={{ overflow: "hidden" }}
+              >
+                <h4>{item.title}</h4>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: clickPoshtmlHandle(item.content),
+                  }}
+                ></div>
+              </Card>
+            </Link>
           );
         })}
       </div>

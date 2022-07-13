@@ -22,6 +22,7 @@ export default function* rootSaga() {
   yield fork(mainIndexPage.getHotSearchArray);
   yield fork(mainIndexPage.getNewPostArray);
   yield fork(mainIndexPage.publishNewPost);
+  yield fork(mainIndexPage.getClickPostArray);
   yield fork(postContentPage.getPostContentBody);
   yield fork(postContentPage.getShowReplyArray);
   yield fork(postContentPage.putNewReply);
