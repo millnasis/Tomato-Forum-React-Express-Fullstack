@@ -1,6 +1,5 @@
 const db = require("../db");
 const { ObjectId } = require("mongodb");
-const PostVO = require("./PostVO");
 const ReplyVO = require("./ReplyVO");
 const CommentVO = require("./CommentVO");
 

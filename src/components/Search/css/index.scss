@@ -15,6 +15,7 @@ $component-background-color: darken(
     background: $component-background-color;
     padding-top: 30px;
     padding-right: 50px;
+    min-height: 90vh;
     height: 1%;
     overflow: hidden;
     .search-col {

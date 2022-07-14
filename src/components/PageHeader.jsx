@@ -20,6 +20,7 @@ class PageHeader extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.location.pathname !== this.props.location.pathname) {
       this.props.send_update_user_info();
+      window.scrollTo(0, 0);
     }
   }
 

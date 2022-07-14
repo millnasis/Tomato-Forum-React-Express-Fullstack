@@ -6,12 +6,25 @@ class SearchBar extends React.Component {
     super(props);
 
     this.search = this.search.bind(this);
+    this.state = {
+      value: "",
+    };
+  }
+
+  componentDidMount() {
+    const params = this.props.getQueryParams();
+    const keyword = decodeURI(params.keyword);
+    if (keyword) {
+      this.setState({ value: keyword });
+    }
   }
 
   search(value) {
-    let params = this.props.getQueryParams();
-    let { searchTarget, sortMode, skip, keyword } = params;
-    keyword = decodeURI(keyword);
+    if (!value) {
+      return;
+    }
+    const params = this.props.getQueryParams();
+    const { searchTarget, sortMode, skip } = params;
     this.props.setSearchParams({ ...params, keyword: value });
     this.props.send_to_search(value, searchTarget, sortMode, skip);
     this.props.showSearchContent();
@@ -24,6 +37,10 @@ class SearchBar extends React.Component {
         <Input.Search
           allowClear={true}
           enterButton="搜索"
+          value={this.state.value}
+          onChange={(e) => {
+            this.setState({value:e.nativeEvent.target.value})
+          }}
           onSearch={this.search}
         ></Input.Search>
       </div>

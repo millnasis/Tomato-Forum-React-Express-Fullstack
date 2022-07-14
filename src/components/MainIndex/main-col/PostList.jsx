@@ -1,6 +1,6 @@
 import React from "react";
 import formatDate from "../../../tools/LocalDate";
-import htmlToText from "../../../tools/htmlToText";
+import recommendPostmlHandle from "../../../tools/recommendPostmlHandle.js";
 import { Link } from "react-router-dom";
 import { List, Button, Skeleton } from "antd";
 
@@ -53,10 +53,12 @@ class PostList extends React.Component {
                 title={<Link to={`/post/${item.id}`}>{item.title}</Link>}
                 description={
                   <Link to={`/post/${item.id}`}>
-                    <div className="main-list-description"
-                    >
-                      {htmlToText(item.content)}
-                    </div>
+                    <div
+                      className="main-list-description"
+                      dangerouslySetInnerHTML={{
+                        __html: recommendPostmlHandle(item.content),
+                      }}
+                    ></div>
                   </Link>
                 }
               />

@@ -16,14 +16,23 @@ class HotPost extends React.Component {
         <Divider></Divider>
         {showClickPostArray.map((item, index) => {
           return (
-            <Link to={`/post/${item.id}`}>
+            <Link to={`/post/${item.id}`} key={item.id}>
               <Card
-                key={item.id}
                 size="small"
                 className="hot-post-list-item"
                 style={{ overflow: "hidden" }}
+                extra={
+                  <div style={{ color: "rgba(0, 0, 0, 0.45)" }}>
+                    {item.click +
+                      "浏览 " +
+                      item.likeCount +
+                      "点赞  " +
+                      item.replyCount +
+                      "回复"}
+                  </div>
+                }
+                title={<strong>{item.title}</strong>}
               >
-                <h4>{item.title}</h4>
                 <div
                   dangerouslySetInnerHTML={{
                     __html: clickPoshtmlHandle(item.content),

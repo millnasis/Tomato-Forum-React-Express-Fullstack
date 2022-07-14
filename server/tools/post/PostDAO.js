@@ -2,8 +2,6 @@ const db = require("../db");
 const { ObjectId } = require("mongodb");
 const PostVO = require("./PostVO");
 const ReplyDAO = require("./replyDAO");
-const ReplyVO = require("./ReplyVO");
-const CommentVO = require("./CommentVO");
 
 const oneDayMSec = 1000 * 60 * 60 * 24;
 
@@ -679,6 +677,7 @@ module.exports = class PostDAO {
       let ret = await posts.updateOne({ _id: ID }, { $inc: { click: 1 } });
       return ret;
     } catch (error) {
+      console.error(error);
       return false;
     }
   }
@@ -731,6 +730,23 @@ module.exports = class PostDAO {
         }
       }
       return ret[0];
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async updateLastTimeByPostID(ID) {
+    try {
+      if (typeof ID === "string") {
+        ID = ObjectId(ID);
+      }
+      const posts = await db(dbName);
+      let ret = await posts.updateOne(
+        { _id: ID },
+        { $set: { lasttime: new Date() } }
+      );
+      return ret;
     } catch (error) {
       console.error(error);
       return false;

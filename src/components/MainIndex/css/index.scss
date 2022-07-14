@@ -38,6 +38,9 @@ $layout-header-background: rgb(76, 0, 9);
         color: rgba(0, 0, 0, 0.45);
         font-size: 14px;
         line-height: 1.5715;
+        img,video{
+          max-height: 20vh;
+        }
       }
     }
     .sub-col {

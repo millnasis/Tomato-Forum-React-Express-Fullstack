@@ -1,6 +1,7 @@
 const express = require("express");
 const FavoriteDAO = require("../tools/favorite/favoriteDAO");
 const { checkLogin } = require("../tools/check");
+const PostDAO = require("../tools/post/PostDAO");
 const router = express.Router();
 
 router.get("/user/:userid", async (req, res) => {
@@ -18,12 +19,14 @@ router.get("/user/:userid", async (req, res) => {
 
 router.post("/user/:userid/post/:postid", checkLogin, async (req, res) => {
   const favoriteDAO = new FavoriteDAO();
+  const postDAO = new PostDAO();
   const { userid, postid } = req.params;
   let ret = await favoriteDAO.toggleByUserIDAndPostID(userid, postid);
   if (!ret) {
     res.status(500).send("error");
     return;
   }
+  await postDAO.updateLastTimeByPostID(postid);
   res.send("OK");
 });
 

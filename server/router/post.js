@@ -173,7 +173,7 @@ router.put("/", checkLogin, async (req, res) => {
 router.put("/:postid/reply", checkLogin, async (req, res) => {
   const postDAO = new PostDAO();
   const messageDAO = new MessageDAO();
-  const { TotalMSGtype, TotalTargetType } = MessageDAO;
+  const { TotalTargetType } = MessageDAO;
   const { publisher, content } = req.body;
   const { postid } = req.params;
   let postVO = await postDAO.queryByID(postid);
@@ -185,6 +185,7 @@ router.put("/:postid/reply", checkLogin, async (req, res) => {
     content,
     publisher
   );
+  await postDAO.updateLastTimeByPostID(postid);
 
   await messageDAO.addReplyMSG(
     publisher,
@@ -204,6 +205,7 @@ router.put("/:postid/reply", checkLogin, async (req, res) => {
 });
 
 router.put("/reply/:replyid/comment", checkLogin, async (req, res) => {
+  const postDAO = new PostDAO();
   const replyDAO = new ReplyDAO();
   const messageDAO = new MessageDAO();
   const { TotalMSGtype, TotalTargetType } = MessageDAO;
@@ -235,6 +237,7 @@ router.put("/reply/:replyid/comment", checkLogin, async (req, res) => {
     res.status(500).send("error");
     return;
   }
+  await postDAO.updateLastTimeByPostID(replyVO.masterID);
   res.send(req.params.replyid);
 });
 
@@ -257,6 +260,7 @@ router.post("/:postid/like", checkLogin, async (req, res) => {
     res.status(500).send("error");
     return;
   }
+  await postDAO.updateLastTimeByPostID(postid);
   res.send(postVO.getOriginData());
 });
 

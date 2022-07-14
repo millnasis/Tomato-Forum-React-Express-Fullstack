@@ -1,7 +1,7 @@
 import React from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Modal, Form, Input, Image, Button, Alert } from "antd";
+import { Modal, Form, Input, Avatar, Button, Alert } from "antd";
 
 import { actions as UIactions } from "../reducers/ui";
 import { actions } from "../reducers/root";
@@ -42,7 +42,7 @@ class Login extends React.Component {
               flexDirection: "column",
             }}
           >
-            <Image src="" width={70} height={70}></Image>
+            <Avatar src="/public/default-avatar.png" size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}></Avatar>
             <h3>{this.state.isRegister ? "注册" : "登陆"}</h3>
           </div>
         }
