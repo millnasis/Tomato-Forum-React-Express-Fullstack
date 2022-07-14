@@ -87,6 +87,7 @@ class CommentVO {
           }
         );
         this.likeList.push(publisher);
+        return 1;
       } else {
         await schema.updateOne(
           {
@@ -109,8 +110,8 @@ class CommentVO {
           this.likeList.findIndex((value) => value === publisher),
           1
         );
+        return -1;
       }
-      return true;
     } catch (error) {
       console.log(error);
       return false;

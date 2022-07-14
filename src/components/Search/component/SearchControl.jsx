@@ -1,6 +1,5 @@
 import React from "react";
 import { Radio } from "antd";
-import { getQueryVariable } from "../../../tools/getQueryVariable";
 
 class SearchControl extends React.Component {
   constructor(props) {
@@ -11,17 +10,27 @@ class SearchControl extends React.Component {
   }
 
   changeSearchTarget(target) {
+    let params = this.props.getQueryParams();
     this.props.change_search_target(target);
+    let { skip, keyword } = params;
+    keyword = decodeURI(keyword);
     this.props.setSearchParams({
-      ...this.props.getQueryParams(),
       searchTarget: target,
       sortMode: this.props.totalSortMode.NEW,
+      skip,
+      keyword,
     });
+    // this.props.send_to_search(
+    //   keyword,
+    //   target,
+    //   this.props.totalSortMode.NEW,
+    //   skip
+    // );
   }
 
   changeSortMode(mode) {
     let params = this.props.getQueryParams();
-    let { searchTarget, sortMode, skip, keyword } = params;
+    let { searchTarget, skip, keyword } = params;
     keyword = decodeURI(keyword);
     this.props.change_sort_mode(mode);
     this.props.setSearchParams({

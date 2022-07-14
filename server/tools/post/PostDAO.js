@@ -2,31 +2,12 @@ const db = require("../db");
 const { ObjectId } = require("mongodb");
 const PostVO = require("./PostVO");
 const ReplyDAO = require("./replyDAO");
+const constant = require("../constant");
+const getRegexByKeyword = require("../getRegexByKeyword");
 
-const oneDayMSec = 1000 * 60 * 60 * 24;
-
-function getRegexByKeyword(keywords) {
-  let regex = "";
-  for (let index = 0; index < keywords.length; index++) {
-    const element = keywords[index];
-    regex += element;
-    if (index < keywords.length - 1) {
-      regex += "|";
-    }
-  }
-  return new RegExp(regex);
-}
+const { totalSortMode, oneDayMSec } = constant;
 
 const dbName = "posts";
-
-const totalSortMode = {
-  NEW: "NEW",
-  CLICK: "CLICK",
-  LIKE: "LIKE",
-  REPLY: "REPLY",
-  FAVORITE: "FAVORITE",
-  POST: "POST",
-};
 
 module.exports = class PostDAO {
   /**
@@ -440,7 +421,7 @@ module.exports = class PostDAO {
           },
         ])
         .toArray();
-      ret.sum = sum[0] ? sum[0].count : 0;
+      ret.sum = sum.length !== 0 ? sum[0].count : 0;
       switch (sortMode) {
         case totalSortMode.NEW: {
           ret.arr = await posts
@@ -474,7 +455,7 @@ module.exports = class PostDAO {
               },
             ])
             .toArray();
-          return ret;
+          break;
         }
         case totalSortMode.CLICK: {
           ret.arr = await posts
@@ -508,7 +489,7 @@ module.exports = class PostDAO {
               },
             ])
             .toArray();
-          return ret;
+          break;
         }
         case totalSortMode.LIKE: {
           ret.arr = await posts
@@ -549,7 +530,7 @@ module.exports = class PostDAO {
               },
             ])
             .toArray();
-          return ret;
+          break;
         }
         case totalSortMode.FAVORITE: {
           ret.arr = await posts
@@ -608,7 +589,7 @@ module.exports = class PostDAO {
               },
             ])
             .toArray();
-          return ret;
+          break;
         }
         case totalSortMode.REPLY: {
           ret.arr = await posts
@@ -657,11 +638,12 @@ module.exports = class PostDAO {
               },
             ])
             .toArray();
-          return ret;
+          break;
         }
         default:
           break;
       }
+      return ret;
     } catch (error) {
       console.log(error);
       return false;

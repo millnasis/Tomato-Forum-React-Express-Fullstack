@@ -111,38 +111,38 @@ class ReplyVO {
       ret = ret[0].comments;
       if (ret.isMention) {
         let mentionRet = await replys
-        .aggregate([
-          {
-            $unwind: "$comments",
-          },
-          {
-            $match: {
-              "comments.id": ret.mentionID,
+          .aggregate([
+            {
+              $unwind: "$comments",
             },
-          },
-          {
-            $lookup: {
-              from:"replys",
-              localField:"comments.masterID",
-              foreignField:"_id",
-              as:"comments.master"
+            {
+              $match: {
+                "comments.id": ret.mentionID,
+              },
             },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "comments.mentionUser",
-              foreignField: "_id",
-              as: "comments.mentionUser",
+            {
+              $lookup: {
+                from: "replys",
+                localField: "comments.masterID",
+                foreignField: "_id",
+                as: "comments.master",
+              },
             },
-          },
-          {
-            $project: { comments: 1 },
-          },
-        ])
-        .toArray();
+            {
+              $lookup: {
+                from: "users",
+                localField: "comments.mentionUser",
+                foreignField: "_id",
+                as: "comments.mentionUser",
+              },
+            },
+            {
+              $project: { comments: 1 },
+            },
+          ])
+          .toArray();
         mentionRet = mentionRet[0].comments;
-        const query = new CommentVO(mentionRet,dbName);
+        const query = new CommentVO(mentionRet, dbName);
         ret.mention = query.getOriginData();
       }
       return new CommentVO(ret, dbName);
@@ -299,6 +299,7 @@ class ReplyVO {
           }
         );
         this.likeList.push(publisher);
+        return 1;
       } else {
         await replys.updateOne(
           { _id: this.id },
@@ -312,9 +313,8 @@ class ReplyVO {
           this.likeList.findIndex((value) => value === publisher),
           1
         );
+        return -1;
       }
-
-      return true;
     } catch (error) {
       console.log(error);
       return false;

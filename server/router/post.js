@@ -243,12 +243,13 @@ router.put("/reply/:replyid/comment", checkLogin, async (req, res) => {
 
 router.post("/:postid/like", checkLogin, async (req, res) => {
   const postDAO = new PostDAO();
+  const userDAO = new UserDAO();
   const messageDAO = new MessageDAO();
   const { publisher } = req.body;
   const { postid } = req.params;
   const { TotalMSGtype, TotalTargetType } = MessageDAO;
   const postVO = await postDAO.queryByID(postid);
-  let ret = await postVO.toggleLikeByPublisher(publisher);
+  const ret = await postVO.toggleLikeByPublisher(publisher);
   await messageDAO.toggleLikeMSG(
     publisher,
     postVO.publisher._id,
@@ -256,22 +257,24 @@ router.post("/:postid/like", checkLogin, async (req, res) => {
     TotalTargetType.POST,
     TotalMSGtype.LIKE
   );
-  if (!ret) {
+  if (typeof ret !== "number") {
     res.status(500).send("error");
     return;
   }
+  await userDAO.updateLikeCountByUserID(postVO.publisher._id, ret);
   await postDAO.updateLastTimeByPostID(postid);
   res.send(postVO.getOriginData());
 });
 
 router.post("/reply/:replyid/like", checkLogin, async (req, res) => {
+  const userDAO = new UserDAO();
   const replyDAO = new ReplyDAO();
   const messageDAO = new MessageDAO();
   const { TotalMSGtype, TotalTargetType } = MessageDAO;
   const { publisher } = req.body;
   const { replyid } = req.params;
   const replyVO = await replyDAO.queryByID(replyid);
-  let ret = await replyVO.toggleLikeByPublisher(publisher);
+  const ret = await replyVO.toggleLikeByPublisher(publisher);
   await messageDAO.toggleLikeMSG(
     publisher,
     replyVO.publisher,
@@ -279,10 +282,11 @@ router.post("/reply/:replyid/like", checkLogin, async (req, res) => {
     TotalTargetType.REPLY,
     TotalMSGtype.LIKE
   );
-  if (!ret) {
+  if (typeof ret !== "number") {
     res.status(500).send("error");
     return;
   }
+  await userDAO.updateLikeCountByUserID(replyVO.publisher, ret);
   res.send(replyVO.getOriginData());
 });
 
@@ -292,13 +296,14 @@ router.post(
   checkLogin,
   async (req, res) => {
     const replyDAO = new ReplyDAO();
+    const userDAO = new UserDAO();
     const messageDAO = new MessageDAO();
     const { TotalMSGtype, TotalTargetType } = MessageDAO;
     const { replyid, commentid } = req.params;
     const { publisher } = req.body;
     const replyVO = await replyDAO.queryByID(replyid);
     const commentVO = await replyVO.getCommentByID(commentid);
-    let ret = await commentVO.toggleLikeByPublisher(publisher);
+    const ret = await commentVO.toggleLikeByPublisher(publisher);
     await messageDAO.toggleLikeMSG(
       publisher,
       commentVO.publisher,
@@ -306,10 +311,11 @@ router.post(
       TotalTargetType.COMMENT,
       TotalMSGtype.LIKE
     );
-    if (!ret) {
+    if (typeof ret !== "number") {
       res.status(500).send("error");
       return;
     }
+    await userDAO.updateLikeCountByUserID(commentVO.publisher, ret);
     res.send(commentVO.getOriginData());
   }
 );

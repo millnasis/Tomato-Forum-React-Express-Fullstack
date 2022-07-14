@@ -3,6 +3,10 @@ const PermitDAO = require("./PermitDAO");
 const UserVO = require("./UserVO");
 const { ObjectId } = require("mongodb");
 const MessageDAO = require("../message/messageDAO");
+const constant = require("../constant");
+const getRegexByKeyword = require("../getRegexByKeyword");
+
+const { totalSortMode } = constant;
 
 const dbName = "users";
 const default_head_picture = "/public/logo.png";
@@ -135,6 +139,105 @@ module.exports = class UserDAO {
       let ret = await this.queryByID(ID);
       await permit.deleteUserByUsernameAndPassword(ret.username);
       await users.deleteOne({ _id: ObjectId(ID) });
+    } catch (error) {}
+  }
+
+  async updateLikeCountByUserID(ID, num) {
+    try {
+      if (typeof ID === "string") {
+        ID = ObjectId(ID);
+      }
+      num = parseInt(num);
+      const users = await db(dbName);
+      const ret = await users.updateOne(
+        { _id: ID },
+        {
+          $inc: {
+            likeCount: num,
+          },
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async search(keyword, sortMode, skip, limit) {
+    skip = parseInt(skip);
+    limit = parseInt(limit);
+    const regex = getRegexByKeyword(keyword);
+    try {
+      const users = await db(dbName);
+      let ret = {};
+      let sum = await users
+        .aggregate([
+          {
+            $match: {
+              username: regex,
+            },
+          },
+          {
+            $count: "count",
+          },
+        ])
+        .toArray();
+      ret.sum = sum.length !== 0 ? sum[0].count : 0;
+      switch (sortMode) {
+        case totalSortMode.NEW: {
+          ret.arr = await users
+            .aggregate([
+              {
+                $match: {
+                  username: regex,
+                },
+              },
+              {
+                $sort: {
+                  foundtime: -1,
+                },
+              },
+              {
+                $skip: skip,
+              },
+              {
+                $limit: limit,
+              },
+            ])
+            .toArray();
+          break;
+        }
+        case totalSortMode.LIKE: {
+          ret.arr = await users
+            .aggregate([
+              {
+                $match: {
+                  username: regex,
+                },
+              },
+              {
+                $sort: {
+                  likeCount: -1,
+                },
+              },
+              {
+                $skip: skip,
+              },
+              {
+                $limit: limit,
+              },
+            ])
+            .toArray();
+          break;
+        }
+        case totalSortMode.POST: {
+          break;
+        }
+
+        default:
+          break;
+      }
     } catch (error) {}
   }
 };

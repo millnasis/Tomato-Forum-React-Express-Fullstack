@@ -282,6 +282,7 @@ class PostVO {
           }
         );
         this.likeList.push(publisher);
+        return 1;
       } else {
         await posts.updateOne(
           { _id: this.id },
@@ -295,8 +296,8 @@ class PostVO {
           this.likeList.findIndex((value) => value === publisher),
           1
         );
+        return -1;
       }
-      return true;
     } catch (error) {
       console.log(error);
       return false;
