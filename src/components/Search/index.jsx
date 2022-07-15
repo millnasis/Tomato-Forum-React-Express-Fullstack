@@ -102,7 +102,12 @@ class Search extends React.Component {
             ></SearchControl>
             <Divider></Divider>
             <SearchResult
+              searchTarget={this.props.searchTarget}
+              send_to_search={this.props.send_to_search}
+              totalSearchTarget={totalSearchTarget}
               showArray={this.props.showArray}
+              setSearchParams={this.props.setSearchParams}
+              getQueryParams={getQueryParams}
               sum={this.props.sum}
             ></SearchResult>
           </div>

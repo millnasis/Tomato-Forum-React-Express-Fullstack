@@ -20,12 +20,12 @@ class SearchControl extends React.Component {
       skip,
       keyword,
     });
-    // this.props.send_to_search(
-    //   keyword,
-    //   target,
-    //   this.props.totalSortMode.NEW,
-    //   skip
-    // );
+    this.props.send_to_search(
+      keyword,
+      target,
+      this.props.totalSortMode.NEW,
+      skip
+    );
   }
 
   changeSortMode(mode) {

@@ -231,13 +231,32 @@ module.exports = class UserDAO {
             .toArray();
           break;
         }
-        case totalSortMode.POST: {
+        case totalSortMode.FOLLOW: {
+          ret.arr = await users
+            .aggregate([
+              {
+                $match: {
+                  username: regex,
+                },
+              },
+              {
+                $skip: skip,
+              },
+              {
+                $limit: limit,
+              },
+            ])
+            .toArray();
           break;
         }
 
         default:
           break;
       }
-    } catch (error) {}
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 };

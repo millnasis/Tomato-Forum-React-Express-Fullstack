@@ -19,14 +19,14 @@ class HotSearch extends React.Component {
           bordered
           dataSource={this.props.showHotSearchArray}
           renderItem={(item, index) => (
-            <List.Item className="hot-search-item" key={item._id}>
-              <List.Item.Meta
-                avatar={index + 1}
-                title={
-                  <Link to={`/search?keyword=${item.word}`}>{item.word}</Link>
-                }
-              ></List.Item.Meta>
-            </List.Item>
+            <Link to={`/search?keyword=${item.word}`} key={item._id}>
+              <List.Item className="hot-search-item">
+                <List.Item.Meta
+                  avatar={index + 1}
+                  title={item.word}
+                ></List.Item.Meta>
+              </List.Item>
+            </Link>
           )}
         />
       </div>

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const PostDAO = require("../tools/post/PostDAO");
 const SearchDAO = require("../tools/search/searchDAO");
+const UserDAO = require("../tools/user/UserDAO");
 
 const totalSearchTarget = {
   POST: "POST",
@@ -14,20 +15,29 @@ function handleKeyword(keyword) {
 
 router.get("/", async (req, res) => {
   const { keyword, searchTarget, sortMode, skip, limit } = req.query;
-  const postDAO = new PostDAO();
   const searchDAO = new SearchDAO();
   const decodeKeyword = handleKeyword(keyword);
+  await searchDAO.recordSearchWords(decodeKeyword);
   switch (searchTarget) {
     case totalSearchTarget.POST: {
-      await searchDAO.recordSearchWords(decodeKeyword);
-      let ret = await postDAO.search(decodeKeyword, sortMode, skip, limit);
+      const postDAO = new PostDAO();
+      const ret = await postDAO.search(decodeKeyword, sortMode, skip, limit);
       if (!ret) {
         res.status(500).send("error");
         return;
       }
       res.send(ret);
+      break;
     }
     case totalSearchTarget.USER: {
+      const userDAO = new UserDAO();
+      const ret = await userDAO.search(decodeKeyword, sortMode, skip, limit);
+      if (!ret) {
+        res.status(500).send("error");
+        return;
+      }
+      res.send(ret);
+      break;
     }
     default:
       break;

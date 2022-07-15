@@ -16,6 +16,7 @@ export const totalSortMode = {
   LIKE: "LIKE",
   REPLY: "REPLY",
   FAVORITE: "FAVORITE",
+  FOLLOW: "FOLLOW",
   POST: "POST",
 };
 
@@ -77,6 +78,7 @@ export function reducer(state = initialState, action) {
       return {
         ...state,
         showArray: action.arr,
+        sum: action.sum,
       };
     default:
       return state;

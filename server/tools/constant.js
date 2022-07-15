@@ -6,6 +6,7 @@ module.exports = {
     REPLY: "REPLY",
     FAVORITE: "FAVORITE",
     POST: "POST",
+    FOLLOW: "FOLLOW",
   },
   oneDayMSec: 1000 * 60 * 60 * 24,
 };
