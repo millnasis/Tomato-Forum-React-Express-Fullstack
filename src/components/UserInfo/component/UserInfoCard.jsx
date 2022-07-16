@@ -11,7 +11,6 @@ import {
   Upload,
 } from "antd";
 import ImgCrop from "antd-img-crop";
-import axios from "axios";
 import formatTime from "../../../tools/LocalDate.js";
 
 class UserInfoCard extends React.Component {
@@ -38,8 +37,6 @@ class UserInfoCard extends React.Component {
       });
     }
   }
-
-  
 
   handleSubmit(data) {
     const { id } = this.props.showUserInfo;
@@ -135,7 +132,7 @@ class UserInfoCard extends React.Component {
                 </Radio.Group>
               </Form.Item>
               <Form.Item label="个性签名" name={"words"}>
-                <Input type={"text"} />
+                <Input type={"text"} maxLength={30} />
               </Form.Item>
               <Form.Item label="邮箱地址" name={"email"}>
                 <Input type={"email"} />
