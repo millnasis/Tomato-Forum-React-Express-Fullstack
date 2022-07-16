@@ -1,4 +1,22 @@
 # 番茄社区论坛Tomato-Forum-React-Express-Fullstack
-React+Express+MongoDB全栈实现的一个社区论坛
+
 ## 介绍
-以前拿来练手Nodejs的一个老项目，现在翻出来重构+继续实现，完成度还不高
+
+React+Express+MongoDB全栈实现的一个社区论坛，UI框架使用了Antd，是以前拿来练手Nodejs的一个老项目，现在翻出来重构+继续实现，完成度还不高
+
+## 使用
+
+第一次调试之前先要打包一次，之后再运行`npm run serve`
+
+否则跳出来的网页会是一片空白
+
+```shell
+# 打包：
+npm run build
+# 调试：
+npm run serve
+```
+
+## 数据库
+
+MongoDB数据库，建立一个名为`InterForum`的数据库即可
