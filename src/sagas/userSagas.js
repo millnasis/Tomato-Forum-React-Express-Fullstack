@@ -109,3 +109,18 @@ export function* logout() {
     }
   }
 }
+
+export function* queryFollow() {
+  while (true) {
+    const action = yield take(actionsType.SEND_TO_QUERY_FOLLOW);
+    const { userFrom, userTo } = action;
+    const response = yield call(axios.get, "/api/follow/query/single", {
+      params: { userFrom, userTo },
+    });
+    if (response && response.status === 200) {
+      yield put(actions.response_follow(response.data));
+    } else {
+      yield put(actions.set_message(2, "获取关注信息错误"));
+    }
+  }
+}

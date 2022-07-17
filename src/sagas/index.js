@@ -1,6 +1,6 @@
 import { fork } from "redux-saga/effects";
 
-import { checkLogin, checkRegister, logout, updateUserInfo } from "./userSagas";
+import * as user from "./userSagas";
 import * as userInfoPage from "./userInfoPageSagas";
 import * as mainIndexPage from "./mainIndexSagas";
 import * as postContentPage from "./postContentSagas";
@@ -8,10 +8,11 @@ import * as userMessagePage from "./userMessageSagas";
 import * as searchPage from "./searchPageSagas";
 
 export default function* rootSaga() {
-  yield fork(checkLogin);
-  yield fork(checkRegister);
-  yield fork(logout);
-  yield fork(updateUserInfo);
+  yield fork(user.checkLogin);
+  yield fork(user.checkRegister);
+  yield fork(user.logout);
+  yield fork(user.updateUserInfo);
+  yield fork(user.queryFollow);
   yield fork(userInfoPage.getUserInfo);
   yield fork(userInfoPage.updateUserInfo);
   yield fork(userInfoPage.getUserPostArray);

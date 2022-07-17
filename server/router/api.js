@@ -8,6 +8,7 @@ const uploadAPI = require("./upload");
 const favoriteAPI = require("./favorite");
 const messageAPI = require("./message");
 const searchAPI = require("./search");
+const followAPI = require("./follow");
 const router = express.Router();
 
 router.use("/user", userAPI);
@@ -21,5 +22,7 @@ router.use("/favorite", favoriteAPI);
 router.use("/message", messageAPI);
 
 router.use("/search", searchAPI);
+
+router.use("/follow", followAPI);
 
 module.exports = router;

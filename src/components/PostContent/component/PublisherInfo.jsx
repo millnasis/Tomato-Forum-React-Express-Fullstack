@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Avatar, Divider } from "antd";
+import { Card, Avatar, Divider, Button } from "antd";
 import { Link } from "react-router-dom";
 
 class PublisherInfo extends React.Component {
@@ -27,6 +27,15 @@ class PublisherInfo extends React.Component {
           ></Avatar>
         </Link>
         <Link to={`/user/${publisher._id}`}>{publisher.username}</Link>
+        {this.props.userInfo.id !== publisher._id ? (
+          <Button type="primary" style={{ marginLeft: "10px" }}>
+            关注
+          </Button>
+        ) : (
+          <Button type="ghost" style={{ marginLeft: "10px", color: "gray" }}>
+            已关注
+          </Button>
+        )}
         <Divider></Divider>
         {`"${publisher.words}"`}
       </Card>

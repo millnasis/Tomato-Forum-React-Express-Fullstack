@@ -126,4 +126,30 @@ class followDAO {
       return false;
     }
   }
+
+  async queryFollowIsExist(userFrom, userTo) {
+    try {
+      const follows = await db(dbName);
+      const ret = await follows
+        .find({
+          userFrom,
+          userTo,
+        })
+        .toArray();
+      if (ret.length === 0) {
+        return {
+          status: "exist",
+        };
+      } else {
+        return {
+          status: "null",
+        };
+      }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 }
+
+module.exports = followDAO;

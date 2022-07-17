@@ -7,11 +7,13 @@ import WriteBoard from "./component/WriteBoard";
 import { getQueryVariable } from "../../tools/getQueryVariable";
 import { withUseParamsHooksHOC } from "../../tools/withUseParamsHooksHOC";
 import { actions } from "../../reducers/postContentPage";
+import { actions as rootActions } from "../../reducers/root";
 import { actions as uiActions } from "../../reducers/ui";
 import { actions as postContentPageActions } from "../../reducers/postContentPage";
 const { get_post_content_body, get_show_reply_array, post_new_reply } = actions;
 const { show_login_modal } = uiActions;
 const { change_focus_write_board } = postContentPageActions;
+const { query_follow, reset_follow } = rootActions;
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
@@ -32,6 +34,20 @@ class PostContent extends React.Component {
       postid,
       (page - 1) * defaultLimit,
       defaultLimit
+    );
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!this.props.userInfo) {
+      this.props.reset_follow();
+      return;
+    }
+    if (!this.props.postContentBody.publisher) {
+      return;
+    }
+    this.props.query_follow(
+      this.props.userInfo.id,
+      this.props.postContentBody.publisher._id
     );
   }
 
@@ -76,6 +92,7 @@ class PostContent extends React.Component {
         <div className="post-sub-col post-col">
           <PublisherInfo
             postContentBody={this.props.postContentBody}
+            userInfo={this.props.userInfo}
           ></PublisherInfo>
         </div>
       </div>
@@ -86,8 +103,7 @@ class PostContent extends React.Component {
 function mapStateToProps(state) {
   return {
     ...state.postContentPageState,
-    userInfo: state.globalState.userInfo,
-    isUserLogin: state.globalState.isUserLogin,
+    ...state.globalState,
   };
 }
 
@@ -101,6 +117,8 @@ function mapDispatchToProps(dispatch) {
       change_focus_write_board,
       dispatch
     ),
+    query_follow: bindActionCreators(query_follow, dispatch),
+    reset_follow: bindActionCreators(reset_follow, dispatch),
   };
 }
 

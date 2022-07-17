@@ -10,6 +10,7 @@ const globalInitialState = {
   isFetching: false,
   isUserInfoFetching: false,
   isUserLogin: false,
+  isFollow: false,
   message: {
     type: -1,
     content: null,
@@ -33,6 +34,9 @@ export const actionsType = {
   UPDATE_USER_INFO: "UPDATE_USER_INFO",
   RELOAD_PAGE: "RELOAD_PAGE",
   FAILED_TO_UPDATE_USER_INFO: "FAILED_TO_UPDATE_USER_INFO",
+  SEND_TO_QUERY_FOLLOW: "SEND_TO_QUERY_FOLLOW",
+  RESPONSE_QUERY_FOLLOW: "RESPONSE_QUERY_FOLLOW",
+  RESET_FOLLOW: "RESET_FOLLOW",
 };
 
 export const actions = {
@@ -92,11 +96,29 @@ export const actions = {
       type: actionsType.FETCH_END,
     };
   },
+  query_follow(userFrom, userTo) {
+    return {
+      type: actionsType.SEND_TO_QUERY_FOLLOW,
+      userFrom,
+      userTo,
+    };
+  },
+  response_follow(follow) {
+    return {
+      type: actionsType.RESPONSE_QUERY_FOLLOW,
+      follow: follow.status === "exist",
+    };
+  },
+  reset_follow() {
+    return {
+      type: actionsType.RESET_FOLLOW,
+    };
+  },
   /**
-   * 
+   *
    * @param {int} type 消息类型，1为成功，2为错误，3为警告
    * @param {String} content 消息内容
-   * @returns 
+   * @returns
    */
   set_message(type, content) {
     return {
@@ -180,6 +202,18 @@ export function reducer(globalState = globalInitialState, action) {
         ...globalState,
         isUserInfoFetching: false,
       };
+    case actionsType.RESPONSE_QUERY_FOLLOW: {
+      return {
+        ...globalState,
+        isFollow: action.follow,
+      };
+    }
+    case actionsType.RESET_FOLLOW: {
+      return {
+        ...globalState,
+        isFollow: false,
+      };
+    }
     default:
       return globalState;
   }
