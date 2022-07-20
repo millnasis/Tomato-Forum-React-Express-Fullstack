@@ -93,6 +93,24 @@ function* sendToGetUserFavoriteArray(publisher, skip) {
     return yield put(rootActions.set_message(2, "获取收藏错误"));
   }
 }
+function* sendToGetUserFollowWhoArray(userid, skip) {
+  try {
+    return yield call(axios.get, `/api/follow/query/group/follow/${userid}`, {
+      params: { skip, limit: 10 },
+    });
+  } catch (error) {
+    return yield put(rootActions.set_message(2, "获取关注列表错误"));
+  }
+}
+function* sendToGetWhoFollowUserArray(userid, skip) {
+  try {
+    return yield call(axios.get, `/api/follow/query/group/befollow/${userid}`, {
+      params: { skip, limit: 10 },
+    });
+  } catch (error) {
+    return yield put(rootActions.set_message(2, "获取关注列表错误"));
+  }
+}
 
 export function* getUserPostArray() {
   while (true) {
@@ -143,6 +161,35 @@ export function* getUserFavoriteArray() {
     );
     if (response && response.status === 200) {
       yield put(actions.response_user_favorite_array(response.data));
+    }
+  }
+}
+
+export function* getUserFollowWhoArray() {
+  while (true) {
+    const action = yield take(actionsType.SEND_TO_GET_SHOW_USER_FOLLOW_ARRAY);
+    const response = yield call(
+      sendToGetUserFollowWhoArray,
+      action.userid,
+      action.skip
+    );
+    if (response && response.status === 200) {
+      yield put(actions.response_user_follow_array(response.data));
+    }
+  }
+}
+export function* getWhoFollowUserArray() {
+  while (true) {
+    const action = yield take(
+      actionsType.SEND_TO_GET_SHOW_WHO_FOLLOW_USER_ARRAY
+    );
+    const response = yield call(
+      sendToGetWhoFollowUserArray,
+      action.userid,
+      action.skip
+    );
+    if (response && response.status === 200) {
+      yield put(actions.response_who_follow_user_array(response.data));
     }
   }
 }

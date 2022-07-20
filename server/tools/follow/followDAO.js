@@ -40,10 +40,12 @@ class followDAO {
    * @param {String} ID
    * @returns
    */
-  async queryUserFollowWhoByUserID(ID) {
+  async queryUserFollowWhoByUserID(ID, skip, limit) {
     try {
+      skip = parseInt(skip);
+      limit = parseInt(limit);
       const follows = await db(dbName);
-      const ret = await follows
+      const array = await follows
         .aggregate([
           {
             $match: {
@@ -54,6 +56,12 @@ class followDAO {
             $sort: {
               date: -1,
             },
+          },
+          {
+            $skip: skip,
+          },
+          {
+            $limit: limit,
           },
           {
             $addFields: {
@@ -75,6 +83,22 @@ class followDAO {
           },
         ])
         .toArray();
+      const sum = await follows
+        .aggregate([
+          {
+            $match: {
+              userFrom: ID,
+            },
+          },
+          {
+            $count: "sum",
+          },
+        ])
+        .toArray();
+      return {
+        array,
+        sum: sum.length === 0 ? 0 : sum[0].sum,
+      };
     } catch (error) {
       console.error(error);
       return false;
@@ -85,10 +109,12 @@ class followDAO {
    * 关注我的
    * @param {String} ID
    */
-  async queryWhoFollowUserByUserID(ID) {
+  async queryWhoFollowUserByUserID(ID, skip, limit) {
     try {
+      skip = parseInt(skip);
+      limit = parseInt(limit);
       const follows = await db(dbName);
-      const ret = await follows
+      const array = await follows
         .aggregate([
           {
             $match: {
@@ -99,6 +125,12 @@ class followDAO {
             $sort: {
               date: -1,
             },
+          },
+          {
+            $skip: skip,
+          },
+          {
+            $limit: limit,
           },
           {
             $addFields: {
@@ -120,7 +152,22 @@ class followDAO {
           },
         ])
         .toArray();
-      return ret;
+      const sum = await follows
+        .aggregate([
+          {
+            $match: {
+              userTo: ID,
+            },
+          },
+          {
+            $count: "sum",
+          },
+        ])
+        .toArray();
+      return {
+        array,
+        sum: sum.length === 0 ? 0 : sum[0].sum,
+      };
     } catch (error) {
       console.error(error);
       return false;

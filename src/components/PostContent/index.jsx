@@ -13,7 +13,7 @@ import { actions as postContentPageActions } from "../../reducers/postContentPag
 const { get_post_content_body, get_show_reply_array, post_new_reply } = actions;
 const { show_login_modal } = uiActions;
 const { change_focus_write_board } = postContentPageActions;
-const { query_follow, reset_follow } = rootActions;
+const { query_follow, reset_follow, send_follow, send_unfollow } = rootActions;
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
@@ -38,17 +38,19 @@ class PostContent extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!this.props.userInfo) {
-      this.props.reset_follow();
-      return;
+    if (prevProps.postContentBody.id !== this.props.postContentBody.id) {
+      if (!this.props.userInfo) {
+        this.props.reset_follow(false);
+        return;
+      }
+      if (!this.props.postContentBody.publisher) {
+        return;
+      }
+      this.props.query_follow(
+        this.props.userInfo.id,
+        this.props.postContentBody.publisher._id
+      );
     }
-    if (!this.props.postContentBody.publisher) {
-      return;
-    }
-    this.props.query_follow(
-      this.props.userInfo.id,
-      this.props.postContentBody.publisher._id
-    );
   }
 
   render() {
@@ -93,6 +95,9 @@ class PostContent extends React.Component {
           <PublisherInfo
             postContentBody={this.props.postContentBody}
             userInfo={this.props.userInfo}
+            isFollow={this.props.isFollow}
+            send_follow={this.props.send_follow}
+            send_unfollow={this.props.send_unfollow}
           ></PublisherInfo>
         </div>
       </div>
@@ -119,6 +124,8 @@ function mapDispatchToProps(dispatch) {
     ),
     query_follow: bindActionCreators(query_follow, dispatch),
     reset_follow: bindActionCreators(reset_follow, dispatch),
+    send_follow: bindActionCreators(send_follow, dispatch),
+    send_unfollow: bindActionCreators(send_unfollow, dispatch),
   };
 }
 

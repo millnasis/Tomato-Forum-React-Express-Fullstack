@@ -37,6 +37,8 @@ export const actionsType = {
   SEND_TO_QUERY_FOLLOW: "SEND_TO_QUERY_FOLLOW",
   RESPONSE_QUERY_FOLLOW: "RESPONSE_QUERY_FOLLOW",
   RESET_FOLLOW: "RESET_FOLLOW",
+  SEND_TO_FOLLOW: "SEND_TO_FOLLOW",
+  SEND_TO_UNFOLLOW: "SEND_TO_UNFOLLOW",
 };
 
 export const actions = {
@@ -109,9 +111,27 @@ export const actions = {
       follow: follow.status === "exist",
     };
   },
-  reset_follow() {
+  /**
+   * 
+   * @param {boolean} follow 
+   * @returns 
+   */
+  reset_follow(follow) {
     return {
       type: actionsType.RESET_FOLLOW,
+      follow,
+    };
+  },
+  send_follow(userid) {
+    return {
+      type: actionsType.SEND_TO_FOLLOW,
+      userid,
+    };
+  },
+  send_unfollow(userid) {
+    return {
+      type: actionsType.SEND_TO_UNFOLLOW,
+      userid,
     };
   },
   /**
@@ -211,7 +231,7 @@ export function reducer(globalState = globalInitialState, action) {
     case actionsType.RESET_FOLLOW: {
       return {
         ...globalState,
-        isFollow: false,
+        isFollow: action.follow,
       };
     }
     default:

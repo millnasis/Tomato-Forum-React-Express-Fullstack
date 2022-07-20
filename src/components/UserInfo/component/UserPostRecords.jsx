@@ -9,18 +9,29 @@ const {
   get_show_user_post_array,
   get_show_user_reply_array,
   get_show_user_favorite_array,
+  get_show_user_follow_array,
+  get_show_who_follow_user_array,
 } = actions;
 import { Tabs, List, Pagination } from "antd";
 import { Link } from "react-router-dom";
 
 const singlePageLimit = 10;
 
+const tabKey = {
+  POST: "POST",
+  REPLY: "REPLY",
+  COMMENT: "COMMENT",
+  FAVORITE: "FAVORITE",
+  FOLLOW: "FOLLOW",
+  BEFOLLOW: "BEFOLLOW",
+};
+
 class UserPostRecords extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      nowTabKey: "1",
+      nowTabKey: tabKey.POST,
     };
 
     this.switchTab = this.switchTab.bind(this);
@@ -32,17 +43,23 @@ class UserPostRecords extends React.Component {
     }
     const { userid } = this.props;
     switch (key) {
-      case "1":
+      case tabKey.POST:
         this.props.get_show_user_post_array(userid, 0);
         break;
-      case "2":
+      case tabKey.REPLY:
         this.props.get_show_user_reply_array(userid, 0);
         break;
-      case "3":
+      case tabKey.COMMENT:
         this.props.get_show_user_comment_array(userid, 0);
         break;
-      case "4":
+      case tabKey.FAVORITE:
         this.props.get_show_user_favorite_array(userid, 0);
+        break;
+      case tabKey.FOLLOW:
+        this.props.get_show_user_follow_array(userid, 0);
+        break;
+      case tabKey.BEFOLLOW:
+        this.props.get_show_who_follow_user_array(userid, 0);
         break;
 
       default:
@@ -60,17 +77,23 @@ class UserPostRecords extends React.Component {
     if (prevProps.userid !== this.props.userid) {
       const { userid } = this.props;
       switch (this.state.nowTabKey) {
-        case "1":
+        case tabKey.POST:
           this.props.get_show_user_post_array(userid, 0);
           break;
-        case "2":
+        case tabKey.REPLY:
           this.props.get_show_user_reply_array(userid, 0);
           break;
-        case "3":
+        case tabKey.COMMENT:
           this.props.get_show_user_comment_array(userid, 0);
           break;
-        case "4":
+        case tabKey.FAVORITE:
           this.props.get_show_user_favorite_array(userid, 0);
+          break;
+        case tabKey.FOLLOW:
+          this.props.get_show_user_follow_array(userid, 0);
+          break;
+        case tabKey.BEFOLLOW:
+          this.props.get_show_who_follow_user_array(userid, 0);
           break;
 
         default:
@@ -80,11 +103,12 @@ class UserPostRecords extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     return (
       <div className="user-info-main-col-component">
-        <Tabs defaultActiveKey="1" onChange={this.switchTab}>
-          <Tabs.TabPane tab="发帖" key="1">
-            {this.state.nowTabKey === "1" && (
+        <Tabs defaultActiveKey={tabKey.POST} onChange={this.switchTab}>
+          <Tabs.TabPane tab="发帖" key={tabKey.POST}>
+            {this.state.nowTabKey === tabKey.POST && (
               <List
                 dataSource={this.props.showUserPostArray}
                 renderItem={(item) => {
@@ -125,8 +149,8 @@ class UserPostRecords extends React.Component {
               </List>
             )}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="回复" key="2">
-            {this.state.nowTabKey === "2" && (
+          <Tabs.TabPane tab="回复" key={tabKey.REPLY}>
+            {this.state.nowTabKey === tabKey.REPLY && (
               <List
                 dataSource={this.props.showUserReplyArray}
                 renderItem={(item) => {
@@ -168,8 +192,8 @@ class UserPostRecords extends React.Component {
               </List>
             )}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="评论" key="3">
-            {this.state.nowTabKey === "3" && (
+          <Tabs.TabPane tab="评论" key={tabKey.COMMENT}>
+            {this.state.nowTabKey === tabKey.COMMENT && (
               <List
                 dataSource={this.props.showUserCommentArray}
                 renderItem={(item) => {
@@ -211,8 +235,8 @@ class UserPostRecords extends React.Component {
               </List>
             )}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="收藏" key="4">
-            {this.state.nowTabKey === "4" && (
+          <Tabs.TabPane tab="收藏" key={tabKey.FAVORITE}>
+            {this.state.nowTabKey === tabKey.FAVORITE && (
               <List
                 dataSource={this.props.showUserFavoriteArray}
                 renderItem={(item) => {
@@ -250,6 +274,86 @@ class UserPostRecords extends React.Component {
               </List>
             )}
           </Tabs.TabPane>
+          <Tabs.TabPane tab="我关注的" key={tabKey.FOLLOW}>
+            {this.state.nowTabKey === tabKey.FOLLOW && (
+              <List
+                dataSource={this.props.showUserFollowArray}
+                renderItem={(item) => {
+                  // const { post, foundtime, postid } = item;
+                  // const { content, title } = post;
+                  // return (
+                  //   <List.Item>
+                  //     <List.Item.Meta
+                  //       title={
+                  //         <div className="titleEllipsis">
+                  //           <Link to={`/post/${postid}`}>
+                  //             {htmlToText(title)}
+                  //           </Link>
+                  //         </div>
+                  //       }
+                  //       description={
+                  //         <div className="contentEllipsis">
+                  //           {htmlToText(content)}
+                  //         </div>
+                  //       }
+                  //     ></List.Item.Meta>
+                  //     <span style={{ color: "gray" }}>
+                  //       {"收藏于" + formatDate(foundtime)}
+                  //     </span>
+                  //   </List.Item>
+                  // );
+                  return <div>fuck</div>;
+                }}
+              >
+                {this.props.showUserFollowArraySum > singlePageLimit && (
+                  <Pagination
+                    total={this.props.showUserFollowArraySum}
+                    pageSize={singlePageLimit}
+                  ></Pagination>
+                )}
+              </List>
+            )}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="关注我的" key={tabKey.BEFOLLOW}>
+            {this.state.nowTabKey === tabKey.BEFOLLOW && (
+              <List
+                dataSource={this.props.showWhoFollowUserArray}
+                renderItem={(item) => {
+                  // const { post, foundtime, postid } = item;
+                  // const { content, title } = post;
+                  // return (
+                  //   <List.Item>
+                  //     <List.Item.Meta
+                  //       title={
+                  //         <div className="titleEllipsis">
+                  //           <Link to={`/post/${postid}`}>
+                  //             {htmlToText(title)}
+                  //           </Link>
+                  //         </div>
+                  //       }
+                  //       description={
+                  //         <div className="contentEllipsis">
+                  //           {htmlToText(content)}
+                  //         </div>
+                  //       }
+                  //     ></List.Item.Meta>
+                  //     <span style={{ color: "gray" }}>
+                  //       {"收藏于" + formatDate(foundtime)}
+                  //     </span>
+                  //   </List.Item>
+                  // );
+                  return <div>fuck</div>;
+                }}
+              >
+                {this.props.showWhoFollowUserArraySum > singlePageLimit && (
+                  <Pagination
+                    total={this.props.showWhoFollowUserArraySum}
+                    pageSize={singlePageLimit}
+                  ></Pagination>
+                )}
+              </List>
+            )}
+          </Tabs.TabPane>
         </Tabs>
       </div>
     );
@@ -278,6 +382,14 @@ function mapDispatchToProps(dispatch) {
     ),
     get_show_user_reply_array: bindActionCreators(
       get_show_user_reply_array,
+      dispatch
+    ),
+    get_show_user_follow_array: bindActionCreators(
+      get_show_user_follow_array,
+      dispatch
+    ),
+    get_show_who_follow_user_array: bindActionCreators(
+      get_show_who_follow_user_array,
       dispatch
     ),
   };

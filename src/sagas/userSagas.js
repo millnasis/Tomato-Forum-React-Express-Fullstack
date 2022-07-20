@@ -124,3 +124,29 @@ export function* queryFollow() {
     }
   }
 }
+
+export function* sendFollow() {
+  while (true) {
+    const action = yield take(actionsType.SEND_TO_FOLLOW);
+    const { userid } = action;
+    const response = yield call(axios.post, `/api/follow/add/${userid}`);
+    if (response && response.status === 200) {
+      yield put(actions.reset_follow(true));
+    } else {
+      yield put(actions.set_message(2, "关注失败"));
+    }
+  }
+}
+
+export function* sendUnfollow() {
+  while (true) {
+    const action = yield take(actionsType.SEND_TO_UNFOLLOW);
+    const { userid } = action;
+    const response = yield call(axios.post, `/api/follow/delete/${userid}`);
+    if (response && response.status === 200) {
+      yield put(actions.reset_follow(false));
+    } else {
+      yield put(actions.set_message(2, "取消关注失败"));
+    }
+  }
+}

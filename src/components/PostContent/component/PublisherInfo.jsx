@@ -8,7 +8,8 @@ class PublisherInfo extends React.Component {
   }
 
   render() {
-    let { publisher } = this.props.postContentBody;
+    const { postContentBody, isFollow } = this.props;
+    let { publisher } = postContentBody;
     if (!publisher) {
       publisher = {
         head_picture: undefined,
@@ -28,13 +29,29 @@ class PublisherInfo extends React.Component {
         </Link>
         <Link to={`/user/${publisher._id}`}>{publisher.username}</Link>
         {this.props.userInfo.id !== publisher._id ? (
-          <Button type="primary" style={{ marginLeft: "10px" }}>
-            关注
-          </Button>
+          !isFollow ? (
+            <Button
+              type="primary"
+              style={{ marginLeft: "10px" }}
+              onClick={() => {
+                this.props.send_follow(publisher._id);
+              }}
+            >
+              关注
+            </Button>
+          ) : (
+            <Button
+              type="ghost"
+              style={{ marginLeft: "10px", color: "gray" }}
+              onClick={() => {
+                this.props.send_unfollow(publisher._id);
+              }}
+            >
+              已关注
+            </Button>
+          )
         ) : (
-          <Button type="ghost" style={{ marginLeft: "10px", color: "gray" }}>
-            已关注
-          </Button>
+          <></>
         )}
         <Divider></Divider>
         {`"${publisher.words}"`}

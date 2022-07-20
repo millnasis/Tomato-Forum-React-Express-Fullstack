@@ -9,6 +9,10 @@ const initialState = {
   showUserCommentArraySum: 0,
   showUserFavoriteArray: [],
   showUserFavoriteArraySum: 0,
+  showUserFollowArray: [],
+  showUserFollowArraySum: 0,
+  showWhoFollowUserArray: [],
+  showWhoFollowUserArraySum: 0,
   isEditorFetching: false,
   isShowEditor: false,
   isMe: false,
@@ -23,11 +27,16 @@ export const actionsType = {
   SEND_TO_GET_SHOW_USER_REPLY_ARRAY: "SEND_TO_GET_SHOW_USER_REPLY_ARRAY",
   SEND_TO_GET_SHOW_USER_COMMENT_ARRAY: "SEND_TO_GET_SHOW_USER_COMMENT_ARRAY",
   SEND_TO_GET_SHOW_USER_FAVORITE_ARRAY: "SEND_TO_GET_SHOW_USER_FAVORITE_ARRAY",
+  SEND_TO_GET_SHOW_USER_FOLLOW_ARRAY: "SEND_TO_GET_SHOW_USER_FOLLOW_ARRAY",
+  SEND_TO_GET_SHOW_WHO_FOLLOW_USER_ARRAY:
+    "SEND_TO_GET_SHOW_WHO_FOLLOW_USER_ARRAY",
   RESPONSE_SHOW_USER_INFO: "RESPONSE_SHOW_USER_INFO",
   RESPONSE_SHOW_USER_POST_ARRAY: "RESPONSE_SHOW_USER_POST_ARRAY",
   RESPONSE_SHOW_USER_REPLY_ARRAY: "RESPONSE_SHOW_USER_REPLY_ARRAY",
   RESPONSE_SHOW_USER_COMMENT_ARRAY: "RESPONSE_SHOW_USER_COMMENT_ARRAY",
   RESPONSE_SHOW_USER_FAVORITE_ARRAY: "RESPONSE_SHOW_USER_FAVORITE_ARRAY",
+  RESPONSE_SHOW_USER_FOLLOW_ARRAY: "RESPONSE_SHOW_USER_FOLLOW_ARRAY",
+  RESONSE_SHOW_WHO_FOLLOW_USER_ARRAY: "RESONSE_SHOW_WHO_FOLLOW_USER_ARRAY",
   START_FETCH_UPDATE_USER_INFO: "START_FETCH_UPDATE_USER_INFO",
   END_FETCH_UPDATE_USER_INFO: "END_FETCH_UPDATE_USER_INFO",
   USER_INFO_PAGE_LOG_OUT: "USER_INFO_PAGE_LOG_OUT",
@@ -65,6 +74,20 @@ export const actions = {
     return {
       type: actionsType.SEND_TO_GET_SHOW_USER_FAVORITE_ARRAY,
       publisher,
+      skip,
+    };
+  },
+  get_show_user_follow_array(userid, skip) {
+    return {
+      type: actionsType.SEND_TO_GET_SHOW_USER_FOLLOW_ARRAY,
+      userid,
+      skip,
+    };
+  },
+  get_show_who_follow_user_array(userid, skip) {
+    return {
+      type: actionsType.SEND_TO_GET_SHOW_WHO_FOLLOW_USER_ARRAY,
+      userid,
       skip,
     };
   },
@@ -109,6 +132,20 @@ export const actions = {
       type: actionsType.RESPONSE_SHOW_USER_FAVORITE_ARRAY,
       showUserFavoriteArray: data.array,
       showUserFavoriteArraySum: data.sum,
+    };
+  },
+  response_user_follow_array(data) {
+    return {
+      type: actionsType.RESPONSE_SHOW_USER_FOLLOW_ARRAY,
+      showUserFollowArray: data.array,
+      showUserFollowArraySum: data.sum,
+    };
+  },
+  response_who_follow_user_array(data) {
+    return {
+      type: actionsType.RESONSE_SHOW_WHO_FOLLOW_USER_ARRAY,
+      showWhoFollowUserArray: data.array,
+      showWhoFollowUserArraySum: data.sum,
     };
   },
   start_fetch() {
@@ -165,6 +202,18 @@ export function reducer(state = initialState, action) {
         ...state,
         showUserFavoriteArray: action.showUserFavoriteArray,
         showUserFavoriteArraySum: action.showUserFavoriteArraySum,
+      };
+    case actionsType.RESPONSE_SHOW_USER_FOLLOW_ARRAY:
+      return {
+        ...state,
+        showUserFollowArray: action.showUserFollowArray,
+        showUserFollowArraySum: action.showUserFollowArraySum,
+      };
+    case actionsType.RESONSE_SHOW_WHO_FOLLOW_USER_ARRAY:
+      return {
+        ...state,
+        showWhoFollowUserArray: action.showWhoFollowUserArray,
+        showWhoFollowUserArraySum: action.showWhoFollowUserArraySum,
       };
     case actionsType.START_FETCH_UPDATE_USER_INFO:
       return {

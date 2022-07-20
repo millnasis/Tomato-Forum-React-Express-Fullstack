@@ -13,12 +13,16 @@ export default function* rootSaga() {
   yield fork(user.logout);
   yield fork(user.updateUserInfo);
   yield fork(user.queryFollow);
+  yield fork(user.sendFollow);
+  yield fork(user.sendUnfollow);
   yield fork(userInfoPage.getUserInfo);
   yield fork(userInfoPage.updateUserInfo);
   yield fork(userInfoPage.getUserPostArray);
   yield fork(userInfoPage.getUserReplyArray);
   yield fork(userInfoPage.getUserCommentArray);
   yield fork(userInfoPage.getUserFavoriteArray);
+  yield fork(userInfoPage.getUserFollowWhoArray);
+  yield fork(userInfoPage.getWhoFollowUserArray);
   yield fork(mainIndexPage.getHotPostArray);
   yield fork(mainIndexPage.getHotSearchArray);
   yield fork(mainIndexPage.getNewPostArray);
