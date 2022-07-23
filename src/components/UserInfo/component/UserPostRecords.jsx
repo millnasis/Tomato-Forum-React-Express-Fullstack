@@ -12,7 +12,7 @@ const {
   get_show_user_follow_array,
   get_show_who_follow_user_array,
 } = actions;
-import { Tabs, List, Pagination } from "antd";
+import { Tabs, List, Pagination, Avatar } from "antd";
 import { Link } from "react-router-dom";
 
 const singlePageLimit = 10;
@@ -279,30 +279,29 @@ class UserPostRecords extends React.Component {
               <List
                 dataSource={this.props.showUserFollowArray}
                 renderItem={(item) => {
-                  // const { post, foundtime, postid } = item;
-                  // const { content, title } = post;
-                  // return (
-                  //   <List.Item>
-                  //     <List.Item.Meta
-                  //       title={
-                  //         <div className="titleEllipsis">
-                  //           <Link to={`/post/${postid}`}>
-                  //             {htmlToText(title)}
-                  //           </Link>
-                  //         </div>
-                  //       }
-                  //       description={
-                  //         <div className="contentEllipsis">
-                  //           {htmlToText(content)}
-                  //         </div>
-                  //       }
-                  //     ></List.Item.Meta>
-                  //     <span style={{ color: "gray" }}>
-                  //       {"收藏于" + formatDate(foundtime)}
-                  //     </span>
-                  //   </List.Item>
-                  // );
-                  return <div>fuck</div>;
+                  const { showInfo } = item;
+                  const {
+                    _id,
+                    username,
+                    head_picture,
+                    words,
+                    likeCount,
+                    followCount,
+                  } = showInfo;
+                  return (
+                    <Link to={`/user/${_id}`} key={_id}>
+                      <List.Item>
+                        <List.Item.Meta
+                          avatar={
+                            <Avatar src={head_picture} size="large"></Avatar>
+                          }
+                          title={<div>{username}</div>}
+                          description={<div>个性签名：{words}</div>}
+                        ></List.Item.Meta>
+                        <div>{`${likeCount}点赞   ${followCount}粉丝`}</div>
+                      </List.Item>
+                    </Link>
+                  );
                 }}
               >
                 {this.props.showUserFollowArraySum > singlePageLimit && (
@@ -319,30 +318,29 @@ class UserPostRecords extends React.Component {
               <List
                 dataSource={this.props.showWhoFollowUserArray}
                 renderItem={(item) => {
-                  // const { post, foundtime, postid } = item;
-                  // const { content, title } = post;
-                  // return (
-                  //   <List.Item>
-                  //     <List.Item.Meta
-                  //       title={
-                  //         <div className="titleEllipsis">
-                  //           <Link to={`/post/${postid}`}>
-                  //             {htmlToText(title)}
-                  //           </Link>
-                  //         </div>
-                  //       }
-                  //       description={
-                  //         <div className="contentEllipsis">
-                  //           {htmlToText(content)}
-                  //         </div>
-                  //       }
-                  //     ></List.Item.Meta>
-                  //     <span style={{ color: "gray" }}>
-                  //       {"收藏于" + formatDate(foundtime)}
-                  //     </span>
-                  //   </List.Item>
-                  // );
-                  return <div>fuck</div>;
+                  const { showInfo } = item;
+                  const {
+                    _id,
+                    username,
+                    head_picture,
+                    words,
+                    likeCount,
+                    followCount,
+                  } = showInfo;
+                  return (
+                    <Link to={`/user/${_id}`} key={_id}>
+                      <List.Item>
+                        <List.Item.Meta
+                          avatar={
+                            <Avatar src={head_picture} size="large"></Avatar>
+                          }
+                          title={<div>{username}</div>}
+                          description={<div>个性签名：{words}</div>}
+                        ></List.Item.Meta>
+                        <div>{`${likeCount}点赞   ${followCount}粉丝`}</div>
+                      </List.Item>
+                    </Link>
+                  );
                 }}
               >
                 {this.props.showWhoFollowUserArraySum > singlePageLimit && (

@@ -9,6 +9,7 @@ const TotalMSGtype = {
   LIKE: "like",
   REPLY: "reply",
   COMMENT: "comment",
+  FOLLOW: "FOLLOW",
   MEMTION: "mention",
 };
 
@@ -16,6 +17,7 @@ const TotalTargetType = {
   POST: "post",
   REPLY: "reply",
   COMMENT: "comment",
+  USER: "USER",
 };
 
 function handleInput(targetid, userTo, userFrom, targetType, MSGtype) {
@@ -361,6 +363,76 @@ class MessageDAO {
         userFrom,
         targetType,
         TotalMSGtype.REPLY
+      );
+
+      const ret = await messages.deleteOne({
+        userFrom: handle.userFrom,
+        userTo: handle.userTo,
+        targetid: handle.targetid,
+        targetType,
+        MSGtype: handle.MSGtype,
+      });
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  // *********************************关注**************************************************
+
+  /**
+   *
+   * @param {String} userFrom
+   * @param {String} userTo
+   * @param {String} targetid
+   * @param {String} targetType
+   * @returns {Promise<Boolean>}
+   */
+  async addFollowMSG(userFrom, userTo, targetid, targetType) {
+    try {
+      const messages = await db(dbName);
+      const handle = handleInput(
+        targetid,
+        userTo,
+        userFrom,
+        targetType,
+        TotalMSGtype.FOLLOW
+      );
+
+      const ret = await messages.insertOne({
+        userFrom: handle.userFrom,
+        userTo: handle.userTo,
+        targetid: handle.targetid,
+        targetType,
+        MSGtype: handle.MSGtype,
+        lastUpdate: new Date(),
+        read: false,
+      });
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  /**
+   *
+   * @param {String} userFrom
+   * @param {String} userTo
+   * @param {String} targetid
+   * @param {String} targetType
+   * @returns {Promise<Boolean>}
+   */
+  async delFollowMSG(userFrom, userTo, targetid, targetType) {
+    try {
+      const messages = await db(dbName);
+      const handle = handleInput(
+        targetid,
+        userTo,
+        userFrom,
+        targetType,
+        TotalMSGtype.FOLLOW
       );
 
       const ret = await messages.deleteOne({
@@ -750,6 +822,41 @@ class MessageDAO {
             })
           );
           break;
+        }
+        case TotalMSGtype.FOLLOW: {
+          ret = await messages
+            .aggregate([
+              {
+                $match: {
+                  userTo: ObjectId(userid),
+                  MSGtype,
+                },
+              },
+              {
+                $sort: {
+                  lastUpdate: -1,
+                },
+              },
+              {
+                $skip: skip,
+              },
+              {
+                $limit: limit,
+              },
+              {
+                $lookup: {
+                  from: "users",
+                  localField: "userFrom",
+                  foreignField: "_id",
+                  as: "userFrom",
+                },
+              },
+              {
+                $unwind: "$userFrom",
+              },
+            ])
+            .toArray();
+            break;
         }
         case TotalMSGtype.MEMTION: {
           return [];

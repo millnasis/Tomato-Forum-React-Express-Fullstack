@@ -78,11 +78,40 @@ class followDAO {
               from: "users",
               localField: "userTo",
               foreignField: "_id",
-              as: "userTo",
+              as: "showInfo",
+            },
+          },
+          {
+            $unwind: "$showInfo",
+          },
+          {
+            $addFields: {
+              "showInfo._id": {
+                $convert: {
+                  input: "$showInfo._id",
+                  to: "string",
+                },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "follows",
+              localField: "showInfo._id",
+              foreignField: "userTo",
+              as: "showInfo.followCount",
+            },
+          },
+          {
+            $addFields: {
+              "showInfo.followCount": {
+                $size: "$showInfo.followCount",
+              },
             },
           },
         ])
         .toArray();
+      console.log(array);
       const sum = await follows
         .aggregate([
           {
@@ -147,7 +176,35 @@ class followDAO {
               from: "users",
               localField: "userFrom",
               foreignField: "_id",
-              as: "userFrom",
+              as: "showInfo",
+            },
+          },
+          {
+            $unwind: "$showInfo",
+          },
+          {
+            $addFields: {
+              "showInfo._id": {
+                $convert: {
+                  input: "$showInfo._id",
+                  to: "string",
+                },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "follows",
+              localField: "showInfo._id",
+              foreignField: "userTo",
+              as: "showInfo.followCount",
+            },
+          },
+          {
+            $addFields: {
+              "showInfo.followCount": {
+                $size: "$showInfo.followCount",
+              },
             },
           },
         ])
@@ -183,7 +240,7 @@ class followDAO {
           userTo,
         })
         .toArray();
-      if (ret.length === 0) {
+      if (ret.length !== 0) {
         return {
           status: "exist",
         };
@@ -192,6 +249,31 @@ class followDAO {
           status: "null",
         };
       }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async queryFollowSumByUserID(ID) {
+    try {
+      const follows = await db(dbName);
+      const ret = await follows
+        .aggregate([
+          {
+            $match: {
+              userTo: ID,
+            },
+          },
+          {
+            $count: "sum",
+          },
+        ])
+        .toArray();
+      if (ret.length !== 0) {
+        return ret[0].sum;
+      }
+      return false;
     } catch (error) {
       console.error(error);
       return false;

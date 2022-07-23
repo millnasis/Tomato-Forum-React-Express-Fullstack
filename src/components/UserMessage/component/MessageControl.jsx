@@ -9,6 +9,7 @@ const msgTypeArr = [
   TotalTab.LIKE,
   TotalTab.REPLY,
   TotalTab.COMMENT,
+  TotalTab.FOLLOW,
   TotalTab.MEMTION,
 ];
 
@@ -21,6 +22,8 @@ const ControlLi = (props) => {
         return "我的回帖";
       case TotalTab.COMMENT:
         return "评论我的";
+      case TotalTab.FOLLOW:
+        return "关注我的";
       case TotalTab.MEMTION:
         return "@ 我的";
     }
@@ -86,34 +89,6 @@ class MessageControl extends React.Component {
             ></ControlLi>
           );
         })}
-        {/* <ControlLi
-          nowTab={this.props.nowTab}
-          switch_tab={this.props.switch_tab}
-          tabkey={TotalTab.LIKE}
-          userid={this.props.userInfo.id}
-          get_show_message_array={this.props.get_show_message_array}
-        ></ControlLi>
-        <ControlLi
-          nowTab={this.props.nowTab}
-          switch_tab={this.props.switch_tab}
-          userid={this.props.userInfo.id}
-          get_show_message_array={this.props.get_show_message_array}
-          tabkey={TotalTab.REPLY}
-        ></ControlLi>
-        <ControlLi
-          nowTab={this.props.nowTab}
-          switch_tab={this.props.switch_tab}
-          userid={this.props.userInfo.id}
-          tabkey={TotalTab.COMMENT}
-          get_show_message_array={this.props.get_show_message_array}
-        ></ControlLi>
-        <ControlLi
-          userid={this.props.userInfo.id}
-          nowTab={this.props.nowTab}
-          switch_tab={this.props.switch_tab}
-          tabkey={TotalTab.MEMTION}
-          get_show_message_array={this.props.get_show_message_array}
-        ></ControlLi> */}
       </ul>
     );
   }

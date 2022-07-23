@@ -71,7 +71,7 @@ class SearchResult extends React.Component {
                       }
                     ></List.Item.Meta>
                     <div className="search-result-info">
-                      {`${item.likeCount}点赞   ${item.likeCount}粉丝`}
+                      {`${item.likeCount}点赞   ${item.followCount}粉丝`}
                     </div>
                   </List.Item>
                 </Link>

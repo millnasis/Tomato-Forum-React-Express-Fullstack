@@ -34,6 +34,10 @@ class PublisherInfo extends React.Component {
               type="primary"
               style={{ marginLeft: "10px" }}
               onClick={() => {
+                if (!this.props.isUserLogin) {
+                  this.props.show_login_modal();
+                  return;
+                }
                 this.props.send_follow(publisher._id);
               }}
             >

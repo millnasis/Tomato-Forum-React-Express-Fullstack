@@ -63,7 +63,8 @@ class UserInfoCard extends React.Component {
   }
 
   render() {
-    const { username, words, sex, foundtime, head_picture, email } =
+    console.log(this.props);
+    const { username, words, sex, foundtime, head_picture, email, id } =
       this.props.showUserInfo;
     return (
       <Card>
@@ -89,7 +90,7 @@ class UserInfoCard extends React.Component {
               {formatTime(foundtime)}
             </Descriptions.Item>
           </Descriptions>
-          {this.props.isMe && (
+          {this.props.isMe ? (
             <Button
               type="primary"
               onClick={() => {
@@ -97,6 +98,29 @@ class UserInfoCard extends React.Component {
               }}
             >
               修改个人资料
+            </Button>
+          ) : !this.props.isFollow ? (
+            <Button
+              type="primary"
+              onClick={() => {
+                if (!this.props.isUserLogin) {
+                  this.props.show_login_modal();
+                  return;
+                }
+                this.props.send_follow(id);
+              }}
+            >
+              关注
+            </Button>
+          ) : (
+            <Button
+              type="ghost"
+              style={{ color: "gray" }}
+              onClick={() => {
+                this.props.send_unfollow(id);
+              }}
+            >
+              已关注
             </Button>
           )}
           <Modal

@@ -3,6 +3,7 @@ const TotalMSGtype = {
   REPLY: "reply",
   COMMENT: "comment",
   FAVORITE: "favorite",
+  FOLLOW: "FOLLOW",
   MEMTION: "mention",
 };
 
@@ -44,8 +45,8 @@ export const actions = {
   response_show_message_array(data) {
     return {
       type: actionsType.RESPONSE_SHOW_MESSAGE_ARRAY,
-      array:data.array,
-      sum:data.sum
+      array: data.array,
+      sum: data.sum,
     };
   },
 };

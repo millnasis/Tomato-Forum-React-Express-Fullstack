@@ -194,6 +194,31 @@ module.exports = class UserDAO {
                 },
               },
               {
+                $addFields: {
+                  _id: {
+                    $convert: {
+                      input: "$_id",
+                      to: "string",
+                    },
+                  },
+                },
+              },
+              {
+                $lookup: {
+                  from: "follows",
+                  localField: "_id",
+                  foreignField: "userTo",
+                  as: "followCount",
+                },
+              },
+              {
+                $addFields: {
+                  followCount: {
+                    $size: "$followCount",
+                  },
+                },
+              },
+              {
                 $sort: {
                   foundtime: -1,
                 },
@@ -217,6 +242,31 @@ module.exports = class UserDAO {
                 },
               },
               {
+                $addFields: {
+                  _id: {
+                    $convert: {
+                      input: "$_id",
+                      to: "string",
+                    },
+                  },
+                },
+              },
+              {
+                $lookup: {
+                  from: "follows",
+                  localField: "_id",
+                  foreignField: "userTo",
+                  as: "followCount",
+                },
+              },
+              {
+                $addFields: {
+                  followCount: {
+                    $size: "$followCount",
+                  },
+                },
+              },
+              {
                 $sort: {
                   likeCount: -1,
                 },
@@ -237,6 +287,31 @@ module.exports = class UserDAO {
               {
                 $match: {
                   username: regex,
+                },
+              },
+              {
+                $addFields: {
+                  _id: {
+                    $convert: {
+                      input: "$_id",
+                      to: "string",
+                    },
+                  },
+                },
+              },
+              {
+                $lookup: {
+                  from: "follows",
+                  localField: "_id",
+                  foreignField: "userTo",
+                  as: "followCount",
+                },
+              },
+              {
+                $addFields: {
+                  followCount: {
+                    $size: "$followCount",
+                  },
                 },
               },
               {

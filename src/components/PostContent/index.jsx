@@ -96,6 +96,8 @@ class PostContent extends React.Component {
             postContentBody={this.props.postContentBody}
             userInfo={this.props.userInfo}
             isFollow={this.props.isFollow}
+            isUserLogin={this.props.isUserLogin}
+            show_login_modal={this.props.show_login_modal}
             send_follow={this.props.send_follow}
             send_unfollow={this.props.send_unfollow}
           ></PublisherInfo>

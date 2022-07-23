@@ -312,6 +312,57 @@ class ShowMessageBody extends React.Component {
           </List>
         );
       }
+      case TotalTab.FOLLOW: {
+        console.log(showMessageArray);
+        return (
+          <List
+            header={<MessageControl position="top"></MessageControl>}
+            dataSource={showMessageArray}
+            renderItem={(item) => {
+              return (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={
+                      <Badge count={!item.read ? "新" : 0}>
+                        <Avatar
+                          src={item.userFrom.head_picture}
+                          shape={"circle"}
+                        ></Avatar>
+                      </Badge>
+                    }
+                    title={
+                      <div>
+                        用户
+                        <SpawnTitle likeList={item.userFrom}></SpawnTitle>
+                        关注了您
+                      </div>
+                    }
+                    description={
+                      <div>
+                        <div>{formatDate(item.lastUpdate)}</div>
+                      </div>
+                    }
+                  ></List.Item.Meta>
+                </List.Item>
+              );
+            }}
+          >
+            {messageSum > singlePageLimit && (
+              <Pagination
+                total={messageSum}
+                pageSize={singlePageLimit}
+                onChange={(page, pageSize) => {
+                  this.props.get_show_message_array(
+                    userInfo.id,
+                    nowTab,
+                    (+page - 1) * pageSize
+                  );
+                }}
+              ></Pagination>
+            )}
+          </List>
+        );
+      }
       default:
         break;
     }
