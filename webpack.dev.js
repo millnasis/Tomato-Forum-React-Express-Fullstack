@@ -49,6 +49,8 @@ module.exports = {
                       "primary-color": "rgb(128,0,32)",
                       "link-color": "rgb(128,0,32)",
                       "layout-header-background": "rgb(76,0,9)",
+                      "@layout-trigger-background": "#631005",
+                      "@menu-dark-inline-submenu-bg": "#631005",
                     },
                     javascriptEnabled: true,
                   },
