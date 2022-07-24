@@ -5,8 +5,27 @@ const miniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const { resolve } = require("path");
 
+const build = ["front", "background"];
+
+let entryObject = {};
+build.forEach((value) => {
+  entryObject[value] = `../src/${value}/index.jsx`;
+});
+
+let htmlWebpackPluginArray = [];
+
+build.forEach((value) => {
+  htmlWebpackPluginArray.push(
+    new htmlWebpackPlugin({
+      template: "../src/" + value + "/index.html",
+      chunks: [value],
+      filename: "../views/" + value + ".html",
+    })
+  );
+});
+
 module.exports = {
-  entry: ["../src/index.jsx", "../src/index.html"],
+  entry: entryObject,
   output: {
     filename: "js/[name].js",
     path: path.resolve(__dirname, "./server/public"),
@@ -114,11 +133,11 @@ module.exports = {
     ],
   },
   plugins: [
-    new htmlWebpackPlugin({
-      template: "../src/index.html",
-      filename: "../views/index.html",
+    ...htmlWebpackPluginArray,
+    new miniCssExtractPlugin({
+      filename: "css/[name].css",
+      chunkFilename: "css/[name].css",
     }),
-    new miniCssExtractPlugin({ filename: "css/[name].css" }),
   ],
   optimization: {
     splitChunks: {

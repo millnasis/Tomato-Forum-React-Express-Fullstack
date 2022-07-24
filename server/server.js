@@ -5,31 +5,39 @@ const http = require("http").createServer(server);
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const { uuid, dbURL } = require("./config/config");
-const history = require('connect-history-api-fallback');
+const history = require("connect-history-api-fallback");
 
 const webpack = require("webpack");
 const devMiddleware = require("webpack-dev-middleware");
-const hotMiddleware = require("webpack-hot-middleware")
+const hotMiddleware = require("webpack-hot-middleware");
 const webPackConfig = require("../webpack.dev.js");
 
 const compiler = webpack(webPackConfig);
 
 // 将不以/api和/public开头的请求都导航到“/”
-server.use(history({
-  rewrites:[{
-    from:/^(?!(\/api)|(\/public)).*/,
-    to:"/"
-  }]
-}))
+server.use(
+  history({
+    rewrites: [
+      {
+        from: /^\/background/,
+        to: "/background",
+      },
+      {
+        from: /^(?!(\/api)|(\/public)).*/,
+        to: "/",
+      },
+    ],
+  })
+);
 
 server.use(
   devMiddleware(compiler, {
-    publicPath:"/public",
+    publicPath: "/public",
     stats: { colors: true },
   })
 );
 
-server.use(hotMiddleware(compiler))
+server.use(hotMiddleware(compiler));
 
 server.use(express.json());
 server.use(express.urlencoded());

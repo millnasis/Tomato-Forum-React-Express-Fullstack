@@ -111,7 +111,6 @@ class followDAO {
           },
         ])
         .toArray();
-      console.log(array);
       const sum = await follows
         .aggregate([
           {
