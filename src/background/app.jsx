@@ -10,6 +10,10 @@ import React from "react";
 import { Layout, Menu } from "antd";
 import { TotalSectionState, actions } from "./reducers/root.js";
 import { connect } from "react-redux";
+import Post from "./component/post";
+import User from "./component/user";
+import HotSearch from "./component/hotsearch";
+import Permit from "./component/permit";
 const { change_section_state } = actions;
 
 function getItem(label, key, icon, children) {
@@ -46,6 +50,21 @@ const items = [
   ),
 ];
 
+function getComponent(state) {
+  switch (state) {
+    case TotalSectionState.POST:
+      return <Post></Post>;
+    case TotalSectionState.PERMIT:
+      return <Permit></Permit>;
+    case TotalSectionState.HOT_SERACH:
+      return <HotSearch></HotSearch>;
+    case TotalSectionState.USER:
+      return <User></User>;
+    default:
+      return <div className="warp"></div>;
+  }
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -76,7 +95,7 @@ class App extends React.Component {
           />
         </Sider>
         <Layout>
-          <Content></Content>
+          <Content>{getComponent(this.props.sectionState)}</Content>
           <Footer></Footer>
         </Layout>
       </Layout>

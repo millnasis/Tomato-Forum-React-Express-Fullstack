@@ -143,21 +143,18 @@ module.exports = {
   ],
   optimization: {
     splitChunks: {
-      chunks: "all",
+      // 这段配置让打包出来的依赖代码名字统一为vendors
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all",
+        },
+      },
     },
-  },
-  devServer: {
-    contentBase: resolve(__dirname, "dist"),
-    compress: true,
-    port: 8000,
-    open: true,
-    hot: true,
   },
   mode: "development",
   resolve: {
-    alias: {
-      $css: path.resolve(__dirname, "src/css"),
-    },
     extensions: [".jsx", ".js"],
   },
 };
