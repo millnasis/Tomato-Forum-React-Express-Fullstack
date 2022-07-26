@@ -11,6 +11,7 @@ import {
   Tag,
 } from "antd";
 const { Title, Paragraph } = Typography;
+const { Option } = Select;
 
 const columns = [
   {
@@ -19,9 +20,11 @@ const columns = [
     key: "_id",
   },
   {
-    title: "标题",
-    dataIndex: "title",
-    key: "title",
+    title: "内容",
+    dataIndex: "content",
+    key: "content",
+    render: (v) => <div dangerouslySetInnerHTML={{ __html: v }}></div>,
+    ellipsis: true,
   },
   {
     title: "作者",
@@ -30,14 +33,14 @@ const columns = [
     render: (v) => v.username,
   },
   {
-    title: "创建时间",
-    dataIndex: "foundtime",
-    key: "foundtime",
+    title: "所属帖子",
+    dataIndex: "masterID",
+    key: "masterID",
   },
   {
-    title: "点击量",
-    dataIndex: "click",
-    key: "click",
+    title: "发布时间",
+    dataIndex: "foundtime",
+    key: "foundtime",
   },
   {
     title: "点赞数",
@@ -46,9 +49,10 @@ const columns = [
     render: (v) => v.length,
   },
   {
-    title: "回帖量",
-    dataIndex: "replyCount",
-    key: "replyCount",
+    title: "评论",
+    dataIndex: "comments",
+    key: "comments",
+    render: (v) => <Button>{v.length + "条评论"}</Button>,
   },
   {
     title: "操作",
@@ -56,9 +60,10 @@ const columns = [
     key: "_id",
     render: (v) => (
       <>
-        <Button type="primary" style={{ marginRight: "5px" }}>
+        <Button type="primary" style={{ marginBottom: "5px" }}>
           修改
         </Button>
+        <br />
         <Button>删除</Button>
       </>
     ),
@@ -67,12 +72,11 @@ const columns = [
 
 const data = [
   {
-    _id: "62c416695beb883da9c44edf",
-    title: "我发布的第一个帖子",
+    _id: "62c4167f5beb883da9c44ee1",
+
     content:
       '<p>内容是学习<span style="font-size: 14px;">😀</span></p><p><span style="font-size: 14px;"><br/></span></p>',
-    foundtime: "2022-07-05T10:46:01.339Z",
-    lasttime: "2022-07-14T10:25:40.090Z",
+    foundtime: "2022-07-05T10:46:23.551Z",
     publisher: {
       _id: "62c414f95beb883da9c44ede",
       username: "MillNasis",
@@ -85,14 +89,45 @@ const data = [
       sex: "男",
       permit: "user",
     },
-    comments: [],
-    click: 139,
-    likeList: ["62c414f95beb883da9c44ede"],
-    replyCount: 5,
+    comments: [
+      {
+        id: "62c561b921a1bfd112ff49d71657113456371",
+        content: "<p>叼你妈的锄头，夜晚偷绿豆</p>",
+        foundtime: "2022-07-06T13:17:36.371Z",
+
+        publisher: "62c561b921a1bfd112ff49d7",
+        likeList: [],
+        masterID: "62c4167f5beb883da9c44ee1",
+
+        isMention: false,
+        mentionID: null,
+        mentionUser: "62c58b705287df0026f144d7",
+      },
+      {
+        id: "62c414f95beb883da9c44ede1657113664971",
+        content: "<p>歇息啦你</p>",
+        foundtime: {
+          $date: "2022-07-06T13:21:04.971Z",
+        },
+        publisher: "62c414f95beb883da9c44ede",
+        likeList: ["62c414f95beb883da9c44ede"],
+        masterID: {
+          $oid: "62c4167f5beb883da9c44ee1",
+        },
+        isMention: true,
+        mentionID: "62c561b921a1bfd112ff49d71657113456371",
+        mentionUser: {
+          $oid: "62c561b921a1bfd112ff49d7",
+        },
+      },
+    ],
+    likeList: ["62c561b921a1bfd112ff49d7", "62c414f95beb883da9c44ede"],
+    count: 1,
+    masterID: "62c416695beb883da9c44edf",
   },
 ];
 
-class Post extends React.Component {
+class Permit extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -101,7 +136,7 @@ class Post extends React.Component {
     return (
       <div className="warp">
         <Typography>
-          <Title>帖子管理</Title>
+          <Title>回帖管理</Title>
           <Divider></Divider>
           <Paragraph>
             <Row gutter={[8, 8]}>
@@ -110,7 +145,7 @@ class Post extends React.Component {
                 <Input addonBefore="ID"></Input>
               </Col>
               <Col span={5}>
-                <Input addonBefore="标题"></Input>
+                <Input addonBefore="所属帖子（ID）"></Input>
               </Col>
               <Col span={5}>
                 <Input addonBefore="作者（ID）"></Input>
@@ -130,4 +165,4 @@ class Post extends React.Component {
   }
 }
 
-export default Post;
+export default Permit;

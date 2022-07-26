@@ -1,20 +1,20 @@
 import {
   DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
+  FileTextOutlined,
+  KeyOutlined,
+  SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { bindActionCreators } from "redux";
 import React from "react";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, message } from "antd";
 import { TotalSectionState, actions } from "./reducers/root.js";
 import { connect } from "react-redux";
 import Post from "./component/post";
 import User from "./component/user";
 import HotSearch from "./component/hotsearch";
-import Permit from "./component/permit";
-const { change_section_state } = actions;
+import Reply from "./component/Reply";
+const { change_section_state, clear_message } = actions;
 
 function getItem(label, key, icon, children) {
   return {
@@ -34,19 +34,15 @@ const items = [
     <DesktopOutlined></DesktopOutlined>
   ),
   getItem(
-    "用户管理",
-    TotalSectionState.USER,
-    <DesktopOutlined></DesktopOutlined>
+    "回帖管理",
+    TotalSectionState.REPLY,
+    <FileTextOutlined></FileTextOutlined>
   ),
+  getItem("用户管理", TotalSectionState.USER, <UserOutlined></UserOutlined>),
   getItem(
     "热搜管理",
     TotalSectionState.HOT_SERACH,
-    <DesktopOutlined></DesktopOutlined>
-  ),
-  getItem(
-    "权限管理",
-    TotalSectionState.PERMIT,
-    <DesktopOutlined></DesktopOutlined>
+    <SearchOutlined></SearchOutlined>
   ),
 ];
 
@@ -54,8 +50,8 @@ function getComponent(state) {
   switch (state) {
     case TotalSectionState.POST:
       return <Post></Post>;
-    case TotalSectionState.PERMIT:
-      return <Permit></Permit>;
+    case TotalSectionState.REPLY:
+      return <Reply></Reply>;
     case TotalSectionState.HOT_SERACH:
       return <HotSearch></HotSearch>;
     case TotalSectionState.USER:
@@ -73,6 +69,27 @@ class App extends React.Component {
       collapsed: false,
     };
   }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.message.type !== this.props.message.type &&
+      this.props.message.type !== -1
+    ) {
+      this.spawnMessage();
+    }
+  }
+
+  spawnMessage = () => {
+    if (this.props.message.type === 1) {
+      message.success(this.props.message.content);
+    } else if (this.props.message.type === 2) {
+      message.error(this.props.message.content);
+    } else if (this.props.message.type === 3) {
+      message.warning(this.props.message.content);
+    }
+    this.props.clear_message();
+    return false;
+  };
 
   render() {
     return (
@@ -112,6 +129,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     change_section_state: bindActionCreators(change_section_state, dispatch),
+    clear_message: bindActionCreators(clear_message, dispatch),
   };
 }
 
