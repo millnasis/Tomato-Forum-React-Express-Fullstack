@@ -47,6 +47,22 @@ module.exports = class PermitDAO {
       } else {
         return true;
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async queryAdminPermit(username) {
+    try {
+      const permit = await db(dbName);
+      const ret = await permit.find({ username, permit: "admin" }).toArray();
+      if (ret.length === 0) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 };

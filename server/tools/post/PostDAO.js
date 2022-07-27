@@ -12,6 +12,108 @@ const dbName = "posts";
 module.exports = class PostDAO {
   /**
    *
+   * @param {object} query
+   * @returns {Promise< { arr:Array<PostVO> , pagination:object } >}
+   */
+  async adminQuery(query) {
+    try {
+      let { current, pageSize, id, title, publisher } = query;
+      const posts = await db(dbName);
+      const aggregate = [];
+      const match = {};
+      if (id) {
+        id = ObjectId(id);
+        match["_id"] = id;
+      }
+      if (title) {
+        match["title"] = new RegExp(title);
+      }
+      if (publisher) {
+        match["publisher"] = publisher;
+      }
+      aggregate.push({ $match: match }, { $sort: { foundtime: -1 } });
+      if (current) {
+        current = parseInt(current);
+        pageSize = pageSize ? parseInt(pageSize) : 10;
+        aggregate.push(
+          { $skip: (current - 1) * pageSize },
+          { $limit: pageSize }
+        );
+      } else {
+        (current = 1), (pageSize = 10);
+      }
+      aggregate.push(
+        ...[
+          {
+            $addFields: {
+              publisher: {
+                $convert: {
+                  input: "$publisher",
+                  to: "objectId",
+                },
+              },
+            },
+            // userid是String类型，转换为objectId类型，再做关联查询
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "publisher",
+              foreignField: "_id",
+              as: "publisher",
+            },
+          },
+          {
+            $addFields: {
+              favorite: {
+                $convert: {
+                  input: "$_id",
+                  to: "string",
+                },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: "favorites",
+              localField: "favorite",
+              foreignField: "postid",
+              as: "favorite",
+            },
+          },
+        ]
+      );
+
+      let ret = await posts.aggregate(aggregate).toArray();
+      const sum = await posts
+        .aggregate([
+          {
+            $match: match,
+          },
+          {
+            $count: "sum",
+          },
+        ])
+        .toArray();
+      ret = ret.map((value) => {
+        return new PostVO(value);
+      });
+      return {
+        arr: ret,
+        pagination: {
+          current,
+          pageSize,
+          total: sum.length === 0 ? 0 : sum[0].sum,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  /**
+   *
    * @param {string} ID
    * @returns {Promise<PostVO>}
    */

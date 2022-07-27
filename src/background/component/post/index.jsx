@@ -11,12 +11,16 @@ import {
   Tag,
 } from "antd";
 const { Title, Paragraph } = Typography;
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { actions } from "../../reducers/post";
+const { get_background_post_show_array, set_background_post_query } = actions;
 
 const columns = [
   {
     title: "ID",
-    dataIndex: "_id",
-    key: "_id",
+    dataIndex: "id",
+    key: "id",
   },
   {
     title: "标题",
@@ -52,8 +56,8 @@ const columns = [
   },
   {
     title: "操作",
-    dataIndex: "_id",
-    key: "_id",
+    dataIndex: "id",
+    key: "id",
     render: (v) => (
       <>
         <Button type="primary" style={{ marginRight: "5px" }}>
@@ -65,36 +69,13 @@ const columns = [
   },
 ];
 
-const data = [
-  {
-    _id: "62c416695beb883da9c44edf",
-    title: "我发布的第一个帖子",
-    content:
-      '<p>内容是学习<span style="font-size: 14px;">😀</span></p><p><span style="font-size: 14px;"><br/></span></p>',
-    foundtime: "2022-07-05T10:46:01.339Z",
-    lasttime: "2022-07-14T10:25:40.090Z",
-    publisher: {
-      _id: "62c414f95beb883da9c44ede",
-      username: "MillNasis",
-      head_picture: "/public/img/75626274_p0.jpg",
-      words: "我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊",
-      age: 0,
-      foundtime: "2022-07-05T10:39:53.097Z",
-      likeCount: 4,
-      email: "1985551393@qq.com",
-      sex: "男",
-      permit: "user",
-    },
-    comments: [],
-    click: 139,
-    likeList: ["62c414f95beb883da9c44ede"],
-    replyCount: 5,
-  },
-];
-
 class Post extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    this.props.get_background_post_show_array();
   }
 
   render() {
@@ -107,22 +88,79 @@ class Post extends React.Component {
             <Row gutter={[8, 8]}>
               <Col span={3}></Col>
               <Col span={5}>
-                <Input addonBefore="ID"></Input>
+                <Input
+                  addonBefore="ID"
+                  value={this.props.query.id}
+                  onChange={(e) => {
+                    this.props.set_background_post_query({
+                      ...this.props.query,
+                      id: e.nativeEvent.target.value,
+                    });
+                  }}
+                ></Input>
               </Col>
               <Col span={5}>
-                <Input addonBefore="标题"></Input>
+                <Input
+                  addonBefore="标题"
+                  value={this.props.query.title}
+                  onChange={(e) => {
+                    this.props.set_background_post_query({
+                      ...this.props.query,
+                      title: e.nativeEvent.target.value,
+                    });
+                  }}
+                ></Input>
               </Col>
               <Col span={5}>
-                <Input addonBefore="作者（ID）"></Input>
+                <Input
+                  addonBefore="作者（ID）"
+                  value={this.props.query.publisher}
+                  onChange={(e) => {
+                    this.props.set_background_post_query({
+                      ...this.props.query,
+                      publisher: e.nativeEvent.target.value,
+                    });
+                  }}
+                ></Input>
               </Col>
               <Col span={3}>
-                <Button type="primary">查询</Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.props.get_background_post_show_array(
+                      null,
+                      this.props.query
+                    );
+                  }}
+                >
+                  查询
+                </Button>
+                &nbsp;
+                <Button
+                  onClick={() => {
+                    this.props.set_background_post_query()
+                    this.props.get_background_post_show_array();
+                  }}
+                >
+                  重置
+                </Button>
               </Col>
             </Row>
           </Paragraph>
           <Divider></Divider>
           <Paragraph>
-            <Table columns={columns} dataSource={data}></Table>
+            <Table
+              columns={columns}
+              dataSource={this.props.showArray}
+              loading={this.props.isFetching}
+              pagination={this.props.pagination}
+              onChange={(pagination) => {
+                this.props.get_background_post_show_array(
+                  pagination,
+                  this.props.query
+                );
+              }}
+            ></Table>
           </Paragraph>
         </Typography>
       </div>
@@ -130,4 +168,24 @@ class Post extends React.Component {
   }
 }
 
-export default Post;
+function mapStateToProps(state) {
+  return {
+    ...state.postState,
+    isFetching: state.globalState.isFetching,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    get_background_post_show_array: bindActionCreators(
+      get_background_post_show_array,
+      dispatch
+    ),
+    set_background_post_query: bindActionCreators(
+      set_background_post_query,
+      dispatch
+    ),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Post);

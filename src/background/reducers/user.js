@@ -8,6 +8,7 @@ const initialState = {
   showArray: [],
   pagination: {
     current: 1,
+    total: 0,
     pageSize: 10,
   },
   query: {

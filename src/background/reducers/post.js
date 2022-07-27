@@ -3,6 +3,7 @@ const initialState = {
   pagination: {
     current: 1,
     pageSize: 10,
+    total: 0,
   },
   query: {
     id: "",
@@ -23,6 +24,12 @@ export const actionsType = {
 
 export const actions = {
   get_background_post_show_array(pagination, query) {
+    if (!pagination) {
+      pagination = initialState.pagination;
+    }
+    if (!query) {
+      query = initialState.query;
+    }
     return {
       type: actionsType.SEND_TO_GET_BACKGROUND_POST_SHOW_ARRAY,
       pagination,
@@ -43,6 +50,9 @@ export const actions = {
     };
   },
   set_background_post_query(query) {
+    if (!query) {
+      query = initialState.query;
+    }
     return {
       type: actionsType.SET_BACKGROUND_POST_QUERY,
       query,
@@ -68,7 +78,8 @@ export function reducer(state = initialState, action) {
     case actionsType.RESPONSE_BACKGROUND_POST_SHOW_ARRAY:
       return {
         ...state,
-        showArray: action.data,
+        showArray: action.data.arr,
+        pagination: action.data.pagination,
       };
     case actionsType.SET_BACKGROUND_POST_PAGINATION:
       return {

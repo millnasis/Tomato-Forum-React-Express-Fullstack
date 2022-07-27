@@ -14,6 +14,22 @@ async function checkLogin(req, res, next) {
   }
 }
 
+async function checkAdmin(req, res, next) {
+  if (!req.session.userInfo) {
+    res.status(403).send("no permit");
+    return;
+  }
+  const permitDAO = new PermitDAO();
+  const ret = await permitDAO.queryAdminPermit(req.session.userInfo.username);
+  if (!ret) {
+    res.status(403).send("no permit");
+    return;
+  }
+  console.log("通过");
+  next();
+}
+
 module.exports = {
   checkLogin,
+  checkAdmin,
 };

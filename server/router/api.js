@@ -9,6 +9,7 @@ const favoriteAPI = require("./favorite");
 const messageAPI = require("./message");
 const searchAPI = require("./search");
 const followAPI = require("./follow");
+const adminAPI = require("./admin");
 const router = express.Router();
 
 router.use("/user", userAPI);
@@ -24,5 +25,7 @@ router.use("/message", messageAPI);
 router.use("/search", searchAPI);
 
 router.use("/follow", followAPI);
+
+router.use("/admin", adminAPI);
 
 module.exports = router;

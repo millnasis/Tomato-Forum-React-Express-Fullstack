@@ -18,7 +18,7 @@ const globalInitialState = {
     type: -1,
     content: null,
   },
-  reload: false,
+  isFetching: false,
 };
 
 export const actionsType = {
@@ -36,6 +36,12 @@ export const actions = {
       sectionState,
     };
   },
+  /**
+   *
+   * @param {int} type 1 成功 2 错误 3 警告
+   * @param {*} content
+   * @returns
+   */
   set_message(type, content) {
     return {
       type: actionsType.SET_MESSAGE,

@@ -42,6 +42,7 @@ class PostVO {
       click: this.click,
       likeList: this.likeList,
       favorite: this.favorite,
+      replyCount: this.replyCount,
     };
   }
 
