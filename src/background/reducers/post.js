@@ -10,6 +10,10 @@ const initialState = {
     title: "",
     publisher: "",
   },
+  modal: {
+    show: false,
+    target: {},
+  },
 };
 
 export const actionsType = {
@@ -20,9 +24,22 @@ export const actionsType = {
   SET_BACKGROUND_POST_QUERY: "SET_BACKGROUND_POST_QUERY",
   SEND_TO_UPDATE_SINGLE_POST: "SEND_TO_UPDATE_SINGLE_POST",
   SEND_TO_DELETE_SINGLE_POST: "SEND_TO_DELETE_SINGLE_POST",
+  OPEN_POST_UPDATE_MODAL: "OPEN_POST_UPDATE_MODAL",
+  CLOSE_POST_UPDATE_MODAL: "CLOSE_POST_UPDATE_MODAL",
 };
 
 export const actions = {
+  open_update_modal(id) {
+    return {
+      type: actionsType.OPEN_POST_UPDATE_MODAL,
+      id,
+    };
+  },
+  close_update_modal() {
+    return {
+      type: actionsType.CLOSE_POST_UPDATE_MODAL,
+    };
+  },
   get_background_post_show_array(pagination, query) {
     if (!pagination) {
       pagination = initialState.pagination;
@@ -93,6 +110,22 @@ export function reducer(state = initialState, action) {
       return {
         ...state,
         query: action.query,
+      };
+    case actionsType.OPEN_POST_UPDATE_MODAL:
+      return {
+        ...state,
+        modal: {
+          show: true,
+          target: state.showArray.find((v) => v.id === action.id),
+        },
+      };
+    case actionsType.CLOSE_POST_UPDATE_MODAL:
+      return {
+        ...state,
+        modal: {
+          show: false,
+          target: {},
+        },
       };
     default:
       return state;

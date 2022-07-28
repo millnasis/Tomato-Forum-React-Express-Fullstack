@@ -25,7 +25,6 @@ async function checkAdmin(req, res, next) {
     res.status(403).send("no permit");
     return;
   }
-  console.log("通过");
   next();
 }
 

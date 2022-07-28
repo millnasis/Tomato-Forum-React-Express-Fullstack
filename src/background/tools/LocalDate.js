@@ -13,6 +13,6 @@ export default function formatDate(time) {
   min = +min >= 10 ? min : "0" + min;
   sec = +sec >= 10 ? sec : "0" + sec;
   var newTime =
-    year + "年" + month + "月" + day + "日 " + hour + ":" + min + ":" + sec;
+    year + "-" + month + "-" + day + "T" + hour + ":" + min + ":" + sec;
   return newTime;
 }
