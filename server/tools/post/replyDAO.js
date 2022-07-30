@@ -8,6 +8,94 @@ const dbName = "replys";
 module.exports = class ReplyDAO {
   /**
    *
+   * @param {object} query
+   * @returns {Promise< { arr:Array<ReplyVO> , pagination:object } >}
+   */
+  async adminQuery(query) {
+    try {
+      let { current, pageSize, id, masterID, publisher } = query;
+      const replys = await db(dbName);
+      const aggregate = [];
+      const match = {};
+      if (id) {
+        id = ObjectId(id);
+        match["_id"] = id;
+      }
+      if (masterID) {
+        masterID = ObjectId(masterID);
+        match["masterID"] = masterID;
+      }
+      if (publisher) {
+        match["publisher"] = publisher;
+      }
+      aggregate.push({ $match: match }, { $sort: { foundtime: -1 } });
+      if (current) {
+        current = parseInt(current);
+        pageSize = pageSize ? parseInt(pageSize) : 10;
+        aggregate.push(
+          { $skip: (current - 1) * pageSize },
+          { $limit: pageSize }
+        );
+      } else {
+        (current = 1), (pageSize = 10);
+      }
+      aggregate.push(
+        ...[
+          {
+            $addFields: {
+              publisher: {
+                $convert: {
+                  input: "$publisher",
+                  to: "objectId",
+                },
+              },
+            },
+            // userid是String类型，转换为objectId类型，再做关联查询
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "publisher",
+              foreignField: "_id",
+              as: "publisher",
+            },
+          },
+        ]
+      );
+
+      let ret = await replys.aggregate(aggregate).toArray();
+      const sum = await replys
+        .aggregate([
+          {
+            $match: match,
+          },
+          {
+            $count: "sum",
+          },
+        ])
+        .toArray();
+      ret = ret.map(async (value) => {
+        const replyVO = new ReplyVO(value);
+        replyVO.comments = await replyVO.getCommentBySkipAndLimit(0, 5);
+        return replyVO;
+      });
+      ret = await Promise.all(ret);
+      return {
+        arr: ret,
+        pagination: {
+          current,
+          pageSize,
+          total: sum.length === 0 ? 0 : sum[0].sum,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  /**
+   *
    * @param {*} postID
    * @param {int} skip
    * @param {int} limit
@@ -84,7 +172,7 @@ module.exports = class ReplyDAO {
           },
           {
             $lookup: {
-              from: "posts",
+              from: "replys",
               localField: "masterID",
               foreignField: "_id",
               as: "master",

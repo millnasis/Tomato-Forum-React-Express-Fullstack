@@ -6,14 +6,12 @@ import {
   Row,
   Col,
   Button,
-  Select,
   Table,
-  Tag,
   Form,
   Modal,
   Avatar,
   Alert,
-  DatePicker,
+  Popconfirm,
 } from "antd";
 const { Title, Paragraph } = Typography;
 import { bindActionCreators } from "redux";
@@ -54,7 +52,23 @@ class Post extends React.Component {
         title: "作者",
         dataIndex: "publisher",
         key: "publisher._id",
-        render: (v) => v.username,
+        render: (v) => (
+          <Button
+            className="button-warp"
+            onClick={() => {
+              this.props.set_background_post_query({
+                ...this.props.query,
+                publisher: v._id,
+              });
+              this.props.get_background_post_show_array(null, {
+                ...this.props.query,
+                publisher: v._id,
+              });
+            }}
+          >
+            {v.username}
+          </Button>
+        ),
       },
       {
         title: "创建时间",
@@ -90,8 +104,11 @@ class Post extends React.Component {
             >
               修改
             </Button>
-            <Button
-              onClick={() =>
+            <Popconfirm
+              title="确定要删除吗"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() =>
                 this.props.delete_single_post(
                   v,
                   this.props.query,
@@ -99,8 +116,8 @@ class Post extends React.Component {
                 )
               }
             >
-              删除
-            </Button>
+              <Button>删除</Button>
+            </Popconfirm>
           </>
         ),
       },
@@ -116,15 +133,18 @@ class Post extends React.Component {
         dataIndex: "id",
         key: "id",
         render: (v) => (
-          <a
-            onClick={() => {
+          <Popconfirm
+            title="确定要删除吗"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => {
               this.setState({
                 likeList: this.state.likeList.filter((e) => e.id !== v),
               });
             }}
           >
-            删除
-          </a>
+            <a>删除</a>
+          </Popconfirm>
         ),
       },
     ];
@@ -159,7 +179,7 @@ class Post extends React.Component {
       content,
     } = this.props.modal.target;
     return (
-      <div className="warp">
+      <div className="warp post">
         <Modal
           title="修改帖子"
           visible={this.props.modal.show}

@@ -1,14 +1,14 @@
 import { put, take, call } from "redux-saga/effects";
 import axios from "axios";
 import { actions as rootActions } from "../reducers/root";
-import { actions, actionsType } from "../reducers/post";
+import { actions, actionsType } from "../reducers/reply";
 const { start_fetch, end_fetch, set_message } = rootActions;
 const {} = actions;
 
-function* sendToGetPostArray(pagination, query) {
+function* sendToGetReplyArray(pagination, query) {
   yield put(start_fetch());
   try {
-    return yield call(axios.get, "/api/admin/post", {
+    return yield call(axios.get, "/api/admin/reply", {
       params: { ...pagination, ...query },
     });
   } catch (error) {
@@ -18,41 +18,41 @@ function* sendToGetPostArray(pagination, query) {
   }
 }
 
-export function* getPostArray() {
+export function* getReplyArray() {
   while (true) {
     const action = yield take(
-      actionsType.SEND_TO_GET_BACKGROUND_POST_SHOW_ARRAY
+      actionsType.SEND_TO_GET_BACKGROUND_REPLY_SHOW_ARRAY
     );
     const { pagination, query } = action;
-    const response = yield call(sendToGetPostArray, pagination, query);
+    const response = yield call(sendToGetReplyArray, pagination, query);
     if (response && response.status === 200) {
-      yield put(actions.response_background_post_show_array(response.data));
+      yield put(actions.response_background_reply_show_array(response.data));
     }
   }
 }
 
-export function* updatePost() {
+export function* updateReply() {
   while (true) {
-    const action = yield take(actionsType.SEND_TO_UPDATE_SINGLE_POST);
+    const action = yield take(actionsType.SEND_TO_UPDATE_SINGLE_REPLY);
     const { id, obj, query, pagination } = action;
-    const response = yield call(axios.post, "/api/admin/post", {
+    const response = yield call(axios.post, "/api/admin/reply", {
       id,
       obj,
       query,
       pagination,
     });
     if (response && response.status === 200) {
-      yield put(actions.response_background_post_show_array(response.data));
+      yield put(actions.response_background_reply_show_array(response.data));
     } else {
       yield put(rootActions.set_message(2, "修改错误"));
     }
   }
 }
-export function* deletePost() {
+export function* deleteReply() {
   while (true) {
-    const action = yield take(actionsType.SEND_TO_DELETE_SINGLE_POST);
+    const action = yield take(actionsType.SEND_TO_DELETE_SINGLE_REPLY);
     const { id, query, pagination } = action;
-    const response = yield call(axios.delete, "/api/admin/post", {
+    const response = yield call(axios.delete, "/api/admin/reply", {
       data: {
         id,
         query,
@@ -60,7 +60,7 @@ export function* deletePost() {
       },
     });
     if (response && response.status === 200) {
-      yield put(actions.response_background_post_show_array(response.data));
+      yield put(actions.response_background_reply_show_array(response.data));
     } else {
       yield put(rootActions.set_message(2, "修改错误"));
     }

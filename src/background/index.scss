@@ -1,7 +1,14 @@
 .warp{
     min-height: 90vh;
     padding: 20px;
-    &.user{
-        
-    }
+    .button-warp {
+        width: 100%;
+        height: auto;
+        span {
+          display: inline;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          white-space: normal;
+        }
+      }
 }
