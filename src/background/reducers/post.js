@@ -75,17 +75,21 @@ export const actions = {
       query,
     };
   },
-  update_single_post(id, obj) {
+  update_single_post(id, obj, query, pagination) {
     return {
       type: actionsType.SEND_TO_UPDATE_SINGLE_POST,
       id,
       obj,
+      query,
+      pagination,
     };
   },
-  delete_single_post(id) {
+  delete_single_post(id, query, pagination) {
     return {
       type: actionsType.SEND_TO_DELETE_SINGLE_POST,
       id,
+      query,
+      pagination,
     };
   },
 };

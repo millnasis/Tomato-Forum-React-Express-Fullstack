@@ -30,3 +30,37 @@ export function* getPostArray() {
     }
   }
 }
+
+export function* updatePost() {
+  while (true) {
+    const action = yield take(actionsType.SEND_TO_UPDATE_SINGLE_POST);
+    const { id, obj, query, pagination } = action;
+    const response = yield call(axios.post, "/api/admin/update/post", {
+      id,
+      obj,
+      query,
+      pagination,
+    });
+    if (response && response.status === 200) {
+      yield put(actions.response_background_post_show_array(response.data));
+    } else {
+      yield put(rootActions.set_message(2, "修改错误"));
+    }
+  }
+}
+export function* deletePost() {
+  while (true) {
+    const action = yield take(actionsType.SEND_TO_DELETE_SINGLE_POST);
+    const { id, query, pagination } = action;
+    const response = yield call(axios.post, "/api/admin/delete/post", {
+      id,
+      query,
+      pagination,
+    });
+    if (response && response.status === 200) {
+      yield put(actions.response_background_post_show_array(response.data));
+    } else {
+      yield put(rootActions.set_message(2, "修改错误"));
+    }
+  }
+}

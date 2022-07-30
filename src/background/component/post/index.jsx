@@ -26,6 +26,8 @@ const {
   set_background_post_query,
   open_update_modal,
   close_update_modal,
+  update_single_post,
+  delete_single_post,
 } = actions;
 
 class Post extends React.Component {
@@ -88,7 +90,17 @@ class Post extends React.Component {
             >
               修改
             </Button>
-            <Button>删除</Button>
+            <Button
+              onClick={() =>
+                this.props.delete_single_post(
+                  v,
+                  this.props.query,
+                  this.props.pagination
+                )
+              }
+            >
+              删除
+            </Button>
           </>
         ),
       },
@@ -136,8 +148,16 @@ class Post extends React.Component {
   }
 
   render() {
-    const { id, title, publisher, foundtime, lasttime, click, replyCount } =
-      this.props.modal.target;
+    const {
+      id,
+      title,
+      publisher,
+      foundtime,
+      lasttime,
+      click,
+      replyCount,
+      content,
+    } = this.props.modal.target;
     return (
       <div className="warp">
         <Modal
@@ -149,21 +169,37 @@ class Post extends React.Component {
           <Form
             key={id}
             initialValues={{
+              id,
               title,
               publisher: publisher ? publisher._id : "",
               foundtime: formatDate(foundtime),
               lasttime: formatDate(lasttime),
               click,
+              content,
               replyCount,
             }}
             onFinish={(value) => {
-              console.log(value);
+              const obj = {
+                ...value,
+                likeList: this.state.likeList.map((v) => v.id),
+              };
+              this.props.update_single_post(
+                obj.id,
+                obj,
+                this.props.query,
+                this.props.pagination
+              );
               this.props.close_update_modal();
             }}
           >
-            <Form.Item label="id">{id}</Form.Item>
+            <Form.Item label="id" name={"id"}>
+              <Input disabled></Input>
+            </Form.Item>
             <Form.Item id="title" name="title" label="标题">
               <Input></Input>
+            </Form.Item>
+            <Form.Item id="content" name={"content"} label="内容">
+              <Input.TextArea></Input.TextArea>
             </Form.Item>
             {publisher && (
               <Form.Item
@@ -246,7 +282,10 @@ class Post extends React.Component {
               ></Table>
             </Form.Item>
             <Form.Item>
-              <Alert type="info" message="在您按下修改按钮之前，本页的所有修改都不会保存"></Alert>
+              <Alert
+                type="info"
+                message="在您按下修改按钮之前，本页的所有修改都不会保存"
+              ></Alert>
             </Form.Item>
             <Form.Item>
               <Row gutter={[8, 8]}>
@@ -370,6 +409,8 @@ function mapDispatchToProps(dispatch) {
     ),
     open_update_modal: bindActionCreators(open_update_modal, dispatch),
     close_update_modal: bindActionCreators(close_update_modal, dispatch),
+    update_single_post: bindActionCreators(update_single_post, dispatch),
+    delete_single_post: bindActionCreators(delete_single_post, dispatch),
   };
 }
 

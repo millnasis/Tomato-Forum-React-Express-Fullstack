@@ -10,6 +10,38 @@ const { totalSortMode, oneDayMSec } = constant;
 const dbName = "posts";
 
 module.exports = class PostDAO {
+  async deleteByID(id) {
+    try {
+      id = ObjectId(id);
+      const posts = await db(dbName);
+      const ret = await posts.deleteOne({ _id: id });
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async adminUpdate(id, obj) {
+    try {
+      id = ObjectId(id);
+      delete obj.id;
+      const posts = await db(dbName);
+      const ret = await posts.replaceOne(
+        { _id: id },
+        {
+          ...obj,
+          foundtime: new Date(obj.foundtime),
+          lasttime: new Date(obj.lasttime),
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   /**
    *
    * @param {object} query
