@@ -689,17 +689,29 @@ class MessageDAO {
             .toArray();
           const postDAO = new PostDAO();
           const replyDAO = new ReplyDAO();
-          ret = Promise.all(
+          ret = await Promise.all(
             ret.map(async (value) => {
               switch (value.targetType) {
                 case TotalTargetType.POST:
                   let queryPost = await postDAO.queryByID(value.targetid);
+                  if (!queryPost) {
+                    return {
+                      failure: true,
+                      target: value._id,
+                    };
+                  }
                   return {
                     ...value,
                     target: queryPost.getOriginData(),
                   };
                 case TotalTargetType.REPLY:
                   let queryReply = await replyDAO.queryByID(value.targetid);
+                  if (!queryReply) {
+                    return {
+                      failure: true,
+                      target: value._id,
+                    };
+                  }
                   return {
                     ...value,
                     target: queryReply.getOriginData(),
@@ -708,6 +720,12 @@ class MessageDAO {
                   let queryComment = await replyDAO.queryCommentByCommentID(
                     value.targetid
                   );
+                  if (!queryComment) {
+                    return {
+                      failure: true,
+                      target: value._id,
+                    };
+                  }
                   return {
                     ...value,
                     target: queryComment.getOriginData(),
@@ -774,6 +792,14 @@ class MessageDAO {
               },
             ])
             .toArray();
+          ret = ret.map((v) => {
+            if (!userFrom || !target) {
+              return {
+                failure: true,
+                target: v._id,
+              };
+            }
+          });
           break;
         }
         case TotalMSGtype.COMMENT: {
@@ -810,11 +836,23 @@ class MessageDAO {
             ])
             .toArray();
           const replyDAO = new ReplyDAO();
-          ret = Promise.all(
+          ret = await Promise.all(
             ret.map(async (value) => {
+              if (!value.userFrom) {
+                return {
+                  failure: true,
+                  target: value._id,
+                };
+              }
               let queryComment = await replyDAO.queryCommentByCommentID(
                 value.targetid
               );
+              if (!queryComment) {
+                return {
+                  failure: true,
+                  target: value._id,
+                };
+              }
               return {
                 ...value,
                 target: queryComment.getOriginData(),
@@ -856,7 +894,15 @@ class MessageDAO {
               },
             ])
             .toArray();
-            break;
+          ret = ret.map((v) => {
+            if (!userFrom) {
+              return {
+                failure: true,
+                target: v._id,
+              };
+            }
+          });
+          break;
         }
         case TotalMSGtype.MEMTION: {
           return [];
@@ -869,7 +915,27 @@ class MessageDAO {
         { userTo: ObjectId(userid), MSGtype },
         { $set: { read: true } }
       );
-      return ret;
+      const handleRet = [];
+      const failureRet = [];
+      ret.forEach(async (e) => {
+        if (e.failure) {
+          failureRet.push(e.target);
+        } else {
+          handleRet.push(e);
+        }
+      });
+      if (failureRet.length > 0) {
+        await messages.deleteMany({
+          $or: [
+            ...failureRet.map((v) => {
+              return {
+                _id: ObjectId(v),
+              };
+            }),
+          ],
+        });
+      }
+      return handleRet;
     } catch (error) {
       console.log(error);
       return false;

@@ -6,6 +6,28 @@ const CommentVO = require("./CommentVO");
 const dbName = "replys";
 
 module.exports = class ReplyDAO {
+  async adminUpdate(id, obj) {
+    try {
+      id = ObjectId(id);
+      delete obj.id;
+      obj.count = parseInt(obj.count);
+      obj.masterID = ObjectId(obj.masterID);
+      const replys = await db(dbName);
+      const ret = await replys.updateOne(
+        { _id: id },
+        {
+          $set:{
+            ...obj,
+            foundtime: new Date(obj.foundtime),
+          }
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
   /**
    *
    * @param {object} query
@@ -76,7 +98,7 @@ module.exports = class ReplyDAO {
         .toArray();
       ret = ret.map(async (value) => {
         const replyVO = new ReplyVO(value);
-        replyVO.comments = await replyVO.getCommentBySkipAndLimit(0, 5);
+        replyVO.comments = await replyVO.getCommentBySkipAndLimit();
         return replyVO;
       });
       ret = await Promise.all(ret);

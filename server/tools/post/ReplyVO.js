@@ -158,16 +158,22 @@ class ReplyVO {
    * @param {int} limit
    * @returns {Promise<Array<CommentVO>>}
    */
-  async getCommentBySkipAndLimit(skip = 0, limit = 20) {
+  async getCommentBySkipAndLimit(skip, limit) {
     const replys = await db(dbName);
-    skip = parseInt(skip);
-    limit = parseInt(limit);
-    let ret = await replys
-      .aggregate([
-        { $match: { _id: ObjectId(this.id) } },
-        { $unwind: "$comments" },
-        { $skip: skip },
-        { $limit: limit },
+    const aggregate = [];
+    aggregate.push(
+      ...[{ $match: { _id: ObjectId(this.id) } }, { $unwind: "$comments" }]
+    );
+    if (typeof skip !== "undefined") {
+      skip = parseInt(skip);
+      aggregate.push({ $skip: skip });
+    }
+    if (typeof limit !== "undefined") {
+      limit = parseInt(limit);
+      aggregate.push({ $limit: limit });
+    }
+    aggregate.push(
+      ...[
         { $project: { comments: 1 } },
         {
           $addFields: {
@@ -195,8 +201,9 @@ class ReplyVO {
             as: "comments.mentionUser",
           },
         },
-      ])
-      .toArray();
+      ]
+    );
+    let ret = await replys.aggregate(aggregate).toArray();
 
     if (ret.length === 0) {
       return [];

@@ -92,11 +92,13 @@ export const actions = {
       query,
     };
   },
-  update_single_reply(id, obj) {
+  update_single_reply(id, obj, query, pagination) {
     return {
       type: actionsType.SEND_TO_UPDATE_SINGLE_REPLY,
       id,
       obj,
+      query,
+      pagination,
     };
   },
   delete_single_reply(id) {

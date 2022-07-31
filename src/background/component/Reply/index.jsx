@@ -27,6 +27,7 @@ const {
   close_update_modal,
   close_comments_update_modal,
   open_comments_update_modal,
+  update_single_reply,
 } = actions;
 
 class Permit extends React.Component {
@@ -179,11 +180,29 @@ class Permit extends React.Component {
         title: "ID",
         dataIndex: "id",
         key: "id",
+        width: "100px",
       },
       {
         title: "内容",
         dataIndex: "content",
         key: "content",
+      },
+      {
+        title: "作者",
+        dataIndex: "publisher",
+        key: "publisher",
+        render: (v) => v.username,
+      },
+      {
+        title: "回复给",
+        dataIndex: "mentionUser",
+        key: "mentionUser",
+        render: (v) => {
+          if (!v) {
+            return "无";
+          }
+          return v.username;
+        },
       },
       {
         title: "操作",
@@ -211,6 +230,19 @@ class Permit extends React.Component {
     this.props.get_background_reply_show_array();
   }
 
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.modal.target !== this.props.modal.target &&
+      this.props.modal.target.likeList
+    ) {
+      this.setState({
+        likeList: this.props.modal.target.likeList.map((v) => {
+          return { id: v };
+        }),
+      });
+    }
+  }
+
   render() {
     console.log(this.props);
     const {
@@ -231,10 +263,12 @@ class Permit extends React.Component {
           visible={this.props.comments.show}
           onCancel={() => this.props.close_comments_update_modal()}
           footer={null}
+          width={"80vw"}
         >
           <Table
             columns={this.commentsColumns}
             dataSource={this.props.comments.target}
+            scroll={{ scrollToFirstRowOnChange: false, x: true }}
           ></Table>
         </Modal>
         <Modal
@@ -261,7 +295,7 @@ class Permit extends React.Component {
                 ...value,
                 likeList: this.state.likeList.map((v) => v.id),
               };
-              this.props.update_single_post(
+              this.props.update_single_reply(
                 obj.id,
                 obj,
                 this.props.query,
@@ -270,7 +304,18 @@ class Permit extends React.Component {
               this.props.close_update_modal();
             }}
           >
-            <Form.Item label="id" name={"id"}>
+            <Form.Item
+              label="ID"
+              name={"id"}
+              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+            >
+              <Input disabled></Input>
+            </Form.Item>
+            <Form.Item
+              label="所属帖子ID"
+              name={"masterID"}
+              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+            >
               <Input disabled></Input>
             </Form.Item>
             <Form.Item id="content" name={"content"} label="内容">
@@ -474,6 +519,7 @@ function mapDispatchToProps(dispatch) {
       open_comments_update_modal,
       dispatch
     ),
+    update_single_reply: bindActionCreators(update_single_reply, dispatch),
   };
 }
 

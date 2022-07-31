@@ -27,12 +27,15 @@ module.exports = class PostDAO {
       id = ObjectId(id);
       delete obj.id;
       const posts = await db(dbName);
-      const ret = await posts.replaceOne(
+      const ret = await posts.updateOne(
         { _id: id },
         {
-          ...obj,
-          foundtime: new Date(obj.foundtime),
-          lasttime: new Date(obj.lasttime),
+          $set: {
+            ...obj,
+            click: +obj.click,
+            foundtime: new Date(obj.foundtime),
+            lasttime: new Date(obj.lasttime),
+          },
         }
       );
       return ret;

@@ -65,4 +65,20 @@ router.get("/reply", async (req, res) => {
   res.send(ret);
 });
 
+router.post("/reply", async (req, res) => {
+  const replyDAO = new ReplyDAO();
+  const { id, obj, query, pagination } = req.body;
+  const ret = await replyDAO.adminUpdate(id, obj);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  const queryRet = await replyDAO.adminQuery({ ...query, ...pagination });
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  queryRet.arr = queryRet.arr.map((v) => v.getOriginData());
+  res.send(queryRet);
+});
 module.exports = router;
