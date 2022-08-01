@@ -3,4 +3,12 @@
   img {
     width: 100%;
   }
+  
+}
+.comment-content {
+  display: flex;
+  flex-direction: row;
+  .content {
+    flex: 1;
+  }
 }

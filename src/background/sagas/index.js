@@ -8,4 +8,6 @@ export default function* rootSaga() {
   yield fork(post.deletePost);
   yield fork(reply.getReplyArray);
   yield fork(reply.updateReply);
+  yield fork(reply.deleteReply);
+  yield fork(reply.deleteComment);
 }

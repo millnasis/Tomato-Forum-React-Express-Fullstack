@@ -253,23 +253,49 @@ class ReplyVO {
     }
   }
 
-  async deleteCommentByID(ID) {
-    const replys = await db(dbName);
+  async updateCommentByIDAndContent(id, content) {
+    try {
+      const replys = await db(dbName);
+      const ret = await replys.updateOne(
+        { _id: ObjectId(this.id) },
+        {
+          $set: {
+            "comments.$[elem].content": content,
+          },
+        },
+        {
+          arrayFilters: [
+            {
+              "elem.id": id,
+            },
+          ],
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 
-    await replys.updateOne(
-      { _id: ObjectId(this.id) },
-      {
-        $pull: {
-          comments: {
-            $elemMatch: {
+  async deleteCommentByID(ID) {
+    try {
+      const replys = await db(dbName);
+      const ret = await replys.updateOne(
+        { _id: ObjectId(this.id) },
+        {
+          $pull: {
+            comments: {
               id: ID,
             },
           },
-        },
-      }
-    );
-
-    return true;
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 
   /**

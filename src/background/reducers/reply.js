@@ -28,6 +28,8 @@ export const actionsType = {
   SET_BACKGROUND_REPLY_QUERY: "SET_BACKGROUND_REPLY_QUERY",
   SEND_TO_UPDATE_SINGLE_REPLY: "SEND_TO_UPDATE_SINGLE_REPLY",
   SEND_TO_DELETE_SINGLE_REPLY: "SEND_TO_DELETE_SINGLE_REPLY",
+  SEND_TO_DELETE_SINGLE_COMMENT: "SEND_TO_DELETE_SINGLE_COMMENT",
+  RESPONSE_COMMENTS: "RESPONSE_COMMENTS",
   OPEN_REPLY_UPDATE_MODAL: "OPEN_REPLY_UPDATE_MODAL",
   CLOSE_REPLY_UPDATE_MODAL: "CLOSE_REPLY_UPDATE_MODAL",
   OPEN_REPLY_COMMENTS_UPDATE_MODAL: "OPEN_REPLY_COMMENTS_UPDATE_MODAL",
@@ -101,10 +103,28 @@ export const actions = {
       pagination,
     };
   },
-  delete_single_reply(id) {
+  delete_single_reply(id, query, pagination) {
     return {
       type: actionsType.SEND_TO_DELETE_SINGLE_REPLY,
       id,
+      query,
+      pagination,
+    };
+  },
+  delete_single_comment(commentID, masterID, query, pagination) {
+    return {
+      type: actionsType.SEND_TO_DELETE_SINGLE_COMMENT,
+      commentID,
+      masterID,
+      query,
+      pagination,
+    };
+  },
+  response_comments(masterID, data) {
+    return {
+      type: actionsType.RESPONSE_COMMENTS,
+      masterID,
+      data,
     };
   },
 };
@@ -159,8 +179,22 @@ export function reducer(state = initialState, action) {
         ...state,
         comments: {
           show: false,
-          target: {},
+          target: [],
         },
+      };
+    case actionsType.RESPONSE_COMMENTS:
+      return {
+        ...state,
+        comments: {
+          show: true,
+          target: action.data.comments,
+        },
+        showArray: state.showArray.map((v) => {
+          if (v.id === action.masterID) {
+            return action.data;
+          }
+          return v;
+        }),
       };
     default:
       return state;

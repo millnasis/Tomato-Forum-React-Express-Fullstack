@@ -62,7 +62,27 @@ export function* deleteReply() {
     if (response && response.status === 200) {
       yield put(actions.response_background_reply_show_array(response.data));
     } else {
-      yield put(rootActions.set_message(2, "修改错误"));
+      yield put(rootActions.set_message(2, "删除失败"));
+    }
+  }
+}
+export function* deleteComment() {
+  while (true) {
+    const action = yield take(actionsType.SEND_TO_DELETE_SINGLE_COMMENT);
+    const { commentID, masterID, query, pagination } = action;
+    const response = yield call(axios.delete, "/api/admin/comments", {
+      data: {
+        commentID,
+        masterID,
+        query,
+        pagination,
+      },
+    });
+    if (response && response.status === 200) {
+      console.log(response.data);
+      yield put(actions.response_comments(masterID, response.data));
+    } else {
+      yield put(rootActions.set_message(2, "删除失败"));
     }
   }
 }

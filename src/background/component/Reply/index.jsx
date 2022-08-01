@@ -19,6 +19,7 @@ import { connect } from "react-redux";
 import formatDate from "../../tools/LocalDate";
 import { actions } from "../../reducers/reply";
 import "./index.scss";
+import CommentContentEditor from "./CommentContentEditor";
 
 const {
   get_background_reply_show_array,
@@ -28,6 +29,8 @@ const {
   close_comments_update_modal,
   open_comments_update_modal,
   update_single_reply,
+  delete_single_reply,
+  delete_single_comment,
 } = actions;
 
 class Permit extends React.Component {
@@ -141,7 +144,13 @@ class Permit extends React.Component {
               title="确定要删除吗"
               okText="确定"
               cancelText="取消"
-              onConfirm={() => null}
+              onConfirm={() =>
+                this.props.delete_single_reply(
+                  v,
+                  this.props.query,
+                  this.props.pagination
+                )
+              }
             >
               <Button>删除</Button>
             </Popconfirm>
@@ -184,8 +193,20 @@ class Permit extends React.Component {
       },
       {
         title: "内容",
-        dataIndex: "content",
-        key: "content",
+        dataIndex: "id",
+        key: "id",
+        render: (id) => {
+          const { content, masterID } = this.props.comments.target.filter(
+            (v) => v.id === id
+          )[0];
+          return (
+            <CommentContentEditor
+              id={id}
+              value={content}
+              masterID={masterID}
+            ></CommentContentEditor>
+          );
+        },
       },
       {
         title: "作者",
@@ -208,20 +229,28 @@ class Permit extends React.Component {
         title: "操作",
         dataIndex: "id",
         key: "id",
-        render: (v) => (
-          <Popconfirm
-            title="确定要删除吗"
-            okText="确定"
-            cancelText="取消"
-            // onConfirm={() => {
-            //   this.setState({
-            //     likeList: this.state.likeList.filter((e) => e.id !== v),
-            //   });
-            // }}
-          >
-            <a>删除</a>
-          </Popconfirm>
-        ),
+        render: (id) => {
+          const { masterID } = this.props.comments.target.filter(
+            (v) => v.id === id
+          )[0];
+          return (
+            <Popconfirm
+              title="确定要删除吗"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => {
+                this.props.delete_single_comment(
+                  id,
+                  masterID,
+                  this.props.query,
+                  this.props.pagination
+                );
+              }}
+            >
+              <a>删除</a>
+            </Popconfirm>
+          );
+        },
       },
     ];
   }
@@ -266,6 +295,7 @@ class Permit extends React.Component {
           width={"80vw"}
         >
           <Table
+            key={this.props.comments.target}
             columns={this.commentsColumns}
             dataSource={this.props.comments.target}
             scroll={{ scrollToFirstRowOnChange: false, x: true }}
@@ -520,6 +550,8 @@ function mapDispatchToProps(dispatch) {
       dispatch
     ),
     update_single_reply: bindActionCreators(update_single_reply, dispatch),
+    delete_single_comment: bindActionCreators(delete_single_comment, dispatch),
+    delete_single_reply: bindActionCreators(delete_single_reply, dispatch),
   };
 }
 
