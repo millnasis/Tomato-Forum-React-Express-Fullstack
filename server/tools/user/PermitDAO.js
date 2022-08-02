@@ -59,10 +59,12 @@ module.exports = class PermitDAO {
     }
   }
 
-  async queryAdminPermit(username) {
+  async queryAdminPermit(userid) {
     try {
       const permit = await db(dbName);
-      const ret = await permit.find({ username, permit: "admin" }).toArray();
+      const ret = await permit
+        .find({ userid: ObjectId(userid), permit: "admin" })
+        .toArray();
       if (ret.length === 0) {
         return false;
       } else {
@@ -70,6 +72,24 @@ module.exports = class PermitDAO {
       }
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  async updateUserPermit(userid, userPermit) {
+    try {
+      const permit = await db(dbName);
+      const ret = await permit.updateOne(
+        { userid: ObjectId(userid) },
+        {
+          $set: {
+            permit: userPermit,
+          },
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
   }
 };

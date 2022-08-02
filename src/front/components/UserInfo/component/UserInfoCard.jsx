@@ -40,7 +40,7 @@ class UserInfoCard extends React.Component {
 
   handleSubmit(data) {
     const { id } = this.props.showUserInfo;
-    const { sex, email, words } = data;
+    const { sex, email, words, age } = data;
     let head_picture = null;
     if (this.state.avatar.length === 0) {
       head_picture = "/public/default-avatar.png";
@@ -54,6 +54,7 @@ class UserInfoCard extends React.Component {
       email,
       words,
       head_picture,
+      age,
     };
     this.props.update_user_info(id, userInfo);
   }
@@ -64,7 +65,7 @@ class UserInfoCard extends React.Component {
 
   render() {
     console.log(this.props);
-    const { username, words, sex, foundtime, head_picture, email, id } =
+    const { username, words, sex, age, foundtime, head_picture, email, id } =
       this.props.showUserInfo;
     return (
       <Card>
@@ -85,10 +86,11 @@ class UserInfoCard extends React.Component {
             <Descriptions.Item label="邮箱地址">
               {email ? email : "无"}
             </Descriptions.Item>
-            <Descriptions.Item label="性别">{sex}</Descriptions.Item>
+            <Descriptions.Item label="年龄">{age}</Descriptions.Item>
             <Descriptions.Item label="创建时间">
               {formatTime(foundtime)}
             </Descriptions.Item>
+            <Descriptions.Item label="性别">{sex}</Descriptions.Item>
           </Descriptions>
           {this.props.isMe ? (
             <Button
@@ -131,7 +133,7 @@ class UserInfoCard extends React.Component {
           >
             <Form
               onFinish={this.handleSubmit}
-              initialValues={{ sex: sex, words: words, email: email }}
+              initialValues={{ sex: sex, words: words, email: email, age: age }}
             >
               <Form.Item label="修改头像">
                 <ImgCrop rotate>
@@ -149,11 +151,22 @@ class UserInfoCard extends React.Component {
                   </Upload>
                 </ImgCrop>
               </Form.Item>
-              <Form.Item label="性别" name={"sex"}>
+              <Form.Item
+                label="性别"
+                name={"sex"}
+                style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+              >
                 <Radio.Group>
                   <Radio value={"男"}>男</Radio>
                   <Radio value={"女"}>女</Radio>
                 </Radio.Group>
+              </Form.Item>
+              <Form.Item
+                label="年龄"
+                name={"age"}
+                style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+              >
+                <Input type={"number"}></Input>
               </Form.Item>
               <Form.Item label="个性签名" name={"words"}>
                 <Input type={"text"} maxLength={30} />

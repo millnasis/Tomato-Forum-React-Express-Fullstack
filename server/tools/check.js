@@ -20,7 +20,7 @@ async function checkAdmin(req, res, next) {
     return;
   }
   const permitDAO = new PermitDAO();
-  const ret = await permitDAO.queryAdminPermit(req.session.userInfo.username);
+  const ret = await permitDAO.queryAdminPermit(req.session.userInfo.id);
   if (!ret) {
     res.status(403).send("no permit");
     return;

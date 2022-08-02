@@ -14,6 +14,8 @@ class UserVO {
     this.email = data.email;
     this.likeCount = data.likeCount;
     this.msgNum = msgNum;
+    this.permit = data.permit;
+    this.age = data.age;
   }
 
   changeInfo(data) {
@@ -34,6 +36,8 @@ class UserVO {
       foundtime: this.foundtime,
       likeCount: this.likeCount,
       msgNum: this.msgNum,
+      permit: this.permit,
+      age: this.age,
     };
   }
 

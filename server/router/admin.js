@@ -124,33 +124,33 @@ router.delete("/comments", async (req, res) => {
   res.send(replyVO.getOriginData());
 });
 
-// router.get("/post", async (req, res) => {
-//   const postDAO = new PostDAO();
-//   const ret = await postDAO.adminQuery(req.query);
-//   if (!ret) {
-//     res.status(500).send("error");
-//     return;
-//   }
-//   ret.arr = ret.arr.map((v) => v.getOriginData());
-//   res.send(ret);
-// });
+router.get("/user", async (req, res) => {
+  const userDAO = new UserDAO();
+  const ret = await userDAO.adminQuery(req.query);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  ret.arr = ret.arr.map((v) => v.getOriginData());
+  res.send(ret);
+});
 
-// router.post("/post", async (req, res) => {
-//   const postDAO = new PostDAO();
-//   const { id, obj, query, pagination } = req.body;
-//   const ret = await postDAO.adminUpdate(id, obj);
-//   if (!ret) {
-//     res.status(500).send("error");
-//     return;
-//   }
-//   const queryRet = await postDAO.adminQuery({ ...query, ...pagination });
-//   if (!queryRet) {
-//     res.status(500).send("error");
-//     return;
-//   }
-//   queryRet.arr = queryRet.arr.map((v) => v.getOriginData());
-//   res.send(queryRet);
-// });
+router.post("/user", async (req, res) => {
+  const userDAO = new UserDAO();
+  const { id, obj, query, pagination } = req.body;
+  const ret = await userDAO.adminUpdate(id, obj);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  const queryRet = await userDAO.adminQuery({ ...query, ...pagination });
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  queryRet.arr = queryRet.arr.map((v) => v.getOriginData());
+  res.send(queryRet);
+});
 
 // router.delete("/post", async (req, res) => {
 //   const postDAO = new PostDAO();

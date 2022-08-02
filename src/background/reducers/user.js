@@ -1,13 +1,13 @@
 export const totalUserPermitValue = {
-  ALL: "ALL",
-  USER: "USER",
-  ADMIN: "ADMIN",
+  ALL: "",
+  USER: "user",
+  ADMIN: "admin",
 };
 
 export const sexState = {
   male: "男",
   female: "女",
-  none: null,
+  none: "",
 };
 
 const initialState = {
@@ -87,7 +87,7 @@ export const actions = {
       query,
     };
   },
-  update_single_user(id, obj) {
+  update_single_user(id, obj, query, pagination) {
     return {
       type: actionsType.SEND_TO_UPDATE_SINGLE_USER,
       id,
@@ -96,7 +96,7 @@ export const actions = {
       pagination,
     };
   },
-  delete_single_user(id) {
+  delete_single_user(id, query, pagination) {
     return {
       type: actionsType.SEND_TO_DELETE_SINGLE_USER,
       id,

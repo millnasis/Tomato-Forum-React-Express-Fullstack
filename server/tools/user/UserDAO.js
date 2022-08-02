@@ -12,6 +12,110 @@ const dbName = "users";
 const default_head_picture = "/public/logo.png";
 
 module.exports = class UserDAO {
+  async adminUpdate(id, obj) {
+    try {
+      const permitDAO = new PermitDAO();
+      const userPermit = obj.permit;
+      delete obj.permit;
+      const users = await db(dbName);
+      if (userPermit) {
+        const updateRet = await permitDAO.updateUserPermit(id,userPermit);
+        if (!updateRet) {
+          return false;
+        }
+      }
+      id = ObjectId(id);
+      delete obj.id;
+      const ret = await users.updateOne(
+        { _id: id },
+        {
+          $set: {
+            ...obj,
+            age: +obj.age,
+            foundtime: new Date(obj.foundtime),
+          },
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  /**
+   *
+   * @param {object} query
+   * @returns {Promise< { arr:Array<UserVO> , pagination:object } >}
+   */
+  async adminQuery(query) {
+    try {
+      let { current, pageSize, id, username, permit } = query;
+      const users = await db(dbName);
+      const aggregate = [];
+      const queryArr = [];
+      const match = {};
+      if (id) {
+        id = ObjectId(id);
+        match["_id"] = id;
+      }
+      if (username) {
+        match["username"] = new RegExp(username);
+      }
+      queryArr.push({ $match: match }, { $sort: { foundtime: -1 } });
+      queryArr.push(
+        {
+          $lookup: {
+            from: "permit",
+            localField: "_id",
+            foreignField: "userid",
+            as: "permit",
+          },
+        },
+        {
+          $unwind: "$permit",
+        }
+      );
+      if (permit) {
+        queryArr.push({
+          $match: {
+            "permit.permit": permit,
+          },
+        });
+      }
+      aggregate.push(...queryArr);
+      if (current) {
+        current = parseInt(current);
+        pageSize = pageSize ? parseInt(pageSize) : 10;
+        aggregate.push(
+          { $skip: (current - 1) * pageSize },
+          { $limit: pageSize }
+        );
+      } else {
+        (current = 1), (pageSize = 10);
+      }
+
+      let ret = await users.aggregate(aggregate).toArray();
+      const sum = await users
+        .aggregate(queryArr.concat([{ $count: "sum" }]))
+        .toArray();
+      ret = ret.map((value) => {
+        return new UserVO(value);
+      });
+      return {
+        arr: ret,
+        pagination: {
+          current,
+          pageSize,
+          total: sum.length === 0 ? 0 : sum[0].sum,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   async queryByID(ID) {
     try {
       const users = await db(dbName);
@@ -145,6 +249,7 @@ module.exports = class UserDAO {
             words: userInfo.words,
             sex: userInfo.sex,
             email: userInfo.email,
+            age: +userInfo.age,
           },
         }
       );

@@ -33,99 +33,83 @@ const {
   set_background_user_query,
 } = actions;
 
-const columns = [
-  {
-    title: "头像",
-    dataIndex: "head_picture",
-    key: "head_picture",
-    render: (v) => <Avatar src={v} size="large"></Avatar>,
-  },
-  {
-    title: "ID",
-    dataIndex: "_id",
-    key: "_id",
-  },
-  {
-    title: "用户名",
-    dataIndex: "username",
-    key: "username",
-  },
-  {
-    title: "性别",
-    dataIndex: "sex",
-    key: "sex",
-  },
-  {
-    title: "创建时间",
-    dataIndex: "foundtime",
-    key: "foundtime",
-  },
-  {
-    title: "权限",
-    key: "permit",
-    dataIndex: "permit",
-    render: (v) => (v === "user" ? <Tag>{v}</Tag> : <Tag>别的</Tag>),
-  },
-  {
-    title: "操作",
-    dataIndex: "_id",
-    key: "_id",
-    render: (v) => (
-      <>
-        <Button
-          type="primary"
-          style={{ marginRight: "5px", marginBottom: "5px" }}
-        >
-          修改
-        </Button>
-        <Popconfirm
-          title="确定要删除吗"
-          okText="确定"
-          cancelText="取消"
-          onConfirm={() => null}
-        >
-          <Button>删除</Button>
-        </Popconfirm>
-      </>
-    ),
-  },
-];
-
-const data = [
-  {
-    _id: "62c414f95beb883da9c44ede",
-    username: "MillNasis",
-    head_picture: "/public/img/75626274_p0.jpg",
-    words: "我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊",
-    age: 0,
-    foundtime: "2022-07-05T10:39:53.097Z",
-    likeCount: 4,
-    email: "1985551393@qq.com",
-    sex: "男",
-    permit: "user",
-  },
-  {
-    _id: "62c414f95beb883da9c44ede",
-    username: "MillNasis",
-    head_picture: "/public/img/75626274_p0.jpg",
-    words: "我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊我是嫩爹啊",
-    age: 0,
-    foundtime: "2022-07-05T10:39:53.097Z",
-    likeCount: 4,
-    email: "1985551393@qq.com",
-    sex: "男",
-    permit: "user",
-  },
-];
-
 class User extends React.Component {
   constructor(props) {
     super(props);
+
+    this.columns = [
+      {
+        title: "头像",
+        dataIndex: "head_picture",
+        key: "head_picture",
+        render: (v) => <Avatar src={v} size="large"></Avatar>,
+      },
+      {
+        title: "ID",
+        dataIndex: "id",
+        key: "id",
+      },
+      {
+        title: "用户名",
+        dataIndex: "username",
+        key: "username",
+      },
+      {
+        title: "性别",
+        dataIndex: "sex",
+        key: "sex",
+        render: (v) => (v ? v : "未设置"),
+      },
+      {
+        title: "创建时间",
+        dataIndex: "foundtime",
+        key: "foundtime",
+      },
+      {
+        title: "权限",
+        key: "permit",
+        dataIndex: "permit",
+        render: (v) =>
+          v.permit === "admin" ? (
+            <Tag color={"cyan"}>管理员</Tag>
+          ) : (
+            <Tag>普通用户</Tag>
+          ),
+      },
+      {
+        title: "操作",
+        dataIndex: "id",
+        key: "id",
+        render: (v) => (
+          <>
+            <Button
+              type="primary"
+              style={{ marginRight: "5px", marginBottom: "5px" }}
+              onClick={() => this.props.open_update_modal(v)}
+            >
+              修改
+            </Button>
+            <Popconfirm
+              title="确定要删除吗"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => null}
+            >
+              <Button>删除</Button>
+            </Popconfirm>
+          </>
+        ),
+      },
+    ];
+  }
+
+  componentDidMount() {
+    this.props.get_background_user_show_array();
   }
 
   render() {
     const {
-      _id,
+      id,
       username,
       head_picture,
       word,
@@ -145,20 +129,28 @@ class User extends React.Component {
           footer={null}
         >
           <Form
-            key={_id}
+            key={id}
             initialValues={{
-              _id,
+              id,
               username,
               head_picture,
               word,
               age,
-              foundtime,
+              foundtime: formatDate(foundtime),
               likeCount,
               email,
               sex,
-              permit,
+              permit: permit ? permit.permit : "",
             }}
-            onFinish={(value) => {}}
+            onFinish={(value) => {
+              this.props.update_single_user(
+                value.id,
+                value,
+                this.props.query,
+                this.props.pagination
+              );
+              this.props.close_update_modal();
+            }}
           >
             <Form.Item label="ID" name={"id"}>
               <Input disabled></Input>
@@ -171,16 +163,22 @@ class User extends React.Component {
               <Input></Input>
             </Form.Item>
             <Form.Item
-              label="头像地址"
-              name={"head_picture"}
+              label="权限"
+              name={"permit"}
               style={{ display: "inline-block", width: "calc(50% - 12px)" }}
             >
-              <Input></Input>
+              <Select>
+                <Option value={totalUserPermitValue.ADMIN}>管理员</Option>
+                <Option value={totalUserPermitValue.USER}>普通用户</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="头像地址" name={"head_picture"}>
+              <Input addonBefore={<Avatar src={head_picture}></Avatar>}></Input>
             </Form.Item>
             <Form.Item
               label="性别"
               name={"sex"}
-              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+              style={{ display: "inline-block", width: "calc(25% - 6px)" }}
             >
               <Select>
                 <Option value={sexState.male}>男</Option>
@@ -191,11 +189,16 @@ class User extends React.Component {
             <Form.Item
               label="年龄"
               name={"age"}
-              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+              style={{ display: "inline-block", width: "calc(25% - 6px)" }}
             >
               <Input type={"number"}></Input>
             </Form.Item>
-            <Form.Item id="email" name={"email"} label="电子邮箱">
+            <Form.Item
+              id="email"
+              name={"email"}
+              label="电子邮箱"
+              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+            >
               <Input type={"email"}></Input>
             </Form.Item>
             <Form.Item id="words" name={"words"} label="个性签名">
@@ -235,15 +238,40 @@ class User extends React.Component {
             <Row gutter={[8, 8]}>
               <Col span={3}></Col>
               <Col span={5}>
-                <Input addonBefore="ID"></Input>
+                <Input
+                  addonBefore="ID"
+                  value={this.props.query.id}
+                  onChange={(e) =>
+                    this.props.set_background_user_query({
+                      ...this.props.query,
+                      id: e.nativeEvent.target.value,
+                    })
+                  }
+                ></Input>
               </Col>
               <Col span={5}>
-                <Input addonBefore="用户名"></Input>
+                <Input
+                  addonBefore="用户名"
+                  value={this.props.query.username}
+                  onChange={(e) =>
+                    this.props.set_background_user_query({
+                      ...this.props.query,
+                      username: e.nativeEvent.target.value,
+                    })
+                  }
+                ></Input>
               </Col>
               <Col span={5}>
                 <Select
                   defaultValue={totalUserPermitValue.ALL}
                   style={{ width: "100%" }}
+                  value={this.props.query.permit}
+                  onChange={(v) => {
+                    this.props.set_background_user_query({
+                      ...this.props.query,
+                      permit: v,
+                    });
+                  }}
                 >
                   <Option key={totalUserPermitValue.ALL}>全部</Option>
                   <Option key={totalUserPermitValue.USER}>普通用户</Option>
@@ -251,13 +279,43 @@ class User extends React.Component {
                 </Select>
               </Col>
               <Col span={3}>
-                <Button type="primary">搜索</Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.props.get_background_user_show_array(
+                      null,
+                      this.props.query
+                    );
+                  }}
+                >
+                  查询
+                </Button>
+                &nbsp;
+                <Button
+                  onClick={() => {
+                    this.props.set_background_user_query();
+                    this.props.get_background_user_show_array();
+                  }}
+                >
+                  重置
+                </Button>
               </Col>
             </Row>
           </Paragraph>
           <Divider></Divider>
           <Paragraph>
-            <Table columns={columns} dataSource={data}></Table>
+            <Table
+              columns={this.columns}
+              dataSource={this.props.showArray}
+              loading={this.props.isFetching}
+              pagination={this.props.pagination}
+              onChange={(pagination) => {
+                this.props.get_background_user_show_array(
+                  pagination,
+                  this.props.query
+                );
+              }}
+            ></Table>
           </Paragraph>
         </Typography>
       </div>
