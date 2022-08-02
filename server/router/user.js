@@ -7,17 +7,14 @@ const ReplyDAO = require("../tools/post/replyDAO");
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
   const userDAO = new UserDAO();
-  const permitDAO = new PermitDAO();
-  let condition = await permitDAO.queryByUsername(req.body.username);
-  if (!condition) {
+  let userid = await userDAO.queryIDByUserName(username);
+  if (!userid) {
     res.status(401).send("username");
     return;
   }
-  let ret = await userDAO.queryByUserPermit(
-    req.body.username,
-    req.body.password
-  );
+  let ret = await userDAO.queryByUserPermit(userid, password);
   if (ret) {
     req.session.userInfo = ret.getOriginData();
     res.send(ret.getOriginData());

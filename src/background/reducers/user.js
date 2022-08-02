@@ -4,6 +4,12 @@ export const totalUserPermitValue = {
   ADMIN: "ADMIN",
 };
 
+export const sexState = {
+  male: "男",
+  female: "女",
+  none: null,
+};
+
 const initialState = {
   showArray: [],
   pagination: {
@@ -16,6 +22,10 @@ const initialState = {
     username: "",
     permit: totalUserPermitValue.ALL,
   },
+  modal: {
+    show: false,
+    target: {},
+  },
 };
 
 export const actionsType = {
@@ -26,10 +36,29 @@ export const actionsType = {
   SET_BACKGROUND_USER_QUERY: "SET_BACKGROUND_USER_QUERY",
   SEND_TO_UPDATE_SINGLE_USER: "SEND_TO_UPDATE_SINGLE_USER",
   SEND_TO_DELETE_SINGLE_USER: "SEND_TO_DELETE_SINGLE_USER",
+  OPEN_USER_UPDATE_MODAL: "OPEN_USER_UPDATE_MODAL",
+  CLOSE_USER_UPDATE_MODAL: "CLOSE_USER_UPDATE_MODAL",
 };
 
 export const actions = {
+  open_update_modal(id) {
+    return {
+      type: actionsType.OPEN_USER_UPDATE_MODAL,
+      id,
+    };
+  },
+  close_update_modal() {
+    return {
+      type: actionsType.CLOSE_USER_UPDATE_MODAL,
+    };
+  },
   get_background_user_show_array(pagination, query) {
+    if (!pagination) {
+      pagination = initialState.pagination;
+    }
+    if (!query) {
+      query = initialState.query;
+    }
     return {
       type: actionsType.SEND_TO_GET_BACKGROUND_USER_SHOW_ARRAY,
       pagination,
@@ -50,6 +79,9 @@ export const actions = {
     };
   },
   set_background_user_query(query) {
+    if (!query) {
+      query = initialState.query;
+    }
     return {
       type: actionsType.SET_BACKGROUND_USER_QUERY,
       query,
@@ -60,12 +92,16 @@ export const actions = {
       type: actionsType.SEND_TO_UPDATE_SINGLE_USER,
       id,
       obj,
+      query,
+      pagination,
     };
   },
   delete_single_user(id) {
     return {
       type: actionsType.SEND_TO_DELETE_SINGLE_USER,
       id,
+      query,
+      pagination,
     };
   },
 };
@@ -75,7 +111,8 @@ export function reducer(state = initialState, action) {
     case actionsType.RESPONSE_BACKGROUND_USER_SHOW_ARRAY:
       return {
         ...state,
-        showArray: action.data,
+        showArray: action.data.arr,
+        pagination: action.data.pagination,
       };
     case actionsType.SET_BACKGROUND_USER_PAGINATION:
       return {
@@ -89,6 +126,22 @@ export function reducer(state = initialState, action) {
       return {
         ...state,
         query: action.query,
+      };
+    case actionsType.OPEN_USER_UPDATE_MODAL:
+      return {
+        ...state,
+        modal: {
+          show: true,
+          target: state.showArray.find((v) => v.id === action.id),
+        },
+      };
+    case actionsType.CLOSE_USER_UPDATE_MODAL:
+      return {
+        ...state,
+        modal: {
+          show: false,
+          target: {},
+        },
       };
     default:
       return state;

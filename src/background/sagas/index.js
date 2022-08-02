@@ -1,6 +1,7 @@
 import { fork } from "redux-saga/effects";
 import * as post from "./post";
 import * as reply from "./reply";
+import * as user from "./user";
 
 export default function* rootSaga() {
   yield fork(post.getPostArray);
@@ -10,4 +11,7 @@ export default function* rootSaga() {
   yield fork(reply.updateReply);
   yield fork(reply.deleteReply);
   yield fork(reply.deleteComment);
+  yield fork(user.getUserArray);
+  yield fork(user.updateUser);
+  yield fork(user.deleteUser);
 }

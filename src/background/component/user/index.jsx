@@ -4,18 +4,34 @@ import {
   Divider,
   Input,
   Row,
+  Modal,
+  Form,
+  Popconfirm,
+  Tag,
+  Select,
+  Alert,
   Col,
   Button,
-  Select,
   Table,
-  Tag,
   Avatar,
 } from "antd";
-import { totalUserPermitValue } from "../../reducers/user";
+import { totalUserPermitValue, sexState } from "../../reducers/user";
+import { bindActionCreators } from "redux";
+import formatDate from "../../tools/LocalDate";
+import { actions } from "../../reducers/user";
+import { connect } from "react-redux";
 const { Title, Paragraph } = Typography;
 const { Option } = Select;
 
-
+const {
+  close_update_modal,
+  delete_single_user,
+  get_background_user_show_array,
+  open_update_modal,
+  update_single_user,
+  set_background_user_pagination,
+  set_background_user_query,
+} = actions;
 
 const columns = [
   {
@@ -35,6 +51,11 @@ const columns = [
     key: "username",
   },
   {
+    title: "性别",
+    dataIndex: "sex",
+    key: "sex",
+  },
+  {
     title: "创建时间",
     dataIndex: "foundtime",
     key: "foundtime",
@@ -51,8 +72,20 @@ const columns = [
     key: "_id",
     render: (v) => (
       <>
-        <Button type="primary" style={{marginRight:"5px"}}>修改</Button>
-        <Button>删除</Button>
+        <Button
+          type="primary"
+          style={{ marginRight: "5px", marginBottom: "5px" }}
+        >
+          修改
+        </Button>
+        <Popconfirm
+          title="确定要删除吗"
+          okText="确定"
+          cancelText="取消"
+          onConfirm={() => null}
+        >
+          <Button>删除</Button>
+        </Popconfirm>
       </>
     ),
   },
@@ -91,8 +124,110 @@ class User extends React.Component {
   }
 
   render() {
+    const {
+      _id,
+      username,
+      head_picture,
+      word,
+      age,
+      foundtime,
+      likeCount,
+      email,
+      sex,
+      permit,
+    } = this.props.modal.target;
     return (
       <div className="warp user">
+        <Modal
+          title="修改回帖"
+          visible={this.props.modal.show}
+          onCancel={() => this.props.close_update_modal()}
+          footer={null}
+        >
+          <Form
+            key={_id}
+            initialValues={{
+              _id,
+              username,
+              head_picture,
+              word,
+              age,
+              foundtime,
+              likeCount,
+              email,
+              sex,
+              permit,
+            }}
+            onFinish={(value) => {}}
+          >
+            <Form.Item label="ID" name={"id"}>
+              <Input disabled></Input>
+            </Form.Item>
+            <Form.Item
+              label="用户名"
+              name={"username"}
+              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+            >
+              <Input></Input>
+            </Form.Item>
+            <Form.Item
+              label="头像地址"
+              name={"head_picture"}
+              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+            >
+              <Input></Input>
+            </Form.Item>
+            <Form.Item
+              label="性别"
+              name={"sex"}
+              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+            >
+              <Select>
+                <Option value={sexState.male}>男</Option>
+                <Option value={sexState.female}>女</Option>
+                <Option value={sexState.none}>未选择</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="年龄"
+              name={"age"}
+              style={{ display: "inline-block", width: "calc(50% - 12px)" }}
+            >
+              <Input type={"number"}></Input>
+            </Form.Item>
+            <Form.Item id="email" name={"email"} label="电子邮箱">
+              <Input type={"email"}></Input>
+            </Form.Item>
+            <Form.Item id="words" name={"words"} label="个性签名">
+              <Input.TextArea></Input.TextArea>
+            </Form.Item>
+            {foundtime && (
+              <Form.Item label="创建时间" id="foundtime" name="foundtime">
+                <Input type={"datetime-local"}></Input>
+              </Form.Item>
+            )}
+            <Form.Item>
+              <Alert
+                type="info"
+                message="在您按下修改按钮之前，本页的所有修改都不会保存"
+              ></Alert>
+            </Form.Item>
+            <Form.Item>
+              <Row gutter={[8, 8]}>
+                <Col offset={16} span={3}>
+                  <Button onClick={() => this.props.close_update_modal()}>
+                    取消
+                  </Button>
+                </Col>
+                <Col offset={1} span={3}>
+                  <Button type="primary" htmlType="submit">
+                    修改
+                  </Button>
+                </Col>
+              </Row>
+            </Form.Item>
+          </Form>
+        </Modal>
         <Typography>
           <Title>用户管理</Title>
           <Divider></Divider>
@@ -130,4 +265,32 @@ class User extends React.Component {
   }
 }
 
-export default User;
+function mapStateToProps(state) {
+  return {
+    ...state.userState,
+    isFetching: state.globalState.isFetching,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    close_update_modal: bindActionCreators(close_update_modal, dispatch),
+    delete_single_user: bindActionCreators(delete_single_user, dispatch),
+    get_background_user_show_array: bindActionCreators(
+      get_background_user_show_array,
+      dispatch
+    ),
+    open_update_modal: bindActionCreators(open_update_modal, dispatch),
+    update_single_user: bindActionCreators(update_single_user, dispatch),
+    set_background_user_pagination: bindActionCreators(
+      set_background_user_pagination,
+      dispatch
+    ),
+    set_background_user_query: bindActionCreators(
+      set_background_user_query,
+      dispatch
+    ),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(User);

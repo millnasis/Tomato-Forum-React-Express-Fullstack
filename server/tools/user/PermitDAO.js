@@ -1,12 +1,13 @@
+const { ObjectId } = require("mongodb");
 const db = require("../db");
 const dbName = "permit";
 
 module.exports = class PermitDAO {
-  async queryByUserNameAndPassWord(username, password) {
+  async queryByUserIDAndPassWord(userid, password) {
     try {
       const permit = await db(dbName);
       let ret = await permit
-        .find({ username: username, password: password })
+        .find({ userid: ObjectId(userid), password })
         .toArray();
       if (ret.length === 0) {
         return false;
@@ -18,12 +19,18 @@ module.exports = class PermitDAO {
     }
   }
 
-  async createUserByUsernameAndPassword(username, password) {
+  async createUserByUserIDAndPassword(userid, password) {
     try {
       const permit = await db(dbName);
-      await permit.insertOne({ username: username, password: password });
+      const ret = await permit.insertOne({
+        userid: ObjectId(userid),
+        password,
+        permit: "user",
+      });
+      return ret;
     } catch (error) {
       console.error(error);
+      return false;
     }
   }
 
@@ -48,7 +55,7 @@ module.exports = class PermitDAO {
         return true;
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }
 
@@ -62,7 +69,7 @@ module.exports = class PermitDAO {
         return true;
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }
 };

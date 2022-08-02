@@ -43,6 +43,20 @@ module.exports = class UserDAO {
     }
   }
 
+  async queryIDByUserName(username) {
+    try {
+      const users = await db(dbName);
+      const ret = await users.find({ username }).toArray();
+      if (ret.length === 0) {
+        return false;
+      }
+      return ret[0]._id;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   async queryByUserName(userName) {
     try {
       const users = await db(dbName);
@@ -60,18 +74,15 @@ module.exports = class UserDAO {
     }
   }
 
-  async queryByUserPermit(username, password) {
+  async queryByUserPermit(userid, password) {
     try {
       const permit = new PermitDAO();
-      let condition = await permit.queryByUserNameAndPassWord(
-        username,
-        password
-      );
+      let condition = await permit.queryByUserIDAndPassWord(userid, password);
       if (!condition) {
         return false;
       }
       const users = await db(dbName);
-      let ret = await users.find({ username: username }).toArray();
+      let ret = await users.find({ _id: ObjectId(userid) }).toArray();
 
       if (ret.length === 0) {
         return false;
@@ -86,22 +97,32 @@ module.exports = class UserDAO {
   async createUserByUsernameAndPassword(username, password) {
     try {
       const permit = new PermitDAO();
-      let condition = await permit.queryByUsername(username);
-      if (condition) {
+      const users = await db(dbName);
+      let condition = await users.find({ username }).toArray();
+      if (condition.length !== 0) {
         return false;
       }
-      const users = await db(dbName);
 
-      await permit.createUserByUsernameAndPassword(username, password);
-
-      await users.insertOne({
+      const insertRet = await users.insertOne({
         username: username,
         head_picture: default_head_picture,
         words: "编辑个性签名",
         age: 0,
         foundtime: new Date(),
         likeCount: 0,
+        email: null,
+        sex: null,
       });
+
+      const ret = await permit.createUserByUserIDAndPassword(
+        insertRet.insertedId,
+        password
+      );
+
+      if (!ret) {
+        return false;
+      }
+
       return true;
     } catch (error) {
       console.error(error);
