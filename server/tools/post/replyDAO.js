@@ -16,10 +16,10 @@ module.exports = class ReplyDAO {
       const ret = await replys.updateOne(
         { _id: id },
         {
-          $set:{
+          $set: {
             ...obj,
             foundtime: new Date(obj.foundtime),
-          }
+          },
         }
       );
       return ret;
@@ -194,7 +194,7 @@ module.exports = class ReplyDAO {
           },
           {
             $lookup: {
-              from: "replys",
+              from: "posts",
               localField: "masterID",
               foreignField: "_id",
               as: "master",

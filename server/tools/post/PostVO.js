@@ -2,6 +2,7 @@ const ReplyDAO = require("./replyDAO");
 const CommentVO = require("./CommentVO");
 const ReplyVO = require("./ReplyVO");
 const db = require("../db");
+const constant = require("../constant");
 const { ObjectId } = require("mongodb");
 
 const dbName = "posts";
@@ -22,7 +23,9 @@ class PostVO {
     this.foundtime = data.foundtime || new Date();
     this.lasttime = data.lasttime || new Date();
     this.publisher = Array.isArray(data.publisher)
-      ? data.publisher[0]
+      ? data.publisher.length === 0
+        ? constant.nonExistUser
+        : data.publisher[0]
       : data.publisher;
     // this.comments = data.comments;
     this.replyCount = data.replyCount;

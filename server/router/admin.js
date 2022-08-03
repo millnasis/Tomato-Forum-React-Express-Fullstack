@@ -152,20 +152,20 @@ router.post("/user", async (req, res) => {
   res.send(queryRet);
 });
 
-// router.delete("/post", async (req, res) => {
-//   const postDAO = new PostDAO();
-//   const { id, query, pagination } = req.body;
-//   const ret = await postDAO.deleteByID(id);
-//   if (!ret) {
-//     res.status(500).send("error");
-//     return;
-//   }
-//   const queryRet = await postDAO.adminQuery({ ...query, ...pagination });
-//   if (!queryRet) {
-//     res.status(500).send("error");
-//     return;
-//   }
-//   queryRet.arr = queryRet.arr.map((v) => v.getOriginData());
-//   res.send(queryRet);
-// });
+router.delete("/user", async (req, res) => {
+  const userDAO = new UserDAO();
+  const { id, query, pagination } = req.body;
+  const ret = userDAO.deleteUserByID(id);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  const queryRet = await userDAO.adminQuery({ ...query, ...pagination });
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  queryRet.arr = queryRet.arr.map((v) => v.getOriginData());
+  res.send(queryRet);
+});
 module.exports = router;

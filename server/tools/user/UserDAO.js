@@ -19,7 +19,7 @@ module.exports = class UserDAO {
       delete obj.permit;
       const users = await db(dbName);
       if (userPermit) {
-        const updateRet = await permitDAO.updateUserPermit(id,userPermit);
+        const updateRet = await permitDAO.updateUserPermit(id, userPermit);
         if (!updateRet) {
           return false;
         }
@@ -262,10 +262,19 @@ module.exports = class UserDAO {
     try {
       const users = await db(dbName);
       const permit = new PermitDAO();
-      let ret = await this.queryByID(ID);
-      await permit.deleteUserByUsernameAndPassword(ret.username);
-      await users.deleteOne({ _id: ObjectId(ID) });
-    } catch (error) {}
+      const deleteRet1 = permit.deleteUserByID(ID);
+      if (!deleteRet1) {
+        return false;
+      }
+      const deleteRet2 = await users.deleteOne({ _id: ObjectId(ID) });
+      if (!deleteRet2) {
+        return false;
+      }
+      return deleteRet2;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 
   async updateLikeCountByUserID(ID, num) {

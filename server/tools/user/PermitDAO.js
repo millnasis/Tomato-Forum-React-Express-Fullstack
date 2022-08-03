@@ -34,13 +34,14 @@ module.exports = class PermitDAO {
     }
   }
 
-  async deleteUserByUsernameAndPassword(username) {
+  async deleteUserByID(userid) {
     try {
       const permit = await db(dbName);
-      await permit.deleteOne({ username: username });
-      return true;
+      const ret = await permit.deleteOne({ userid: ObjectId(userid) });
+      return ret;
     } catch (error) {
       console.error(error);
+      return false;
     }
   }
 

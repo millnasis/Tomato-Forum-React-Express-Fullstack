@@ -1,4 +1,5 @@
 const db = require("../db");
+const constant = require("../constant");
 const { ObjectId } = require("mongodb");
 
 class CommentVO {
@@ -8,7 +9,9 @@ class CommentVO {
     this.content = data.content;
     this.foundtime = data.foundtime || new Date();
     this.publisher = Array.isArray(data.publisher)
-      ? data.publisher[0]
+      ? data.publisher.length === 0
+        ? constant.nonExistUser
+        : data.publisher[0]
       : data.publisher;
     this.likeList = data.likeList;
     //   count为所属楼数

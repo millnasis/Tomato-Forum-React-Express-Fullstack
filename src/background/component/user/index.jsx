@@ -93,7 +93,13 @@ class User extends React.Component {
               title="确定要删除吗"
               okText="确定"
               cancelText="取消"
-              onConfirm={() => null}
+              onConfirm={() =>
+                this.props.delete_single_user(
+                  v,
+                  this.props.query,
+                  this.props.pagination
+                )
+              }
             >
               <Button>删除</Button>
             </Popconfirm>

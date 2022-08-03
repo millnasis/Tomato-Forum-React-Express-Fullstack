@@ -793,12 +793,13 @@ class MessageDAO {
             ])
             .toArray();
           ret = ret.map((v) => {
-            if (!userFrom || !target) {
+            if (!v.userFrom || !v.target) {
               return {
                 failure: true,
                 target: v._id,
               };
             }
+            return v;
           });
           break;
         }
@@ -895,12 +896,13 @@ class MessageDAO {
             ])
             .toArray();
           ret = ret.map((v) => {
-            if (!userFrom) {
+            if (!v.userFrom) {
               return {
                 failure: true,
                 target: v._id,
               };
             }
+            return v;
           });
           break;
         }

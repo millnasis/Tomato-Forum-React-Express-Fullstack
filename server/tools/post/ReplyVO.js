@@ -1,5 +1,6 @@
 const CommentVO = require("./CommentVO");
 const db = require("../db");
+const constant = require("../constant");
 const { ObjectId } = require("mongodb");
 
 const dbName = "replys";
@@ -16,7 +17,9 @@ class ReplyVO {
     this.content = data.content;
     this.foundtime = data.foundtime || new Date();
     this.publisher = Array.isArray(data.publisher)
-      ? data.publisher[0]
+      ? data.publisher.length === 0
+        ? constant.nonExistUser
+        : data.publisher[0]
       : data.publisher;
     this.comments = data.comments;
     this.count = data.count;
