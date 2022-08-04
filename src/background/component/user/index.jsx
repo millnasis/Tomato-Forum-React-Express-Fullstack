@@ -129,7 +129,7 @@ class User extends React.Component {
     return (
       <div className="warp user">
         <Modal
-          title="修改回帖"
+          title="修改用户信息"
           visible={this.props.modal.show}
           onCancel={() => this.props.close_update_modal()}
           footer={null}

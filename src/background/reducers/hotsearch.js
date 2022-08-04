@@ -18,85 +18,101 @@ const initialState = {
   },
   query: {
     word: "",
-    type: totalHotSearchTypeState.ALL,
     sort: totalSortSelectionState.DESC,
+  },
+  modal: {
+    show: false,
+    target: {},
   },
 };
 
 export const actionsType = {
-    SEND_TO_GET_BACKGROUND_HOT_SEARCH_SHOW_ARRAY:
-      "SEND_TO_GET_BACKGROUND_HOT_SEARCH_SHOW_ARRAY",
-    RESPONSE_BACKGROUND_HOT_SEARCH_SHOW_ARRAY: "RESPONSE_BACKGROUND_HOT_SEARCH_SHOW_ARRAY",
-    SET_BACKGROUND_HOT_SEARCH_PAGINATION: "SET_BACKGROUND_HOT_SEARCH_PAGINATION",
-    SET_BACKGROUND_HOT_SEARCH_QUERY: "SET_BACKGROUND_HOT_SEARCH_QUERY",
-    SEND_TO_UPDATE_SINGLE_HOT_SEARCH: "SEND_TO_UPDATE_SINGLE_HOT_SEARCH",
+  SEND_TO_GET_BACKGROUND_HOT_SEARCH_SHOW_ARRAY:
+    "SEND_TO_GET_BACKGROUND_HOT_SEARCH_SHOW_ARRAY",
+  RESPONSE_BACKGROUND_HOT_SEARCH_SHOW_ARRAY:
+    "RESPONSE_BACKGROUND_HOT_SEARCH_SHOW_ARRAY",
+  SET_BACKGROUND_HOT_SEARCH_PAGINATION: "SET_BACKGROUND_HOT_SEARCH_PAGINATION",
+  SET_BACKGROUND_HOT_SEARCH_QUERY: "SET_BACKGROUND_HOT_SEARCH_QUERY",
+  SEND_TO_UPDATE_SINGLE_HOT_SEARCH: "SEND_TO_UPDATE_SINGLE_HOT_SEARCH",
   SEND_TO_DELETE_SINGLE_HOT_SEARCH: "SEND_TO_DELETE_SINGLE_HOT_SEARCH",
-  };
-  
-  export const actions = {
-    get_background_hot_search_show_array(pagination, query) {
+  OPEN_HOT_SEARCH_UPDATE_MODAL: "OPEN_HOT_SEARCH_UPDATE_MODAL",
+  CLOSE_HOT_SEARCH_UPDATE_MODAL: "CLOSE_HOT_SEARCH_UPDATE_MODAL",
+};
+
+export const actions = {
+  open_update_modal(id) {
+    return {
+      type: actionsType.OPEN_HOT_SEARCH_UPDATE_MODAL,
+      id,
+    };
+  },
+  close_update_modal() {
+    return {
+      type: actionsType.CLOSE_HOT_SEARCH_UPDATE_MODAL,
+    };
+  },
+  get_background_hot_search_show_array(pagination, query) {
+    return {
+      type: actionsType.SEND_TO_GET_BACKGROUND_HOT_SEARCH_SHOW_ARRAY,
+      pagination,
+      query,
+    };
+  },
+  response_background_hot_search_show_array(data) {
+    return {
+      type: actionsType.RESPONSE_BACKGROUND_HOT_SEARCH_SHOW_ARRAY,
+      data,
+    };
+  },
+  set_background_hot_search_pagination(current, pageSize) {
+    return {
+      type: actionsType.SET_BACKGROUND_HOT_SEARCH_PAGINATION,
+      current,
+      pageSize,
+    };
+  },
+  set_background_hot_search_query(query) {
+    return {
+      type: actionsType.SET_BACKGROUND_HOT_SEARCH_QUERY,
+      query,
+    };
+  },
+  update_single_hot_search(id, obj) {
+    return {
+      type: actionsType.SEND_TO_UPDATE_SINGLE_HOT_SEARCH,
+      id,
+      obj,
+    };
+  },
+  delete_single_hot_search(id) {
+    return {
+      type: actionsType.SEND_TO_DELETE_SINGLE_HOT_SEARCH,
+      id,
+    };
+  },
+};
+
+export function reducer(state = initialState, action) {
+  switch (action.type) {
+    case actionsType.RESPONSE_BACKGROUND_HOT_SEARCH_SHOW_ARRAY:
       return {
-        type: actionsType.SEND_TO_GET_BACKGROUND_HOT_SEARCH_SHOW_ARRAY,
-        pagination,
-        query,
+        ...state,
+        showArray: action.data,
       };
-    },
-    response_background_hot_search_show_array(data) {
+    case actionsType.SET_BACKGROUND_HOT_SEARCH_PAGINATION:
       return {
-        type: actionsType.RESPONSE_BACKGROUND_HOT_SEARCH_SHOW_ARRAY,
-        data,
+        ...state,
+        pagination: {
+          current: action.current,
+          pageSize: action.pageSize,
+        },
       };
-    },
-    set_background_hot_search_pagination(current, pageSize) {
+    case actionsType.SET_BACKGROUND_HOT_SEARCH_QUERY:
       return {
-        type: actionsType.SET_BACKGROUND_HOT_SEARCH_PAGINATION,
-        current,
-        pageSize,
+        ...state,
+        query: action.query,
       };
-    },
-    set_background_hot_search_query(query) {
-      return {
-        type: actionsType.SET_BACKGROUND_HOT_SEARCH_QUERY,
-        query,
-      };
-    },
-    update_single_hot_search(id, obj) {
-        return {
-          type: actionsType.SEND_TO_UPDATE_SINGLE_HOT_SEARCH,
-          id,
-          obj,
-        };
-      },
-      delete_single_hot_search(id) {
-        return {
-          type: actionsType.SEND_TO_DELETE_SINGLE_HOT_SEARCH,
-          id,
-        };
-      },
-  };
-  
-  export function reducer(state = initialState, action) {
-    switch (action.type) {
-      case actionsType.RESPONSE_BACKGROUND_HOT_SEARCH_SHOW_ARRAY:
-        return {
-          ...state,
-          showArray: action.data,
-        };
-      case actionsType.SET_BACKGROUND_HOT_SEARCH_PAGINATION:
-        return {
-          ...state,
-          pagination: {
-            current: action.current,
-            pageSize: action.pageSize,
-          },
-        };
-      case actionsType.SET_BACKGROUND_HOT_SEARCH_QUERY:
-        return {
-          ...state,
-          query: action.query,
-        };
-      default:
-        return state;
-    }
+    default:
+      return state;
   }
-  
+}
