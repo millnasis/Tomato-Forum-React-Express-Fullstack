@@ -59,7 +59,7 @@ export const actions = {
   response_hot_search(data) {
     return {
       type: actionsType.RESPONSE_HOT_SEARCH,
-      showHotSearchArray: data,
+      data,
     };
   },
   response_hot_post_array(data) {
@@ -182,11 +182,21 @@ export function reducer(state = initialState, action) {
         ...state,
         showClickPostArray: action.arr,
       };
-    case actionsType.RESPONSE_HOT_SEARCH:
+    case actionsType.RESPONSE_HOT_SEARCH: {
+      const { normal, control } = action.data;
+      const arr = control.map((v) => {
+        return {
+          word: v,
+          click: 0,
+          type: "control",
+        };
+      });
+      arr.push(...normal);
       return {
         ...state,
-        showHotSearchArray: action.showHotSearchArray,
+        showHotSearchArray: arr,
       };
+    }
     case actionsType.END_FETCH_HOT_POST:
       return {
         ...state,

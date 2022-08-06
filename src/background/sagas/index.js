@@ -2,6 +2,7 @@ import { fork } from "redux-saga/effects";
 import * as post from "./post";
 import * as reply from "./reply";
 import * as user from "./user";
+import * as hotsearch from "./hotsearch";
 
 export default function* rootSaga() {
   yield fork(post.getPostArray);
@@ -14,4 +15,9 @@ export default function* rootSaga() {
   yield fork(user.getUserArray);
   yield fork(user.updateUser);
   yield fork(user.deleteUser);
+  yield fork(hotsearch.getHotSearchNormalArray);
+  yield fork(hotsearch.getHotSearchControlArray);
+  yield fork(hotsearch.updateHotNormalSearch);
+  yield fork(hotsearch.addNormalHotSearch);
+  yield fork(hotsearch.deleteNormalHotSearch);
 }

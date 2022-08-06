@@ -3,6 +3,7 @@ const UserDAO = require("../tools/user/UserDAO");
 const PostDAO = require("../tools/post/PostDAO");
 const ReplyVO = require("../tools/post/ReplyVO");
 const ReplyDAO = require("../tools/post/replyDAO");
+const SearchDAO = require("../tools/search/searchDAO");
 const check = require("../tools/check");
 const router = express.Router();
 const { checkAdmin } = check;
@@ -167,5 +168,85 @@ router.delete("/user", async (req, res) => {
   }
   queryRet.arr = queryRet.arr.map((v) => v.getOriginData());
   res.send(queryRet);
+});
+
+router.get("/hotsearch/normal", async (req, res) => {
+  const searchDAO = new SearchDAO();
+  const ret = await searchDAO.adminNormalQuery(req.query);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(ret);
+});
+
+router.post("/hotsearch/normal", async (req, res) => {
+  const searchDAO = new SearchDAO();
+  const { id, obj, query, pagination } = req.body;
+  const ret = await searchDAO.adminNormalUpdate(id, obj);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  const queryRet = await searchDAO.adminNormalQuery({
+    ...query,
+    ...pagination,
+  });
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(queryRet);
+});
+
+router.put("/hotsearch/normal", async (req, res) => {
+  const searchDAO = new SearchDAO();
+  const { obj, query, pagination } = req.body;
+  const ret = await searchDAO.adminNormalAdd(obj);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  } else if (ret === "exist") {
+    res.status(400).send(ret);
+    return;
+  }
+  const queryRet = await searchDAO.adminNormalQuery({
+    ...query,
+    ...pagination,
+  });
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(queryRet);
+});
+
+router.delete("/hotsearch/normal", async (req, res) => {
+  const searchDAO = new SearchDAO();
+  const { id, query, pagination } = req.body;
+  const ret = await searchDAO.adminNormalDelete(id);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  const queryRet = await searchDAO.adminNormalQuery({
+    ...query,
+    ...pagination,
+  });
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(queryRet);
+});
+
+router.get("/hotsearch/control", async (req, res) => {
+  const searchDAO = new SearchDAO();
+  const ret = await searchDAO.adminControlQuery();
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(ret);
 });
 module.exports = router;

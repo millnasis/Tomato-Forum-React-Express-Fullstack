@@ -29,13 +29,16 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions } from "../../reducers/hotsearch";
 const {
-  delete_single_hot_search,
-  get_background_hot_search_show_array,
+  delete_single_normal_hot_search,
+  get_background_hot_search_show_normal_array,
+  get_background_hot_search_show_control_array,
   set_background_hot_search_pagination,
   set_background_hot_search_query,
-  update_single_hot_search,
+  update_single_normal_hot_search,
+  change_control_array_rank,
   close_update_modal,
   open_update_modal,
+  add_single_normal_hot_search,
 } = actions;
 import "./index.scss";
 
@@ -50,61 +53,6 @@ const DragHandle = SortableHandle(() => (
   />
 ));
 
-const columns = [
-  {
-    title: "拖拽排序",
-    dataIndex: "sort",
-    className: "drag-visible",
-    render: () => <DragHandle />,
-  },
-  {
-    title: "关键词",
-    dataIndex: "word",
-    className: "drag-visible",
-  },
-  {
-    title: "搜索次数",
-    dataIndex: "count",
-  },
-  {
-    title: "标签",
-    dataIndex: "type",
-    render: () => <Tag color={"red"}>受控</Tag>,
-  },
-  {
-    title: "操作",
-    dataIndex: "action",
-    render: () => (
-      <>
-        <Button
-          type="primary"
-          style={{ marginRight: "5px", marginBottom: "5px" }}
-        >
-          修改
-        </Button>
-        <Button>删除</Button>
-      </>
-    ),
-  },
-];
-const data = [
-  {
-    word: "我的",
-    key: 0,
-    index: 0,
-  },
-  {
-    word: "他的",
-    key: 1,
-    index: 1,
-  },
-  {
-    word: "你的",
-    key: 2,
-    index: 2,
-  },
-];
-
 const SortableItem = SortableElement((props) => <tr {...props} />);
 const SortableBody = SortableContainer((props) => <tbody {...props} />);
 
@@ -112,7 +60,7 @@ class HotSearch extends React.Component {
   constructor(props) {
     super(props);
 
-    this.columns = [
+    this.normalColumns = [
       {
         title: "ID",
         dataIndex: "_id",
@@ -148,6 +96,53 @@ class HotSearch extends React.Component {
             <Button
               type="primary"
               style={{ marginRight: "5px", marginBottom: "5px" }}
+              onClick={() => this.props.open_update_modal(v)}
+            >
+              修改
+            </Button>
+            <Popconfirm
+              title="确定要删除吗"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() =>
+                this.props.delete_single_normal_hot_search(
+                  v,
+                  this.props.query,
+                  this.props.pagination
+                )
+              }
+            >
+              <Button>删除</Button>
+            </Popconfirm>
+          </>
+        ),
+      },
+    ];
+    this.controlColumns = [
+      {
+        title: "拖拽排序",
+        dataIndex: "sort",
+        className: "drag-visible",
+        render: () => <DragHandle />,
+      },
+      {
+        title: "关键词",
+        dataIndex: "word",
+        className: "drag-visible",
+      },
+      {
+        title: "标签",
+        dataIndex: "type",
+        render: () => <Tag color={"red"}>受控</Tag>,
+      },
+      {
+        title: "操作",
+        dataIndex: "action",
+        render: () => (
+          <>
+            <Button
+              type="primary"
+              style={{ marginRight: "5px", marginBottom: "5px" }}
             >
               修改
             </Button>
@@ -158,21 +153,19 @@ class HotSearch extends React.Component {
     ];
 
     this.state = {
-      dataSource: data,
       normalModalState: false,
       controlModalState: false,
-      controlWordSortState: false,
     };
   }
 
   onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
       const newData = arrayMoveImmutable(
-        this.state.dataSource.slice(),
+        this.props.showControlArray.slice(),
         oldIndex,
         newIndex
       ).filter((el) => !!el);
-      this.setState({ dataSource: newData, controlWordSortState: true });
+      this.props.change_control_array_rank(newData);
     }
   };
   DraggableContainer = (props) => {
@@ -189,13 +182,19 @@ class HotSearch extends React.Component {
 
   DraggableBodyRow = ({ className, style, ...restProps }) => {
     // function findIndex base on Table rowKey props and should always be a right array index
-    const index = this.state.dataSource.findIndex(
+    const index = this.props.showControlArray.findIndex(
       (x) => x.index === restProps["data-row-key"]
     );
     return <SortableItem index={index} {...restProps} />;
   };
 
+  componentDidMount() {
+    this.props.get_background_hot_search_show_normal_array();
+    this.props.get_background_hot_search_show_control_array();
+  }
+
   render() {
+    console.log(this.props);
     const { _id, word, count } = this.props.modal.target;
     return (
       <div className="warp hot-search">
@@ -207,10 +206,24 @@ class HotSearch extends React.Component {
         >
           <Form
             key={Math.random()}
-            onFinish={(v) => this.setState({ normalModalState: false })}
+            onFinish={(v) => {
+              const { word, count } = v;
+              if (!word || !count) {
+                return;
+              }
+              this.props.add_single_normal_hot_search(
+                v,
+                this.props.query,
+                this.props.pagination
+              );
+              this.setState({ normalModalState: false });
+            }}
           >
-            <Form.Item label="关键词" name={"word"}>
+            <Form.Item label="关键词" name={"word"} required>
               <Input></Input>
+            </Form.Item>
+            <Form.Item label="搜索次数" name={"count"} required>
+              <Input type={"number"}></Input>
             </Form.Item>
             <Form.Item>
               <Row gutter={[8, 8]}>
@@ -240,12 +253,10 @@ class HotSearch extends React.Component {
             key={Math.random()}
             onFinish={(v) => this.setState({ controlModalState: false })}
           >
-            <Form.Item label="关键词" name={"word"}>
+            <Form.Item label="关键词" name={"word"} required>
               <Input></Input>
             </Form.Item>
-            <Form.Item label="搜索次数" name={"count"}>
-              <Input type={"number"}></Input>
-            </Form.Item>
+
             <Form.Item>
               <Row gutter={[8, 8]}>
                 <Col offset={16} span={3}>
@@ -278,7 +289,12 @@ class HotSearch extends React.Component {
               count,
             }}
             onFinish={(value) => {
-              //
+              this.props.update_single_normal_hot_search(
+                value._id,
+                value,
+                this.props.query,
+                this.props.pagination
+              );
               this.props.close_update_modal();
             }}
           >
@@ -347,25 +363,28 @@ class HotSearch extends React.Component {
           </Paragraph>
           <Paragraph>
             <Table
-              columns={this.columns}
-              dataSource={[
-                {
-                  _id: "62cc265cd7f341c9ded617ce",
-                  word: "龙骧",
-                  count: 11,
-                },
-              ]}
+              columns={this.normalColumns}
+              dataSource={this.props.showNormalArray}
+              loading={this.props.isFetching}
+              pagination={this.props.pagination}
+              onChange={(pagination) => {
+                this.props.get_background_hot_search_show_normal_array(
+                  pagination,
+                  this.props.query
+                );
+              }}
             ></Table>
           </Paragraph>
           <Divider></Divider>
           <Paragraph>
             <Row>
               <Col span={8}>
-                {this.state.controlWordSortState ? (
+                {this.props.controlWordSortState ? (
                   <Button
                     type="primary"
-                    onClick={() =>
-                      this.setState({ controlWordSortState: false })
+                    onClick={
+                      () => null
+                      // this.setState({ controlWordSortState: false })
                     }
                   >
                     保存排序
@@ -393,8 +412,8 @@ class HotSearch extends React.Component {
           <Paragraph>
             <Table
               pagination={false}
-              dataSource={this.state.dataSource}
-              columns={columns}
+              dataSource={this.props.showControlArray}
+              columns={this.controlColumns}
               rowKey="index"
               components={{
                 body: {
@@ -420,17 +439,17 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     close_update_modal: bindActionCreators(close_update_modal, dispatch),
-    delete_single_hot_search: bindActionCreators(
-      delete_single_hot_search,
+    delete_single_normal_hot_search: bindActionCreators(
+      delete_single_normal_hot_search,
       dispatch
     ),
-    get_background_hot_search_show_array: bindActionCreators(
-      get_background_hot_search_show_array,
+    get_background_hot_search_show_normal_array: bindActionCreators(
+      get_background_hot_search_show_normal_array,
       dispatch
     ),
     open_update_modal: bindActionCreators(open_update_modal, dispatch),
-    update_single_hot_search: bindActionCreators(
-      update_single_hot_search,
+    update_single_normal_hot_search: bindActionCreators(
+      update_single_normal_hot_search,
       dispatch
     ),
     set_background_hot_search_pagination: bindActionCreators(
@@ -439,6 +458,18 @@ function mapDispatchToProps(dispatch) {
     ),
     set_background_hot_search_query: bindActionCreators(
       set_background_hot_search_query,
+      dispatch
+    ),
+    get_background_hot_search_show_control_array: bindActionCreators(
+      get_background_hot_search_show_control_array,
+      dispatch
+    ),
+    change_control_array_rank: bindActionCreators(
+      change_control_array_rank,
+      dispatch
+    ),
+    add_single_normal_hot_search: bindActionCreators(
+      add_single_normal_hot_search,
       dispatch
     ),
   };

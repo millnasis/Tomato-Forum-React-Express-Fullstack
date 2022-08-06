@@ -20,4 +20,12 @@ module.exports = {
     email: "",
     sex: "",
   },
+  totalHotSearchTypeState: {
+    CONTROL: "CONTROL",
+    NORMAL: "NORMAL",
+  },
+  totalSortSelectionState: {
+    DESC: "DESC",
+    ASC: "ASC",
+  },
 };
