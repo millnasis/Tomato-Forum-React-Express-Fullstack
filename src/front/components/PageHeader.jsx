@@ -1,7 +1,7 @@
 import React from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Layout, Menu, Avatar, Badge } from "antd";
+import { Layout, Menu, Avatar, Badge, Button } from "antd";
 import { Link } from "react-router-dom";
 const { Header } = Layout;
 import { Input } from "antd";
@@ -74,6 +74,14 @@ class PageHeader extends React.Component {
             label: "登陆",
             key: "login",
           },
+      this.props.isUserLogin &&
+        this.props.userInfo.permit === "admin" && {
+          label: (
+            <a href="/background">
+              <Button>进入后台</Button>
+            </a>
+          ),
+        },
     ];
     return (
       <Header

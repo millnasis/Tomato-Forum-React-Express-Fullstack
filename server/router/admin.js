@@ -249,4 +249,56 @@ router.get("/hotsearch/control", async (req, res) => {
   }
   res.send(ret);
 });
+
+router.post("/hotsearch/control", async (req, res) => {
+  const searchDAO = new SearchDAO();
+  const { arr } = req.body;
+  const ret = await searchDAO.adminControlUpdate(arr);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  const queryRet = await searchDAO.adminControlQuery();
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(queryRet);
+});
+
+router.put("/hotsearch/control", async (req, res) => {
+  const searchDAO = new SearchDAO();
+  const { word } = req.body;
+  const ret = await searchDAO.adminControlAdd(word);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  } else if (ret === "exist" || ret === "over") {
+    res.status(400).send(ret);
+    return;
+  }
+  const queryRet = await searchDAO.adminControlQuery();
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(queryRet);
+});
+
+router.delete("/hotsearch/control", async (req, res) => {
+  const searchDAO = new SearchDAO();
+  const { word } = req.body;
+  const ret = await searchDAO.adminControlDelete(word);
+  if (!ret) {
+    res.status(500).send("error");
+    return;
+  }
+  const queryRet = await searchDAO.adminControlQuery();
+  if (!queryRet) {
+    res.status(500).send("error");
+    return;
+  }
+  res.send(queryRet);
+});
+
 module.exports = router;

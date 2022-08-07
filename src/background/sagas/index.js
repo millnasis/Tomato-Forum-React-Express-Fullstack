@@ -18,6 +18,9 @@ export default function* rootSaga() {
   yield fork(hotsearch.getHotSearchNormalArray);
   yield fork(hotsearch.getHotSearchControlArray);
   yield fork(hotsearch.updateHotNormalSearch);
+  yield fork(hotsearch.updateHotControlSearch);
   yield fork(hotsearch.addNormalHotSearch);
+  yield fork(hotsearch.addControlHotSearch);
   yield fork(hotsearch.deleteNormalHotSearch);
+  yield fork(hotsearch.deleteControlHotSearch);
 }

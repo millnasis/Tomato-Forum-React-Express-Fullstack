@@ -6,6 +6,79 @@ const { totalHotSearchTypeState, totalSortSelectionState } = constant;
 const dbName = "search";
 
 module.exports = class SearchDAO {
+  async adminControlDelete(word) {
+    try {
+      const search = await db(dbName);
+      const ret = await search.updateOne(
+        { type: totalHotSearchTypeState.CONTROL },
+        { $pull: { words: word } }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async adminControlAdd(word) {
+    try {
+      const search = await db(dbName);
+      const query = await search
+        .aggregate([
+          {
+            $match: {
+              type: totalHotSearchTypeState.CONTROL,
+            },
+          },
+          {
+            $unwind: "$words",
+          },
+        ])
+        .toArray();
+      if (query.length >= 10) {
+        return "over";
+      }
+      for (let i = 0; i < query.length; i++) {
+        const element = query[i];
+        if (element.words === word) {
+          return "exist";
+        }
+      }
+      const ret = await search.updateOne(
+        {
+          type: totalHotSearchTypeState.CONTROL,
+        },
+        {
+          $push: {
+            words: word,
+          },
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async adminControlUpdate(arr) {
+    try {
+      const search = await db(dbName);
+      const ret = await search.updateOne(
+        { type: totalHotSearchTypeState.CONTROL },
+        {
+          $set: {
+            words: arr,
+          },
+        }
+      );
+      return ret;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   async adminNormalDelete(id) {
     try {
       id = ObjectId(id);
@@ -150,26 +223,9 @@ module.exports = class SearchDAO {
     }
   }
 
-  async getHotSearchKeyword(num = 5) {
+  async getHotSearchKeyword(num = 10) {
     try {
       const search = await db(dbName);
-      const normal = await search
-        .aggregate([
-          {
-            $match: {
-              type: totalHotSearchTypeState.NORMAL,
-            },
-          },
-          {
-            $sort: {
-              count: -1,
-            },
-          },
-          {
-            $limit: num,
-          },
-        ])
-        .toArray();
       let control = await search
         .find({ type: totalHotSearchTypeState.CONTROL })
         .toArray();
@@ -182,6 +238,29 @@ module.exports = class SearchDAO {
       } else {
         control = control[0].words;
       }
+      const nor = control.map((v) => {
+        return {
+          word: v,
+        };
+      });
+      const normal = await search
+        .aggregate([
+          {
+            $match: {
+              type: totalHotSearchTypeState.NORMAL,
+              $nor: nor,
+            },
+          },
+          {
+            $sort: {
+              count: -1,
+            },
+          },
+          {
+            $limit: num,
+          },
+        ])
+        .toArray();
       return {
         control,
         normal,

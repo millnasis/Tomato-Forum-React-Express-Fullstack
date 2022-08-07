@@ -195,10 +195,8 @@ class Permit extends React.Component {
         title: "内容",
         dataIndex: "id",
         key: "id",
-        render: (id) => {
-          const { content, masterID } = this.props.comments.target.filter(
-            (v) => v.id === id
-          )[0];
+        render: (id, obj) => {
+          const { content, masterID } = obj;
           return (
             <CommentContentEditor
               id={id}
@@ -229,10 +227,8 @@ class Permit extends React.Component {
         title: "操作",
         dataIndex: "id",
         key: "id",
-        render: (id) => {
-          const { masterID } = this.props.comments.target.filter(
-            (v) => v.id === id
-          )[0];
+        render: (id, obj) => {
+          const { masterID } = obj;
           return (
             <Popconfirm
               title="确定要删除吗"

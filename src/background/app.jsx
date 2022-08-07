@@ -1,4 +1,5 @@
 import {
+  BackwardOutlined,
   DesktopOutlined,
   FileTextOutlined,
   KeyOutlined,
@@ -43,6 +44,11 @@ const items = [
     "热搜管理",
     TotalSectionState.HOT_SERACH,
     <SearchOutlined></SearchOutlined>
+  ),
+  getItem(
+    <a href="/">返回首页</a>,
+    "back",
+    <BackwardOutlined></BackwardOutlined>
   ),
 ];
 

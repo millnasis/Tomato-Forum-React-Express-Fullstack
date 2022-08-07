@@ -35,10 +35,15 @@ const {
   set_background_hot_search_pagination,
   set_background_hot_search_query,
   update_single_normal_hot_search,
+  update_hot_search_control_array,
   change_control_array_rank,
-  close_update_modal,
-  open_update_modal,
+  open_control_update_modal,
+  open_normal_update_modal,
+  close_control_update_modal,
+  close_normal_update_modal,
   add_single_normal_hot_search,
+  add_single_control_hot_search,
+  delete_single_control_hot_search,
 } = actions;
 import "./index.scss";
 
@@ -96,7 +101,7 @@ class HotSearch extends React.Component {
             <Button
               type="primary"
               style={{ marginRight: "5px", marginBottom: "5px" }}
-              onClick={() => this.props.open_update_modal(v)}
+              onClick={() => this.props.open_normal_update_modal(v)}
             >
               修改
             </Button>
@@ -137,18 +142,28 @@ class HotSearch extends React.Component {
       },
       {
         title: "操作",
-        dataIndex: "action",
-        render: () => (
-          <>
-            <Button
-              type="primary"
-              style={{ marginRight: "5px", marginBottom: "5px" }}
-            >
-              修改
-            </Button>
-            <Button>删除</Button>
-          </>
-        ),
+        dataIndex: "word",
+        render: (v, obj, index) => {
+          return (
+            <>
+              <Button
+                type="primary"
+                style={{ marginRight: "5px", marginBottom: "5px" }}
+                onClick={() => this.props.open_control_update_modal(index)}
+              >
+                修改
+              </Button>
+              <Popconfirm
+                title="确定要删除吗"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => this.props.delete_single_control_hot_search(v)}
+              >
+                <Button>删除</Button>
+              </Popconfirm>
+            </>
+          );
+        },
       },
     ];
 
@@ -195,7 +210,7 @@ class HotSearch extends React.Component {
 
   render() {
     console.log(this.props);
-    const { _id, word, count } = this.props.modal.target;
+    const { _id, word, count } = this.props.normalModal.target;
     return (
       <div className="warp hot-search">
         <Modal
@@ -251,12 +266,18 @@ class HotSearch extends React.Component {
         >
           <Form
             key={Math.random()}
-            onFinish={(v) => this.setState({ controlModalState: false })}
+            onFinish={(v) => {
+              const { word } = v;
+              if (!word) {
+                return;
+              }
+              this.props.add_single_control_hot_search(word);
+              this.setState({ controlModalState: false });
+            }}
           >
             <Form.Item label="关键词" name={"word"} required>
               <Input></Input>
             </Form.Item>
-
             <Form.Item>
               <Row gutter={[8, 8]}>
                 <Col offset={16} span={3}>
@@ -276,9 +297,9 @@ class HotSearch extends React.Component {
           </Form>
         </Modal>
         <Modal
-          title="修改热搜"
-          visible={this.props.modal.show}
-          onCancel={() => this.props.close_update_modal()}
+          title="修改普通热搜"
+          visible={this.props.normalModal.show}
+          onCancel={() => this.props.close_normal_update_modal()}
           footer={null}
         >
           <Form
@@ -289,13 +310,7 @@ class HotSearch extends React.Component {
               count,
             }}
             onFinish={(value) => {
-              this.props.update_single_normal_hot_search(
-                value._id,
-                value,
-                this.props.query,
-                this.props.pagination
-              );
-              this.props.close_update_modal();
+              this.props.close_normal_update_modal();
             }}
           >
             <Form.Item label="ID" name={"_id"}>
@@ -316,7 +331,67 @@ class HotSearch extends React.Component {
             <Form.Item>
               <Row gutter={[8, 8]}>
                 <Col offset={16} span={3}>
-                  <Button onClick={() => this.props.close_update_modal()}>
+                  <Button
+                    onClick={() => this.props.close_normal_update_modal()}
+                  >
+                    取消
+                  </Button>
+                </Col>
+                <Col offset={1} span={3}>
+                  <Button type="primary" htmlType="submit">
+                    修改
+                  </Button>
+                </Col>
+              </Row>
+            </Form.Item>
+          </Form>
+        </Modal>
+        <Modal
+          title="修改受控热搜"
+          visible={this.props.controlModal.show}
+          onCancel={() => this.props.close_control_update_modal()}
+          footer={null}
+        >
+          <Form
+            key={this.props.controlModal.target.word}
+            initialValues={{
+              word: this.props.controlModal.target.word,
+              index: this.props.controlModal.target.index,
+            }}
+            onFinish={(value) => {
+              const { word, index } = value;
+              this.props.update_hot_search_control_array(
+                this.props.showControlArray.map((v) => {
+                  if (v.index === index) {
+                    return {
+                      ...v,
+                      word,
+                    };
+                  }
+                  return v;
+                })
+              );
+              this.props.close_control_update_modal();
+            }}
+          >
+            <Form.Item label="关键词" name={"word"}>
+              <Input></Input>
+            </Form.Item>
+            <Form.Item name={"index"} style={{ display: "none" }}>
+              <Input></Input>
+            </Form.Item>
+            <Form.Item>
+              <Alert
+                type="info"
+                message="在您按下修改按钮之前，本页的所有修改都不会保存"
+              ></Alert>
+            </Form.Item>
+            <Form.Item>
+              <Row gutter={[8, 8]}>
+                <Col offset={16} span={3}>
+                  <Button
+                    onClick={() => this.props.close_control_update_modal()}
+                  >
                     取消
                   </Button>
                 </Col>
@@ -336,21 +411,54 @@ class HotSearch extends React.Component {
             <Row gutter={[8, 8]}>
               <Col span={3}></Col>
               <Col span={5}>
-                <Input addonBefore="关键词"></Input>
+                <Input
+                  addonBefore="关键词"
+                  value={this.props.query.word}
+                  onChange={(e) =>
+                    this.props.set_background_hot_search_query({
+                      ...this.props.query,
+                      word: e.nativeEvent.target.value,
+                    })
+                  }
+                ></Input>
               </Col>
               <Col span={4}>
                 <Select
                   defaultValue={totalSortSelectionState.DESC}
                   style={{ width: "100%" }}
+                  value={this.props.query.sort}
+                  onChange={(v) =>
+                    this.props.set_background_hot_search_query({
+                      ...this.props.query,
+                      sort: v,
+                    })
+                  }
                 >
                   <Option key={totalSortSelectionState.DESC}>次数降序</Option>
                   <Option key={totalSortSelectionState.ASC}>次数升序</Option>
                 </Select>
               </Col>
               <Col span={4}>
-                <Button type="primary">查询</Button>
+                <Button
+                  type="primary"
+                  onClick={() =>
+                    this.props.get_background_hot_search_show_normal_array(
+                      this.props.pagination,
+                      this.props.query
+                    )
+                  }
+                >
+                  查询
+                </Button>
                 &nbsp;
-                <Button>重置</Button>
+                <Button
+                  onClick={() => {
+                    this.props.set_background_hot_search_query();
+                    this.props.get_background_hot_search_show_normal_array();
+                  }}
+                >
+                  重置
+                </Button>
               </Col>
               <Col span={6}>
                 <Button
@@ -382,10 +490,12 @@ class HotSearch extends React.Component {
                 {this.props.controlWordSortState ? (
                   <Button
                     type="primary"
-                    onClick={
-                      () => null
-                      // this.setState({ controlWordSortState: false })
-                    }
+                    onClick={() => {
+                      this.props.update_hot_search_control_array(
+                        this.props.showControlArray
+                      );
+                      this.setState({ controlWordSortState: false });
+                    }}
                   >
                     保存排序
                   </Button>
@@ -413,6 +523,7 @@ class HotSearch extends React.Component {
             <Table
               pagination={false}
               dataSource={this.props.showControlArray}
+              loading={this.props.isFetching}
               columns={this.controlColumns}
               rowKey="index"
               components={{
@@ -438,7 +549,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    close_update_modal: bindActionCreators(close_update_modal, dispatch),
     delete_single_normal_hot_search: bindActionCreators(
       delete_single_normal_hot_search,
       dispatch
@@ -447,7 +557,6 @@ function mapDispatchToProps(dispatch) {
       get_background_hot_search_show_normal_array,
       dispatch
     ),
-    open_update_modal: bindActionCreators(open_update_modal, dispatch),
     update_single_normal_hot_search: bindActionCreators(
       update_single_normal_hot_search,
       dispatch
@@ -470,6 +579,34 @@ function mapDispatchToProps(dispatch) {
     ),
     add_single_normal_hot_search: bindActionCreators(
       add_single_normal_hot_search,
+      dispatch
+    ),
+    update_hot_search_control_array: bindActionCreators(
+      update_hot_search_control_array,
+      dispatch
+    ),
+    open_control_update_modal: bindActionCreators(
+      open_control_update_modal,
+      dispatch
+    ),
+    open_normal_update_modal: bindActionCreators(
+      open_normal_update_modal,
+      dispatch
+    ),
+    close_control_update_modal: bindActionCreators(
+      close_control_update_modal,
+      dispatch
+    ),
+    close_normal_update_modal: bindActionCreators(
+      close_normal_update_modal,
+      dispatch
+    ),
+    add_single_control_hot_search: bindActionCreators(
+      add_single_control_hot_search,
+      dispatch
+    ),
+    delete_single_control_hot_search: bindActionCreators(
+      delete_single_control_hot_search,
       dispatch
     ),
   };

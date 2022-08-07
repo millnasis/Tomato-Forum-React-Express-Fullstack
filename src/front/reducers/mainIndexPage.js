@@ -194,7 +194,7 @@ export function reducer(state = initialState, action) {
       arr.push(...normal);
       return {
         ...state,
-        showHotSearchArray: arr,
+        showHotSearchArray: arr.slice(0, 10),
       };
     }
     case actionsType.END_FETCH_HOT_POST:

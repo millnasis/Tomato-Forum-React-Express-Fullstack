@@ -119,7 +119,31 @@ module.exports = class UserDAO {
   async queryByID(ID) {
     try {
       const users = await db(dbName);
-      const ret = await users.find({ _id: ObjectId(ID) }).toArray();
+      const ret = await users
+        .aggregate([
+          {
+            $match: {
+              _id: ObjectId(ID),
+            },
+          },
+          {
+            $lookup: {
+              from: "permit",
+              localField: "_id",
+              foreignField: "userid",
+              as: "permit",
+            },
+          },
+          {
+            $unwind: "$permit",
+          },
+          {
+            $addFields: {
+              permit: "$permit.permit",
+            },
+          },
+        ])
+        .toArray();
       const messageDAO = new MessageDAO();
       const msgNum = await messageDAO.queryUnreadMessageSumByUserID(ret[0]._id);
 

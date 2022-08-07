@@ -72,6 +72,25 @@ export function* updateHotNormalSearch() {
   }
 }
 
+export function* updateHotControlSearch() {
+  while (true) {
+    const action = yield take(
+      actionsType.SEND_TO_UPDATE_HOT_SEARCH_CONTROL_ARRAY
+    );
+    const { arr } = action;
+    const response = yield call(axios.post, "/api/admin/hotsearch/control", {
+      arr: arr.map((v) => v.word),
+    });
+    if (response && response.status === 200) {
+      yield put(
+        actions.response_background_hot_search_show_control_array(response.data)
+      );
+    } else {
+      yield put(rootActions.set_message(2, "修改错误"));
+    }
+  }
+}
+
 export function* addNormalHotSearch() {
   while (true) {
     try {
@@ -96,6 +115,33 @@ export function* addNormalHotSearch() {
     }
   }
 }
+export function* addControlHotSearch() {
+  while (true) {
+    try {
+      const action = yield take(
+        actionsType.SEND_TO_ADD_SINGLE_CONTROL_HOT_SEARCH
+      );
+      const { word } = action;
+      const response = yield call(axios.put, "/api/admin/hotsearch/control", {
+        word,
+      });
+      if (response && response.status === 200) {
+        yield put(
+          actions.response_background_hot_search_show_control_array(
+            response.data
+          )
+        );
+      }
+    } catch (error) {
+      yield put(
+        rootActions.set_message(
+          2,
+          "新增错误，可能是关键词已存在或超出受控关键词限制（10个）"
+        )
+      );
+    }
+  }
+}
 
 export function* deleteNormalHotSearch() {
   while (true) {
@@ -114,6 +160,34 @@ export function* deleteNormalHotSearch() {
       if (response && response.status === 200) {
         yield put(
           actions.response_background_hot_search_show_normal_array(
+            response.data
+          )
+        );
+      }
+    } catch (error) {
+      yield put(rootActions.set_message(2, "删除失败"));
+    }
+  }
+}
+export function* deleteControlHotSearch() {
+  while (true) {
+    try {
+      const action = yield take(
+        actionsType.SEND_TO_DELETE_SINGLE_CONTROL_HOT_SEARCH
+      );
+      const { word } = action;
+      const response = yield call(
+        axios.delete,
+        "/api/admin/hotsearch/control",
+        {
+          data: {
+            word,
+          },
+        }
+      );
+      if (response && response.status === 200) {
+        yield put(
+          actions.response_background_hot_search_show_control_array(
             response.data
           )
         );
