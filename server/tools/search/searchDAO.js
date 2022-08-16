@@ -243,13 +243,16 @@ module.exports = class SearchDAO {
           word: v,
         };
       });
+      const normalMatch = {
+        type: totalHotSearchTypeState.NORMAL,
+      };
+      if (nor.length > 0) {
+        normalMatch["$nor"] = nor;
+      }
       const normal = await search
         .aggregate([
           {
-            $match: {
-              type: totalHotSearchTypeState.NORMAL,
-              $nor: nor,
-            },
+            $match: normalMatch,
           },
           {
             $sort: {
